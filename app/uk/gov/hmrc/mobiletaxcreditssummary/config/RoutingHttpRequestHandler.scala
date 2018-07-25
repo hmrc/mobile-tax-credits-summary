@@ -30,9 +30,9 @@ class RoutingHttpRequestHandler @Inject()(router: Router, errorHandler: HttpErro
                                           filters: HttpFilters, environment: Environment, runConfiguration: Configuration)
   extends RequestHandler(router: Router, errorHandler: HttpErrorHandler, configuration: HttpConfiguration, filters: HttpFilters) {
 
-  lazy val header = runConfiguration.getString(s"router.header")
-  lazy val regex = runConfiguration.getString(s"router.regex")
-  lazy val prefix = runConfiguration.getString(s"router.prefix")
+  lazy val header: Option[String] = runConfiguration.getString(s"router.header")
+  lazy val regex: Option[String] = runConfiguration.getString(s"router.regex")
+  lazy val prefix: Option[String] = runConfiguration.getString(s"router.prefix")
 
   lazy val routing: Option[(String, String, String)] = {
     (header, regex, prefix) match {
