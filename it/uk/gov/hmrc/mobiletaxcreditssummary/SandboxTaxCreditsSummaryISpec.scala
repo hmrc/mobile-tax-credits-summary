@@ -37,7 +37,7 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
       val response = await(request(sandboxNino).addHttpHeaders(mobileHeader).get())
       response.status                                                                                               shouldBe 200
       (response.json \ "excluded").as[Boolean]                                                                      shouldBe false
-      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "WEEKLY"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "weekly"
       (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String]               shouldBe "Nuala"
     }
 
@@ -45,7 +45,7 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
       val response = await(request(sandboxNino).addHttpHeaders(mobileHeader, "SANDBOX-CONTROL" -> "WORKING-TAX-CREDIT-ONLY").get())
       response.status                                                                                               shouldBe 200
       (response.json \ "excluded").as[Boolean]                                                                      shouldBe false
-      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "WEEKLY"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "weekly"
       (response.json \\ "childTaxCredit")                                                                           shouldBe empty
       (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String]               shouldBe "Nuala"
     }
@@ -54,7 +54,7 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
       val response = await(request(sandboxNino).addHttpHeaders(mobileHeader, "SANDBOX-CONTROL" -> "CHILD-TAX-CREDIT-ONLY").get())
       response.status                                                                                             shouldBe 200
       (response.json \ "excluded").as[Boolean]                                                                    shouldBe false
-      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "childTaxCredit" \ "paymentFrequency").as[String] shouldBe "WEEKLY"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "childTaxCredit" \ "paymentFrequency").as[String] shouldBe "weekly"
       (response.json \\ "workingTaxCredit")                                                                       shouldBe empty
       (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String]             shouldBe "Nuala"
     }
@@ -63,7 +63,7 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
       val response = await(request(sandboxNino).addHttpHeaders(mobileHeader, "SANDBOX-CONTROL" -> "RANDOMVALUE").get())
       response.status                                                                                               shouldBe 200
       (response.json \ "excluded").as[Boolean]                                                                      shouldBe false
-      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "WEEKLY"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "weekly"
       (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String]               shouldBe "Nuala"
     }
 
@@ -71,7 +71,7 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
       val response = await(request(sandboxNino).addHttpHeaders(mobileHeader, "SANDBOX-CONTROL" -> "CLAIMANTS_FAILURE").get())
       response.status                                                                                               shouldBe 200
       (response.json \ "excluded").as[Boolean]                                                                      shouldBe false
-      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "WEEKLY"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "weekly"
       (response.json \ "taxCreditsSummary" \ "claimants").toOption                                                  shouldBe None
     }
 

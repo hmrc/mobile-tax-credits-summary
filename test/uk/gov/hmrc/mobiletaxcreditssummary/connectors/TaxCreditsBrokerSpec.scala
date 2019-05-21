@@ -43,8 +43,8 @@ class TaxCreditsBrokerSpec extends WordSpecLike with Matchers with ScalaFutures 
 
     val expectedPaymentWTC      = FuturePayment(160.34, expectedNextDueDate, oneOffPayment = false)
     val expectedPaymentCTC      = FuturePayment(140.12, expectedNextDueDate, oneOffPayment = false)
-    val paymentSectionCTC       = PaymentSection(List(expectedPaymentCTC), "WEEKLY")
-    val paymentSectionWTC       = PaymentSection(List(expectedPaymentWTC), "WEEKLY")
+    val paymentSectionCTC       = PaymentSection(List(expectedPaymentCTC), "weekly")
+    val paymentSectionWTC       = PaymentSection(List(expectedPaymentWTC), "weekly")
     val paymentSummary          = PaymentSummary(Some(paymentSectionWTC), Some(paymentSectionCTC), paymentEnabled = Some(true))
     val exclusionPaymentSummary = PaymentSummary(None, None, None, None, excluded = Some(true))
 

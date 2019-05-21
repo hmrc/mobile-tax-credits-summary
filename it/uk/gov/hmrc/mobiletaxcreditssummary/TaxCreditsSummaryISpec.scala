@@ -40,7 +40,7 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       val response = await(request(nino1).get())
       response.status                                                                                               shouldBe 200
       (response.json \ "excluded").as[Boolean]                                                                      shouldBe false
-      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "WEEKLY"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "weekly"
       ((response.json \\ "claimants").head \ "personalDetails" \ "forename").as[String]                             shouldBe "Nuala"
       ((response.json \\ "claimants").head \ "personalDetails" \ "surname").as[String]                              shouldBe "O'Shea"
       ((response.json \\ "claimants").head \ "partnerDetails" \ "forename").as[String]                              shouldBe "Frederick"
@@ -114,7 +114,7 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       val response = await(request(nino1).get())
       response.status                                                                                               shouldBe 200
       (response.json \ "excluded").as[Boolean]                                                                      shouldBe false
-      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "WEEKLY"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "weekly"
       (response.json \\ "claimants").isEmpty                                                                        shouldBe true
     }
 
@@ -129,7 +129,7 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       val response = await(request(nino1).get())
       response.status                                                                                               shouldBe 200
       (response.json \ "excluded").as[Boolean]                                                                      shouldBe false
-      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "WEEKLY"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "weekly"
       (response.json \\ "claimants").isEmpty                                                                        shouldBe true
     }
 
@@ -144,7 +144,7 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       val response = await(request(nino1).get())
       response.status                                                                                               shouldBe 200
       (response.json \ "excluded").as[Boolean]                                                                      shouldBe false
-      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "WEEKLY"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "weekly"
       (response.json \\ "claimants").isEmpty                                                                        shouldBe true
     }
 
