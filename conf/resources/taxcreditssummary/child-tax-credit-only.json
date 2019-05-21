@@ -54,7 +54,7 @@
           "earlyPayment": false
         }
       ],
-      "paymentFrequency": "weekly",
+      "paymentFrequency": "WEEKLY",
       "previousPaymentSeq": [
         {
           "amount": 140.70,

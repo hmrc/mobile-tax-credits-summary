@@ -104,7 +104,7 @@ object TaxCreditsBrokerStub {
       |          "explanatoryText" : "This is because of a recent change and is to help you get the right amount of tax credits."
       |        }
       |      ],
-      |      "paymentFrequency": "weekly",
+      |      "paymentFrequency": "WEEKLY",
       |      "previousPaymentSeq": [
       |        {
       |          "amount": 33,
@@ -153,7 +153,7 @@ object TaxCreditsBrokerStub {
       |          "explanatoryText" : "This is because of a recent change and is to help you get the right amount of tax credits."
       |        }
       |      ],
-      |      "paymentFrequency": "weekly"
+      |      "paymentFrequency": "WEEKLY"
       |    },
       |    "paymentEnabled": true,
       |    "totalsByDate": [
