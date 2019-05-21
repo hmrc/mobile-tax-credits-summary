@@ -84,7 +84,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
            |    ${payment(55.00, now.plusMonths(2), oneOffPayment = true, None, futureOneOffPaymentText)},
            |    ${payment(55.00, now.plusMonths(3), oneOffPayment = false, bankHoliday, futureEarlyPaymentText)}
            |  ],
-           |  "paymentFrequency": "weekly"
+           |  "paymentFrequency": "WEEKLY"
            |}
          """.stripMargin
 
@@ -119,7 +119,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
            |    ${payment(55.00, now.plusMonths(2), oneOffPayment = true, None, futureOneOffPaymentText)},
            |    ${payment(55.00, now.plusMonths(3), oneOffPayment = false, bankHoliday, futureEarlyPaymentText)}
            |  ],
-           |  "paymentFrequency": "weekly"
+           |  "paymentFrequency": "WEEKLY"
            |}
          """.stripMargin
 
@@ -153,7 +153,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
            |    ${payment(55.00, now.plusMonths(2), oneOffPayment = true, None, futureOneOffPaymentText)},
            |    ${payment(55.00, now.plusMonths(3), oneOffPayment = false, bankHoliday, futureEarlyPaymentText)}
            |  ],
-           |  "paymentFrequency": "weekly"
+           |  "paymentFrequency": "WEEKLY"
            |}
          """.stripMargin
 
@@ -165,7 +165,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
            |    ${payment(55.00, now.plusMonths(2), oneOffPayment = true, None, futureOneOffPaymentText)},
            |    ${payment(55.00, now.plusMonths(3), oneOffPayment = false, bankHoliday, futureEarlyPaymentText)}
            |  ],
-           |  "paymentFrequency": "weekly"
+           |  "paymentFrequency": "WEEKLY"
            |}
          """.stripMargin
 
@@ -200,7 +200,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
            |    ${payment(55.00, now.plusMonths(2), oneOffPayment = true, None, futureOneOffPaymentText)},
            |    ${payment(55.00, now.plusMonths(3), oneOffPayment = false, bankHoliday, futureEarlyPaymentText)}
            |  ],
-           |  "paymentFrequency": "weekly",
+           |  "paymentFrequency": "WEEKLY",
            |  "previousPaymentSeq": [
            |    ${payment(33.00, now.minusMonths(1), oneOffPayment = false)},
            |    ${payment(43.00, now.minusMonths(2), oneOffPayment = true, None, pastOneOffPaymentText)},
@@ -217,7 +217,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
            |    ${payment(55.00, now.plusMonths(2), oneOffPayment = true, None, futureOneOffPaymentText)},
            |    ${payment(55.00, now.plusMonths(3), oneOffPayment = false, bankHoliday, futureEarlyPaymentText)}
            |  ],
-           |  "paymentFrequency": "weekly"
+           |  "paymentFrequency": "WEEKLY"
            |}
          """.stripMargin
 
@@ -260,7 +260,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
            |    ${payment(55.00, now.plusMonths(2), oneOffPayment = true, None, futureOneOffPaymentText)},
            |    ${payment(55.00, now.plusMonths(3), oneOffPayment = false, bankHoliday, futureEarlyPaymentText)}
            |  ],
-           |  "paymentFrequency": "weekly"
+           |  "paymentFrequency": "WEEKLY"
            |}
          """.stripMargin
 
@@ -272,7 +272,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
            |    ${payment(55.00, now.plusMonths(2), oneOffPayment = true, None, futureOneOffPaymentText)},
            |    ${payment(55.00, now.plusMonths(3), oneOffPayment = false, bankHoliday, futureEarlyPaymentText)}
            |  ],
-           |  "paymentFrequency": "weekly",
+           |  "paymentFrequency": "WEEKLY",
            |  "previousPaymentSeq": [
            |    ${payment(33.00, now.minusMonths(1), oneOffPayment = false)},
            |    ${payment(43.00, now.minusMonths(2), oneOffPayment = true, None, pastOneOffPaymentText)},
@@ -321,7 +321,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
            |    ${payment(22.95, now.plusMonths(2), oneOffPayment = true, None, futureOneOffPaymentText)},
            |    ${payment(89.61, now.plusMonths(3), oneOffPayment = false, bankHoliday, futureEarlyPaymentText)}
            |  ],
-           |  "paymentFrequency": "weekly",
+           |  "paymentFrequency": "WEEKLY",
            |  "previousPaymentSeq": [
            |    ${payment(33.12, now.minusMonths(2), oneOffPayment = false)},
            |    ${payment(33.56, now.minusMonths(2), oneOffPayment = false)},
@@ -343,7 +343,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
            |    ${payment(2.66, now.plusMonths(3), oneOffPayment = true, None, futureOneOffPaymentText)},
            |    ${payment(2.67, now.plusMonths(3), oneOffPayment = false, bankHoliday, futureEarlyPaymentText)}
            |  ],
-           |  "paymentFrequency": "weekly",
+           |  "paymentFrequency": "WEEKLY",
            |  "previousPaymentSeq": [
            |    ${payment(333.33, now.minusMonths(1), oneOffPayment = false)},
            |    ${payment(333.33, now.minusMonths(1), oneOffPayment = false)},
@@ -398,7 +398,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
          |    ${payment(82.00, now.plusMonths(2), oneOffPayment = true, None, futureOneOffPaymentText)},
          |    ${payment(82.00, now.plusMonths(3), oneOffPayment = false, bankHoliday, futureEarlyPaymentText)}
          |  ],
-         |  "paymentFrequency": "weekly"
+         |  "paymentFrequency": "WEEKLY"
          |}
          """.stripMargin
     val ctc =
@@ -409,7 +409,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
          |    ${payment(25.00, now.plusMonths(2), oneOffPayment = true, None, futureOneOffPaymentText)},
          |    ${payment(50.00, now.plusMonths(3), oneOffPayment = false, bankHoliday, futureEarlyPaymentText)}
          |  ],
-         |  "paymentFrequency": "weekly"
+         |  "paymentFrequency": "WEEKLY"
          |}
          """.stripMargin
     val totalsByDate =
