@@ -37,7 +37,7 @@ The Tax Credits Summary response
           "earlyPayment": false
         }
       ],
-      "paymentFrequency": "weekly",
+      "paymentFrequency": "WEEKLY",
       "previousPaymentSeq": [
         {
           "amount": 33,
@@ -56,7 +56,7 @@ The Tax Credits Summary response
           "earlyPayment": false
         }
       ],
-      "paymentFrequency": "weekly"
+      "paymentFrequency": "WEEKLY"
     },
     "paymentEnabled": true,
     "totalsByDate": [
