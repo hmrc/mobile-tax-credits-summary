@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata
+package uk.gov.hmrc.mobiletaxcreditssummary.utils
 
-import play.api.libs.json.{Json, OFormat}
+import java.time.LocalDate
 
-case class Claimants(personalDetails: Person, partnerDetails: Option[Person], children: Seq[Person], ftnaeMessage: Option[String] = None){
-}
+import play.api.Play.current
 
-
-
-object Claimants {
-  implicit val format: OFormat[Claimants] = Json.format[Claimants]
+// ideally a Clock would be injected where LocalDate is used, but that would require
+// refitting the entire project to use DI
+object LocalDateProvider {
+  def now: LocalDate = current.configuration.getOptional[String]("dateOverride") match {
+    case Some(s) => LocalDate.parse(s)
+    case None => LocalDate.now()
+  }
 }

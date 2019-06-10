@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.mocks
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalTime}
 
 import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
@@ -28,12 +28,17 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait TaxCreditsBrokerConnectorMock extends MockFactory {
 
-  val expectedNextDueDate: LocalDate = LocalDate.parse("2015-07-16")
+  val thisYear: Int = LocalDate.now().getYear
+  val expectedNextDueDate: LocalDate = LocalDate.parse(f"$thisYear-07-16")
+  val paymentWithFtnae: LocalDate = LocalDate.parse(f"$thisYear-09-10")
   val expectedPaymentWTC = FuturePayment(160.34, expectedNextDueDate.atStartOfDay(), oneOffPayment = false)
   val expectedPaymentCTC = FuturePayment(140.12, expectedNextDueDate.atStartOfDay(), oneOffPayment = false)
+  val expectedFtnaePaymentCTC = FuturePayment(150.12, paymentWithFtnae.atStartOfDay(), oneOffPayment = false)
   val paymentSectionCTC  = PaymentSection(List(expectedPaymentCTC), "WEEKLY")
+  val paymentSectionCTCWithFtnae  = PaymentSection(List(expectedFtnaePaymentCTC,expectedPaymentCTC), "WEEKLY")
   val paymentSectionWTC  = PaymentSection(List(expectedPaymentWTC), "WEEKLY")
   val paymentSummary     = PaymentSummary(Some(paymentSectionWTC), Some(paymentSectionCTC), paymentEnabled = Some(true))
+  val paymentSummaryFtnae     = PaymentSummary(Some(paymentSectionWTC), Some(paymentSectionCTCWithFtnae), paymentEnabled = Some(true))
 
   val AGE16:         LocalDate = LocalDate.now.minusYears(16)
   val AGE15:         LocalDate = LocalDate.now.minusYears(15)
@@ -41,12 +46,13 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
   val AGE21:         LocalDate = LocalDate.now.minusYears(21)
   val DECEASED_DATE: LocalDate = LocalDate.now.minusYears(1)
 
-  val SarahSmith  = Child("Sarah", "Smith", AGE16, hasFTNAE  = false, hasConnexions = false, isActive = true, None)
-  val JosephSmith = Child("Joseph", "Smith", AGE15, hasFTNAE = false, hasConnexions = false, isActive = true, None)
-  val MarySmith   = Child("Mary", "Smith", AGE13, hasFTNAE   = false, hasConnexions = false, isActive = true, None)
-  val JennySmith  = Child("Jenny", "Smith", AGE21, hasFTNAE  = false, hasConnexions = false, isActive = true, None)
-  val PeterSmith  = Child("Peter", "Smith", AGE13, hasFTNAE  = false, hasConnexions = false, isActive = false, Some(DECEASED_DATE))
-  val SimonSmith  = Child("Simon", "Smith", AGE13, hasFTNAE  = false, hasConnexions = false, isActive = true, Some(DECEASED_DATE))
+  val SarahSmith  = Child("Sarah", "Smith", AGE16, hasFTNAE  = false, hasConnections = false, isActive = true, None)
+  val SarahSmithFtnae  = Child("Sarah", "Smith", AGE16, hasFTNAE  = true, hasConnections = false, isActive = true, None)
+  val JosephSmith = Child("Joseph", "Smith", AGE15, hasFTNAE = false, hasConnections = false, isActive = true, None)
+  val MarySmith   = Child("Mary", "Smith", AGE13, hasFTNAE   = false, hasConnections = false, isActive = true, None)
+  val JennySmith  = Child("Jenny", "Smith", AGE21, hasFTNAE  = false, hasConnections = false, isActive = true, None)
+  val PeterSmith  = Child("Peter", "Smith", AGE13, hasFTNAE  = false, hasConnections = false, isActive = false, Some(DECEASED_DATE))
+  val SimonSmith  = Child("Simon", "Smith", AGE13, hasFTNAE  = false, hasConnections = false, isActive = true, Some(DECEASED_DATE))
 
   val personalDetails = Person(forename = "firstname", surname = "surname")
 
@@ -56,6 +62,13 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
     personalDetails,
     Some(partnerDetails),
     Seq(Person(forename = "Sarah", surname = "Smith"), Person(forename = "Joseph", surname = "Smith"), Person(forename = "Mary", surname = "Smith"))
+  )
+
+  def claimantsFTNAE(link: Option[String] = None) = Claimants(
+    personalDetails,
+    Some(partnerDetails),
+    Seq(Person(forename = "Sarah", surname = "Smith"), Person(forename = "Joseph", surname = "Smith"), Person(forename = "Mary", surname = "Smith")),
+    link
   )
 
   val claimantsNoPartnerDetails = Claimants(

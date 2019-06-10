@@ -64,7 +64,8 @@ val scalatestPlusPlayVersion = "3.1.2"
 val test = Seq(
   "org.scalatest" %% "scalatest" % "3.0.5" % Test,
   "org.scalamock" %% "scalamock" % "4.1.0" % Test,
-  "org.pegdown"   % "pegdown"    % "1.6.0" % Test
+  "org.pegdown"   % "pegdown"    % "1.6.0" % Test,
+  "org.scalatestplus.play" %% "scalatestplus-play" % scalatestPlusPlayVersion % Test
 )
 
 val integration = Seq(

@@ -26,29 +26,45 @@ class ChildSpec extends WordSpecLike with Matchers {
 
   "Child DOB calculation" should {
     "using today's date for child DOB will result in age 0" in {
-      val childA = Child("first", "second", LocalDate.now, hasFTNAE = false, hasConnexions = false, isActive = false, None)
+      val childA = Child("first", "second", LocalDate.now, hasFTNAE = false, hasConnections = false, isActive = false, None)
 
       Child.getAge(childA) shouldBe 0
     }
 
     "using today's date - 16 years for child DOB will result in age 16" in {
-      val childB = Child("first", "second", LocalDate.now.minusYears(16), hasFTNAE = false, hasConnexions = false, isActive = false, None)
+      val childB = Child("first", "second", LocalDate.now.minusYears(16), hasFTNAE = false, hasConnections = false, isActive = false, None)
 
       Child.getAge(childB) shouldBe 16
     }
 
     "using today's date - 16 years and +1 month for child DOB will result in age 15" in {
       val childC =
-        Child("first", "second", LocalDate.now.minusYears(16).plusMonths(1), hasFTNAE = false, hasConnexions = false, isActive = false, None)
+        Child("first", "second", LocalDate.now.minusYears(16).plusMonths(1), hasFTNAE = false, hasConnections = false, isActive = false, None)
 
       Child.getAge(childC) shouldBe 15
     }
   }
 
+  "Check for any child with FTNAE" should {
+    "return false if none are in list" in {
+      val childB = Child("first", "second", LocalDate.now.minusYears(16), hasFTNAE = false, hasConnections = false, isActive = false, None)
+
+      Child.hasFTNAEChildren(List(childB)) shouldBe false
+    }
+    "return true if one or more are in list" in {
+      val childB = Child("first", "second", LocalDate.now.minusYears(16), hasFTNAE = true, hasConnections = false, isActive = false, None)
+
+      Child.hasFTNAEChildren(List(childB)) shouldBe true
+    }
+  }
+
+
+
+
   "Converting Child to json" should {
     "render the birth date as a Long" in {
-      val expected = Json.parse("""{"firstNames":"","surname":"","dateOfBirth":1546300800000,"hasFTNAE":false,"hasConnexions":false,"isActive":false}""")
-      val child    = Child("", "", LocalDate.parse("2019-01-01"), hasFTNAE = false, hasConnexions = false, isActive = false, None)
+      val expected = Json.parse("""{"firstNames":"","surname":"","dateOfBirth":1546300800000,"hasFTNAE":false,"hasConnections":false,"isActive":false}""")
+      val child    = Child("", "", LocalDate.parse("2019-01-01"), hasFTNAE = false, hasConnections = false, isActive = false, None)
       jsonDiff(None, Json.toJson(child), expected) shouldBe 'empty
     }
   }

@@ -22,13 +22,13 @@ import java.time.{LocalDate, Period}
 import play.api.libs.json.{Json, OFormat}
 
 case class Child(
-  firstNames:    String,
-  surname:       String,
-  dateOfBirth:   LocalDate,
-  hasFTNAE:      Boolean,
-  hasConnexions: Boolean,
-  isActive:      Boolean,
-  dateOfDeath:   Option[LocalDate])
+  firstNames:     String,
+  surname:        String,
+  dateOfBirth:    LocalDate,
+  hasFTNAE:       Boolean,
+  hasConnections: Boolean,
+  isActive:       Boolean,
+  dateOfDeath:    Option[LocalDate])
 
 object Child {
   implicit val formats: OFormat[Child] = Json.format[Child]
@@ -36,12 +36,16 @@ object Child {
   def getAge(child: Child): Long =
     Period.between(child.dateOfBirth, LocalDate.now).get(ChronoUnit.YEARS)
 
-  def getEligibleChildren(children: Seq[Child]): Seq[Person] =
+  def getEligibleChildren(children: Seq[Child]): Seq[Child] =
     children
       .filter { child =>
         getAge(child) < 20 &&
         child.isActive &&
         child.dateOfDeath.isEmpty
       }
-      .map(child => Person(forename = child.firstNames, surname = child.surname))
+
+  def hasFTNAEChildren(children: Seq[Child]): Boolean =
+    children.exists {
+      child => child.hasFTNAE
+    }
 }

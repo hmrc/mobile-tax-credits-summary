@@ -60,6 +60,7 @@ case class PaymentSummary(
       Some(
         s"We are currently working out your payments as your child is changing their education or training. This should be done by 7 September ${LocalDateTime.now.getYear}. If your child is staying in education or training, update their details on GOV.UK.")
     else None
+
 }
 
 case class PaymentSection(paymentSeq: List[FuturePayment], paymentFrequency: String, previousPaymentSeq: Option[List[PastPayment]] = None)
@@ -178,5 +179,4 @@ object PaymentSummary {
           paymentSummary.previousTotalsByDate))
     }
   }
-
 }

@@ -22,7 +22,10 @@ import akka.actor.ActorSystem
 import com.typesafe.config.Config
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{Matchers, WordSpecLike}
+import org.scalatest.{Matchers, TestData, WordSpecLike}
+import org.scalatestplus.play.OneAppPerTest
+import play.api.Application
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.domain.Nino
@@ -65,9 +68,9 @@ class TaxCreditsBrokerSpec extends WordSpecLike with Matchers with ScalaFutures 
     val AGE18 = "1998-01-09"
     val AGE19 = "1997-01-09"
 
-    val SarahSmith  = Child("Sarah", "Smith", LocalDate.parse(AGE17), hasFTNAE  = false, hasConnexions = false, isActive = false, None)
-    val JosephSmith = Child("Joseph", "Smith", LocalDate.parse(AGE18), hasFTNAE = false, hasConnexions = false, isActive = false, None)
-    val MarySmith   = Child("Mary", "Smith", LocalDate.parse(AGE19), hasFTNAE   = false, hasConnexions = false, isActive = false, None)
+    val SarahSmith  = Child("Sarah", "Smith", LocalDate.parse(AGE17), hasFTNAE  = false, hasConnections = false, isActive = false, None)
+    val JosephSmith = Child("Joseph", "Smith", LocalDate.parse(AGE18), hasFTNAE = false, hasConnections = false, isActive = false, None)
+    val MarySmith   = Child("Mary", "Smith", LocalDate.parse(AGE19), hasFTNAE   = false, hasConnections = false, isActive = false, None)
 
     val nino            = Nino("KM569110B")
     val personalDetails = Person(forename = "Nuala", surname = "O'Shea")
@@ -163,6 +166,5 @@ class TaxCreditsBrokerSpec extends WordSpecLike with Matchers with ScalaFutures 
       val result:                 PaymentSummary                   = await(connector.getPaymentSummary(TaxCreditsNino(nino.value)))
       result shouldBe exclusionPaymentSummary
     }
-
   }
 }
