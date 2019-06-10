@@ -54,11 +54,11 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
   val taxCreditsSummary =
     TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummary, Some(claimants))))
 
-  def taxCreditsSummaryWithFTNAE(link: Option[String] = None) =
-    TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummaryFtnae, Some(claimantsFTNAE(link)))))
+  def taxCreditsSummaryWithFtnae(link: Option[String] = None) =
+    TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummaryFtnae, Some(claimantsFtnae(link)))))
 
-  def taxCreditsSummaryWithMultipleFTNAE(link: Option[String] = None) =
-    TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummaryMultipleFtnae, Some(claimantsMultipleFTNAE(link)))))
+  def taxCreditsSummaryWithMultipleFtnae(link: Option[String] = None) =
+    TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummaryMultipleFtnae, Some(claimantsMultipleFtnae(link)))))
 
   val taxCreditsSummaryNoPartnerDetails =
     TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummary, Some(claimantsNoPartnerDetails))))
@@ -174,7 +174,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
 
-        await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithFTNAE()
+        await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithFtnae()
       }
 
       f"return a tax-credits user payload $testName but date is after 31st August and before 8th September ($currentYear-09-01)" taggedAs Tag(f"$currentYear-09-01") in {
@@ -212,7 +212,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
-        await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithFTNAE()
+        await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithFtnae()
       }
     }
     f"return a tax-credits user payload but date is before 1st September but in PY ($lastYear-12-31) and there are multiple FTNAE children" taggedAs Tag(f"$lastYear-12-31") in {
@@ -221,7 +221,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
       mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmithFtnae, SarahSmithFtnae, SarahSmithFtnae, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
-      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithMultipleFTNAE()
+      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithMultipleFtnae()
     }
   }
 
@@ -230,9 +230,9 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
 
   def getExpected(testName: String, link: Option[String]): TaxCreditsSummaryResponse =
     if(testName.equals("with FTNAE")){
-      taxCreditsSummaryWithFTNAE(link)
+      taxCreditsSummaryWithFtnae(link)
     } else if(testName.equals("without FTNAE")){
-      taxCreditsSummaryWithFTNAE()
+      taxCreditsSummaryWithFtnae()
     } else{
       throw new IllegalArgumentException("Invalid test name - check tests")
     }

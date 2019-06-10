@@ -56,7 +56,7 @@ class LiveTaxCreditsSummaryService @Inject()(taxCreditsBrokerConnector: TaxCredi
 
       def getFtnaeLink(children: Seq[Child], paymentSummary: PaymentSummary): Option[String] = {
         val hasFtnaePayment: Boolean = hasAFtnaePayment(paymentSummary)
-        Child.hasFTNAEChildren(children) match {
+        Child.hasFtnaeChildren(children) match {
           case _ if !hasFtnaePayment => None
           case true if now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 1)) && hasFtnaePayment =>
             Some("/tax-credits-service/home/children-and-childcare")

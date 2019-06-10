@@ -44,7 +44,7 @@ object Child {
         child.dateOfDeath.isEmpty
       }
 
-  def hasFTNAEChildren(children: Seq[Child]): Boolean =
+  def hasFtnaeChildren(children: Seq[Child]): Boolean =
     children.exists {
       child => child.hasFTNAE
     }

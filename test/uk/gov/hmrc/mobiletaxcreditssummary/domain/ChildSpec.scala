@@ -49,12 +49,12 @@ class ChildSpec extends WordSpecLike with Matchers {
     "return false if none are in list" in {
       val childB = Child("first", "second", LocalDate.now.minusYears(16), hasFTNAE = false, hasConnections = false, isActive = false, None)
 
-      Child.hasFTNAEChildren(List(childB)) shouldBe false
+      Child.hasFtnaeChildren(List(childB)) shouldBe false
     }
     "return true if one or more are in list" in {
       val childB = Child("first", "second", LocalDate.now.minusYears(16), hasFTNAE = true, hasConnections = false, isActive = false, None)
 
-      Child.hasFTNAEChildren(List(childB)) shouldBe true
+      Child.hasFtnaeChildren(List(childB)) shouldBe true
     }
   }
 
