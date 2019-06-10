@@ -38,7 +38,21 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
   val paymentSectionCTCWithFtnae  = PaymentSection(List(expectedFtnaePaymentCTC,expectedPaymentCTC), "WEEKLY")
   val paymentSectionWTC  = PaymentSection(List(expectedPaymentWTC), "WEEKLY")
   val paymentSummary     = PaymentSummary(Some(paymentSectionWTC), Some(paymentSectionCTC), paymentEnabled = Some(true))
-  val paymentSummaryFtnae     = PaymentSummary(Some(paymentSectionWTC), Some(paymentSectionCTCWithFtnae), paymentEnabled = Some(true))
+  val paymentSummaryFtnae     = PaymentSummary(
+    workingTaxCredit = Some(paymentSectionWTC),
+    childTaxCredit=  Some(paymentSectionCTCWithFtnae),
+    paymentEnabled = Some(true),
+    specialCircumstances = Some("FTNAE"),
+    informationMessage =  Some(f"We are currently working out your payments as your child is changing their education or training. This should be done by 7 September $thisYear. If your child is staying in education or training, update their details on GOV.UK.")
+  )
+
+  val paymentSummaryMultipleFtnae     = PaymentSummary(
+    workingTaxCredit = Some(paymentSectionWTC),
+    childTaxCredit=  Some(paymentSectionCTCWithFtnae),
+    paymentEnabled = Some(true),
+    specialCircumstances = Some("FTNAE"),
+    informationMessage =  Some(f"We are currently working out your payments as your children are changing their education or training. This should be done by 7 September $thisYear. If your children are staying in education or training, update their details on GOV.UK.")
+  )
 
   val AGE16:         LocalDate = LocalDate.now.minusYears(16)
   val AGE15:         LocalDate = LocalDate.now.minusYears(15)
@@ -68,6 +82,13 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
     personalDetails,
     Some(partnerDetails),
     Seq(Person(forename = "Sarah", surname = "Smith"), Person(forename = "Joseph", surname = "Smith"), Person(forename = "Mary", surname = "Smith")),
+    link
+  )
+
+  def claimantsMultipleFTNAE(link: Option[String] = None) = Claimants(
+    personalDetails,
+    Some(partnerDetails),
+    Seq(Person(forename = "Sarah", surname = "Smith"), Person(forename = "Sarah", surname = "Smith"), Person(forename = "Sarah", surname = "Smith")),
     link
   )
 

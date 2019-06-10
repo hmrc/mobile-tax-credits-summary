@@ -45,7 +45,6 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
   val currentYear: Int =LocalDate.now().getYear
   val lastYear: Int = currentYear - 1
 
-
   val exclusionPaymentSummary = PaymentSummary(None, None, None, None, excluded = Some(true))
   val taxCreditsNino          = TaxCreditsNino(nino)
 
@@ -58,14 +57,16 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
   def taxCreditsSummaryWithFTNAE(link: Option[String] = None) =
     TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummaryFtnae, Some(claimantsFTNAE(link)))))
 
+  def taxCreditsSummaryWithMultipleFTNAE(link: Option[String] = None) =
+    TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummaryMultipleFtnae, Some(claimantsMultipleFTNAE(link)))))
+
   val taxCreditsSummaryNoPartnerDetails =
     TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummary, Some(claimantsNoPartnerDetails))))
 
   val taxCreditsSummaryNoChildren =
     TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummary, Some(claimantsNoChildren))))
 
-  val taxCreditsSummaryNoClaimants =
-    TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummary, None)))
+  val taxCreditsSummaryEmpty = TaxCreditsSummaryResponse(taxCreditsSummary = None)
 
   "getTaxCreditsSummaryResponse" should {
     "return a non-tax-credits user payload when exclusion returns None" in {
@@ -117,7 +118,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
       mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
 
-      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryNoClaimants
+      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryEmpty
     }
 
     "return TaxCreditsSummaryResponse with payment summary but empty claimants when Get Personal Details fails" in {
@@ -127,7 +128,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
       mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetailsFailure(upstream4xxException, taxCreditsNino)
 
-      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryNoClaimants
+      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryEmpty
     }
 
     "return TaxCreditsSummaryResponse with payment summary but empty claimants when Get Partner Details fails" in {
@@ -137,7 +138,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
       mockTaxCreditsBrokerConnectorGetPartnerDetailsFailure(upstream5xxException, taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
 
-      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryNoClaimants
+      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryEmpty
     }
 
     "return an error when payment summary fails and exclusion returns false" in {
@@ -211,11 +212,21 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
-
         await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithFTNAE()
       }
     }
+    f"return a tax-credits user payload but date is before 1st September but in PY ($lastYear-12-31) and there are multiple FTNAE children" taggedAs Tag(f"$lastYear-12-31") in {
+      mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummaryFtnae, taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmithFtnae, SarahSmithFtnae, SarahSmithFtnae, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
+      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithMultipleFTNAE()
+    }
   }
+
+
+
 
   def getExpected(testName: String, link: Option[String]): TaxCreditsSummaryResponse =
     if(testName.equals("with FTNAE")){

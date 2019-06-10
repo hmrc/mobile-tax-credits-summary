@@ -28,7 +28,8 @@ case class PaymentSummary(
   childTaxCredit:       Option[PaymentSection],
   paymentEnabled:       Option[Boolean] = Some(false),
   specialCircumstances: Option[String] = None,
-  excluded:             Option[Boolean] = None) {
+  excluded:             Option[Boolean] = None,
+  informationMessage:   Option[String] = None                   ) {
   def totalsByDate: Option[List[Total]] =
     total(
       workingTaxCredit.map(_.paymentSeq).getOrElse(Seq.empty)
@@ -54,13 +55,6 @@ case class PaymentSummary(
                 date))
           .toList)
     }
-
-  def informationMessage: Option[String] =
-    if (specialCircumstances.isDefined)
-      Some(
-        s"We are currently working out your payments as your child is changing their education or training. This should be done by 7 September ${LocalDateTime.now.getYear}. If your child is staying in education or training, update their details on GOV.UK.")
-    else None
-
 }
 
 case class PaymentSection(paymentSeq: List[FuturePayment], paymentFrequency: String, previousPaymentSeq: Option[List[PastPayment]] = None)
@@ -150,8 +144,9 @@ object PaymentSummary {
       (JsPath \ "childTaxCredit").readNullable[PaymentSection] and
       (JsPath \ "paymentEnabled").readNullable[Boolean] and
       (JsPath \ "specialCircumstances").readNullable[String] and
-      (JsPath \ "excluded").readNullable[Boolean]
-  )(PaymentSummary.apply _)
+      (JsPath \ "excluded").readNullable[Boolean] and
+      (JsPath \ "informationMessage").readNullable[String]
+    )(PaymentSummary.apply _)
 
   implicit val writes: Writes[PaymentSummary] = new Writes[PaymentSummary] {
 

@@ -421,7 +421,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
          |]
          """.stripMargin
 
-    val request          = s"""{$wtc, $ctc, "specialCircumstances": "FTNAE", "paymentEnabled": true}""".stripMargin
+    val request          = s"""{$wtc, $ctc, "specialCircumstances": "FTNAE","informationMessage": "We are currently working out your payments as your child is changing their education or training. This should be done by 7 September ${DateTime.now.year.get}. If your child is staying in education or training, update their details on GOV.UK.", "paymentEnabled": true}""".stripMargin
     val expectedResponse = Json.parse(s"""{
          |$wtc, $ctc,
          |"paymentEnabled": true,

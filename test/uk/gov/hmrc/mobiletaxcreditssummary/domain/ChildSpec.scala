@@ -58,6 +58,23 @@ class ChildSpec extends WordSpecLike with Matchers {
     }
   }
 
+  "Count children with FTNAE" should {
+    "return 0 if none are in list" in {
+      val childB = Child("first", "second", LocalDate.now.minusYears(16), hasFTNAE = false, hasConnections = false, isActive = false, None)
+
+      Child.countFtnaeChildren(List(childB)) shouldBe 0
+    }
+    "return 1 if there is a ftnae child" in {
+      val childB = Child("first", "second", LocalDate.now.minusYears(16), hasFTNAE = true, hasConnections = false, isActive = false, None)
+
+      Child.countFtnaeChildren(List(childB)) shouldBe 1
+    }
+    "return 2 if there is a ftnae child" in {
+      val childB = Child("first", "second", LocalDate.now.minusYears(16), hasFTNAE = true, hasConnections = false, isActive = false, None)
+
+      Child.countFtnaeChildren(List(childB,childB)) shouldBe 2
+    }
+  }
 
 
 

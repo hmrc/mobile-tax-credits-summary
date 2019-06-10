@@ -48,4 +48,8 @@ object Child {
     children.exists {
       child => child.hasFTNAE
     }
+
+  def countFtnaeChildren(children: Seq[Child]): Int = {
+    children.count(child => child.hasFTNAE)
+  }
 }
