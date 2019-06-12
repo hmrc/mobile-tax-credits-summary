@@ -38,20 +38,28 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
   val paymentSectionCTCWithFtnae  = PaymentSection(List(expectedFtnaePaymentCTC,expectedPaymentCTC), "WEEKLY")
   val paymentSectionWTC  = PaymentSection(List(expectedPaymentWTC), "WEEKLY")
   val paymentSummary     = PaymentSummary(Some(paymentSectionWTC), Some(paymentSectionCTC), paymentEnabled = Some(true))
-  val paymentSummaryFtnae     = PaymentSummary(
+  private def pre31stAugust(child: String) = Some(InformationMessage(f"We are currently working out your payments as your $child changing their education or training. This should be done by 7 September $thisYear.",
+    f"If your $child staying in education or training, you should update their details."))
+
+
+  private def sept1stTo7th(child: String) = Some(InformationMessage(f"We are currently working out your payments as your $child changing " +
+    f"their education or training. This should be done by 7 September $thisYear.",
+    f"If you have let us know that your $child staying in education or training, they will be added back automatically. Otherwise, you can add them back to your claim."))
+
+  def paymentSummaryFtnae(preSeptember: Boolean, currentYear: Boolean = true, ftnae: Boolean = true)     = PaymentSummary(
     workingTaxCredit = Some(paymentSectionWTC),
     childTaxCredit=  Some(paymentSectionCTCWithFtnae),
     paymentEnabled = Some(true),
     specialCircumstances = Some("FTNAE"),
-    informationMessage =  Some(f"We are currently working out your payments as your child is changing their education or training. This should be done by 7 September $thisYear. If your child is staying in education or training, update their details on GOV.UK.")
+    informationMessage = if(currentYear && ftnae) if(preSeptember) pre31stAugust("child is") else sept1stTo7th("child is") else None
   )
 
-  val paymentSummaryMultipleFtnae     = PaymentSummary(
+  def paymentSummaryMultipleFtnae(preSeptember: Boolean, currentYear: Boolean, ftnae: Boolean = true)     = PaymentSummary(
     workingTaxCredit = Some(paymentSectionWTC),
     childTaxCredit=  Some(paymentSectionCTCWithFtnae),
     paymentEnabled = Some(true),
     specialCircumstances = Some("FTNAE"),
-    informationMessage =  Some(f"We are currently working out your payments as your children are changing their education or training. This should be done by 7 September $thisYear. If your children are staying in education or training, update their details on GOV.UK.")
+    informationMessage = if(currentYear && ftnae) if(preSeptember) pre31stAugust("children are") else sept1stTo7th("children are") else None
   )
 
   val AGE16:         LocalDate = LocalDate.now.minusYears(16)

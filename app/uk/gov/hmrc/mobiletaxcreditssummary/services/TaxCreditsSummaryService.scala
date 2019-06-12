@@ -68,13 +68,22 @@ class LiveTaxCreditsSummaryService @Inject()(taxCreditsBrokerConnector: TaxCredi
         }
       }
 
-      def getInformationMessage(children: Seq[Child]): Option[String] =
+      def getInformationMessage(children: Seq[Child]): Option[InformationMessage] =
         if (paymentSummary.specialCircumstances.isDefined){
-          val childChildren = Child.countFtnaeChildren(children) match {
+          val childFtnaeCount = Child.countFtnaeChildren(children)
+          val childChildren = childFtnaeCount match {
             case 0 | 1 =>  "child is"
             case _ => "children are"
           }
-          Some(s"We are currently working out your payments as your $childChildren changing their education or training. This should be done by 7 September ${LocalDateTime.now.getYear}. If your $childChildren staying in education or training, update their details on GOV.UK.")
+
+          if(now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 1)) && childFtnaeCount > 0){
+            Some(InformationMessage(f"We are currently working out your payments as your $childChildren changing their education or training. This should be done by 7 September ${now.getYear}.",f"If your $childChildren staying in education or training, you should update their details."))
+          } else if (now.isAfter(createLocalDate(now.getYear, Month.AUGUST, 31)) &&
+            now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 8)) && childFtnaeCount > 0){
+            Some(InformationMessage(f"We are currently working out your payments as your $childChildren changing their education or training. This should be done by 7 September ${now.getYear}.",f"If you have let us know that your $childChildren staying in education or training, they will be added back automatically. Otherwise, you can add them back to your claim."))
+          } else{
+            None
+          }
         }
         else None
 

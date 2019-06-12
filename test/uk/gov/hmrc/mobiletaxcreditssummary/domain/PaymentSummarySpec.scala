@@ -21,7 +21,7 @@ import java.time.{LocalDateTime, ZoneOffset}
 import org.joda.time.DateTime
 import org.scalatest.{Matchers, OptionValues, WordSpecLike}
 import play.api.libs.json._
-import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.{FuturePayment, PastPayment, PaymentSummary}
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.{FuturePayment, InformationMessage, PastPayment, PaymentSummary}
 
 class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
 
@@ -421,12 +421,18 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
          |]
          """.stripMargin
 
-    val request          = s"""{$wtc, $ctc, "specialCircumstances": "FTNAE","informationMessage": "We are currently working out your payments as your child is changing their education or training. This should be done by 7 September ${DateTime.now.year.get}. If your child is staying in education or training, update their details on GOV.UK.", "paymentEnabled": true}""".stripMargin
+    val request          = s"""{$wtc, $ctc, "specialCircumstances": "FTNAE","informationMessage": {
+                              |"title": "We are currently working out your payments as your child is changing their education or training. This should be done by 7 September ${now.getYear}.",
+                              |"message" : "If your child is staying in education or training, you should update their details."
+                              |}, "paymentEnabled": true}""".stripMargin
     val expectedResponse = Json.parse(s"""{
          |$wtc, $ctc,
          |"paymentEnabled": true,
          |"specialCircumstances":"FTNAE",
-         |"informationMessage": "We are currently working out your payments as your child is changing their education or training. This should be done by 7 September ${DateTime.now.year.get}. If your child is staying in education or training, update their details on GOV.UK.",
+         |"informationMessage": {
+         |"title": "We are currently working out your payments as your child is changing their education or training. This should be done by 7 September ${now.getYear}.",
+         |"message" : "If your child is staying in education or training, you should update their details."
+         |},
          |$totalsByDate
          |}""".stripMargin)
     val response         = Json.parse(request).validate[PaymentSummary]
@@ -435,7 +441,9 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
     paymentSummary.paymentEnabled.get           shouldBe true
     paymentSummary.childTaxCredit.isDefined     shouldBe true
     paymentSummary.workingTaxCredit.isDefined   shouldBe true
-    paymentSummary.informationMessage.isDefined shouldBe true
+    paymentSummary.informationMessage.get.message shouldBe "If your child is staying in education or training, you should update their details."
+    paymentSummary.informationMessage.get.title shouldBe f"We are currently working out your payments as your child is changing their education or training. This should be done by 7 September ${now.getYear}."
+
     paymentSummary.totalsByDate.isDefined       shouldBe true
 
     jsonDiff(None, Json.toJson(paymentSummary), expectedResponse) shouldBe 'empty
