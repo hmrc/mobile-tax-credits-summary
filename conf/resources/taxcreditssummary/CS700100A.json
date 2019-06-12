@@ -1,5 +1,9 @@
 {
   "paymentSummary": {
+    "informationTitle":{
+      "title":"We are currently working out your payments as your child is changing their education or training. This should be done by 7 September CY.",
+      "message":"If your child is staying in education or training, you should update their details."
+    },
     "workingTaxCredit": {
       "paymentSeq": [
         {
@@ -209,6 +213,7 @@
     ]
   },
   "claimants": {
+    "ftnaeLink":"/tax-credits-service/home/children-and-childcare",
     "personalDetails": {
       "forename": "Nuala",
       "surname": "O'Shea"
