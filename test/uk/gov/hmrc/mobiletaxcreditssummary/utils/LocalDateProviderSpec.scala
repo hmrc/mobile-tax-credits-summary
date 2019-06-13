@@ -18,22 +18,23 @@ package uk.gov.hmrc.mobiletaxcreditssummary.utils
 
 import java.time.{LocalDate, Month}
 
+import javax.inject.Inject
 import org.scalatest.{Matchers, Tag, TestData, WordSpecLike}
 import org.scalatestplus.play.OneAppPerTest
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 
-class LocalDateProviderSpec extends WordSpecLike with Matchers with OneAppPerTest {
+class LocalDateProviderSpec @Inject()(localDateProvider: LocalDateProvider) extends WordSpecLike with Matchers with OneAppPerTest {
 
 
   "LocalDateProviderSpec" should {
 
     "return today's date if no config found" in {
-          LocalDateProvider.now shouldBe LocalDate.now()
+      localDateProvider.now shouldBe LocalDate.now()
     }
 
     "return today's date with config set to 2019-09-12" taggedAs Tag("2019-09-12") in {
-      LocalDateProvider.now shouldBe LocalDate.of(2019, Month.SEPTEMBER, 12)
+      localDateProvider.now shouldBe LocalDate.of(2019, Month.SEPTEMBER, 12)
     }
   }
 

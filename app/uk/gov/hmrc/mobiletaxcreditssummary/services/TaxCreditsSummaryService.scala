@@ -33,11 +33,11 @@ trait TaxCreditsSummaryService {
 }
 
 @Singleton
-class LiveTaxCreditsSummaryService @Inject()(taxCreditsBrokerConnector: TaxCreditsBrokerConnector) extends TaxCreditsSummaryService {
+class LiveTaxCreditsSummaryService @Inject()(taxCreditsBrokerConnector: TaxCreditsBrokerConnector, localDateProvider: LocalDateProvider) extends TaxCreditsSummaryService {
 
   override def getTaxCreditsSummaryResponse(nino: Nino)(implicit hc: HeaderCarrier, ex: ExecutionContext): Future[TaxCreditsSummaryResponse] = {
     val tcNino = TaxCreditsNino(nino.value)
-    val now: LocalDate = LocalDateProvider.now
+    val now: LocalDate = localDateProvider.now
 
     def buildTaxCreditsSummary(paymentSummary: PaymentSummary): Future[TaxCreditsSummaryResponse] = {
       def getChildrenAge16AndUnder: Future[Seq[Child]] =

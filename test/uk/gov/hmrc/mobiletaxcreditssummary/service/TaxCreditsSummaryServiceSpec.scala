@@ -18,6 +18,7 @@ package uk.gov.hmrc.mobiletaxcreditssummary.service
 
 import java.time.LocalDate
 
+import javax.inject.Inject
 import org.scalatest.{Tag, TestData}
 import org.scalatestplus.play.OneAppPerTest
 import play.api.{Application, Configuration}
@@ -33,15 +34,16 @@ import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
 import uk.gov.hmrc.mobiletaxcreditssummary.services.LiveTaxCreditsSummaryService
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import org.scalatest.prop.TableDrivenPropertyChecks._
+import uk.gov.hmrc.mobiletaxcreditssummary.utils.LocalDateProvider
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with FutureAwaits with DefaultAwaitTimeout with OneAppPerTest{
+class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvider) extends TestSetup with FileResource with FutureAwaits with DefaultAwaitTimeout with OneAppPerTest{
   implicit val taxCreditsBrokerConnector: TaxCreditsBrokerConnector = mock[TaxCreditsBrokerConnector]
   implicit val auditConnector:            AuditConnector            = mock[AuditConnector]
   val configuration:                      Configuration             = mock[Configuration]
 
-  val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector)
+  val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
   val currentYear: Int =LocalDate.now().getYear
   val lastYear: Int = currentYear - 1
 
