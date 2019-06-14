@@ -59,6 +59,11 @@ The Tax Credits Summary response
       "paymentFrequency": "WEEKLY"
     },
     "paymentEnabled": true,
+    "specialCircumstances":"FTNAE",
+             "informationTitle":{
+                "title":"We are currently working out your payments as your child is changing their education or training. This should be done by 7 September CY.",
+                "message":"If your child is staying in education or training, you should update their details."
+             },
     "totalsByDate": [
       {
         "amount": 110,
@@ -73,6 +78,7 @@ The Tax Credits Summary response
     ]
   },
   "claimants": {
+  "ftnaeLink":"/tax-credits-service/home/children-and-childcare",
     "personalDetails": {
       "forename": "firstname",
       "surname": "surname"

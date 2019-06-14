@@ -16,12 +16,15 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.services
 
+import java.time.{LocalDate, LocalDateTime, Month}
+
 import com.google.inject.{Inject, Singleton}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobiletaxcreditssummary.connectors._
 import uk.gov.hmrc.mobiletaxcreditssummary.domain._
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
+import uk.gov.hmrc.mobiletaxcreditssummary.utils.LocalDateProvider
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -30,43 +33,87 @@ trait TaxCreditsSummaryService {
 }
 
 @Singleton
-class LiveTaxCreditsSummaryService @Inject()(taxCreditsBrokerConnector: TaxCreditsBrokerConnector) extends TaxCreditsSummaryService {
+class LiveTaxCreditsSummaryService @Inject()(taxCreditsBrokerConnector: TaxCreditsBrokerConnector, localDateProvider: LocalDateProvider) extends TaxCreditsSummaryService {
 
   override def getTaxCreditsSummaryResponse(nino: Nino)(implicit hc: HeaderCarrier, ex: ExecutionContext): Future[TaxCreditsSummaryResponse] = {
     val tcNino = TaxCreditsNino(nino.value)
+    val now: LocalDate = localDateProvider.now
 
     def buildTaxCreditsSummary(paymentSummary: PaymentSummary): Future[TaxCreditsSummaryResponse] = {
-      def getChildrenAge16AndUnder: Future[Seq[Person]] = {
-        taxCreditsBrokerConnector.getChildren(tcNino).map(children =>
-          Child.getEligibleChildren(children))
+      def getChildrenAge16AndUnder: Future[Seq[Child]] =
+        taxCreditsBrokerConnector.getChildren(tcNino).map(children => Child.getEligibleChildren(children))
+
+      def createLocalDate(year: Int, month: Month, day: Int): LocalDate = LocalDate.of(year, month, day)
+
+      def isFtnaeDate(payment: FuturePayment): Boolean =
+        payment.paymentDate.isAfter(createLocalDate(now.getYear, Month.AUGUST, 31).atStartOfDay()) && payment.paymentDate.getYear == now.getYear
+
+      def hasAFtnaePayment(paymentSummary: PaymentSummary): Boolean =
+        paymentSummary.childTaxCredit.flatMap(payment => payment.paymentSeq.sortWith((a, b) => a.paymentDate.isAfter(b.paymentDate)).headOption) match {
+          case Some(payment) if isFtnaeDate(payment) => true
+          case _                                     => false
+        }
+
+      def getFtnaeLink(children: Seq[Child], paymentSummary: PaymentSummary): Option[String] = {
+        val hasFtnaePayment: Boolean = hasAFtnaePayment(paymentSummary)
+        Child.hasFtnaeChildren(children) match {
+          case _ if !hasFtnaePayment => None
+          case true if now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 1)) && hasFtnaePayment =>
+            Some("/tax-credits-service/home/children-and-childcare")
+          case true
+            if now.isAfter(createLocalDate(now.getYear, Month.AUGUST, 31)) &&
+              now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 8)) && hasFtnaePayment =>
+            Some("/tax-credits-service/children/add-child/who-do-you-want-to-add")
+          case _ => None
+        }
       }
 
-      val childrenFuture = getChildrenAge16AndUnder
-      val partnerDetailsFuture = taxCreditsBrokerConnector.getPartnerDetails(tcNino)
+      def getInformationMessage(children: Seq[Child]): Option[InformationMessage] =
+        if (paymentSummary.specialCircumstances.isDefined){
+          val childFtnaeCount = Child.countFtnaeChildren(children)
+          val childChildren = childFtnaeCount match {
+            case 0 | 1 =>  "child is"
+            case _ => "children are"
+          }
+
+          if(now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 1)) && childFtnaeCount > 0){
+            Some(InformationMessage(f"We are currently working out your payments as your $childChildren changing their education or training. This should be done by 7 September ${now.getYear}.",f"If your $childChildren staying in education or training, you should update their details."))
+          } else if (now.isAfter(createLocalDate(now.getYear, Month.AUGUST, 31)) &&
+            now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 8)) && childFtnaeCount > 0){
+            Some(InformationMessage(f"We are currently working out your payments as your $childChildren changing their education or training. This should be done by 7 September ${now.getYear}.",f"If you have let us know that your $childChildren staying in education or training, they will be added back automatically. Otherwise, you can add them back to your claim."))
+          } else{
+            None
+          }
+        }
+        else None
+
+      val childrenFuture        = getChildrenAge16AndUnder
+      val partnerDetailsFuture  = taxCreditsBrokerConnector.getPartnerDetails(tcNino)
       val personalDetailsFuture = taxCreditsBrokerConnector.getPersonalDetails(tcNino)
 
-      val claimants: Future[Option[Claimants]] = (for {
-        children <- childrenFuture
-        partnerDetails <- partnerDetailsFuture
+      (for {
+        children        <- childrenFuture
+        partnerDetails  <- partnerDetailsFuture
         personalDetails <- personalDetailsFuture
-      } yield Some(Claimants(personalDetails, partnerDetails, children))).recover {
-        case _ => None
-      }
-
-      claimants.map(c => TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummary, c))))
+      } yield {
+        val childConvertedToPerson = children.map(child => Person(forename = child.firstNames, surname = child.surname))
+        val ftnaeLink              = getFtnaeLink(children, paymentSummary)
+        val newPayment: PaymentSummary = paymentSummary.copy(informationMessage = getInformationMessage(children)) //Update for child or children
+       TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary( newPayment, Some(Claimants(personalDetails, partnerDetails, childConvertedToPerson, ftnaeLink)))))
+      }).recover {
+        case _ => TaxCreditsSummaryResponse(taxCreditsSummary = None)
+        }
     }
 
-    def buildResponseFromPaymentSummary: Future[TaxCreditsSummaryResponse] = {
+    def buildResponseFromPaymentSummary: Future[TaxCreditsSummaryResponse] =
       taxCreditsBrokerConnector.getPaymentSummary(tcNino).flatMap { summary =>
         if (summary.excluded.getOrElse(false)) {
           // in the context of getPaymentSummary, 'excluded == true' means a non-tax credits user
           Future successful TaxCreditsSummaryResponse(excluded = false, None)
-        }
-        else {
+        } else {
           buildTaxCreditsSummary(summary)
         }
       }
-    }
 
     taxCreditsBrokerConnector.getExclusion(tcNino).flatMap {
       case Some(exclusion) =>

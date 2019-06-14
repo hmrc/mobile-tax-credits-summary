@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata
+package uk.gov.hmrc.mobiletaxcreditssummary.utils
 
-import play.api.libs.json.{Json, OFormat}
+import java.time.LocalDate
 
-case class Claimants(personalDetails: Person, partnerDetails: Option[Person], children: Seq[Person], ftnaeLink: Option[String] = None)
+import javax.inject.Inject
+import play.api.Configuration
 
-object Claimants {
-  implicit val format: OFormat[Claimants] = Json.format[Claimants]
+class LocalDateProvider @Inject()(configuration: Configuration) {
+  def now: LocalDate = configuration.getOptional[String]("dateOverride") match {
+    case Some(s) => LocalDate.parse(s)
+    case None => LocalDate.now()
+  }
 }

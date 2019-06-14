@@ -23,12 +23,18 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.PaymentReadWriteUtils.{paymentReads, paymentWrites}
 
+case class InformationMessage(title: String, message: String)
+object InformationMessage {
+  implicit val formats: OFormat[InformationMessage] = Json.format[InformationMessage]
+}
+
 case class PaymentSummary(
   workingTaxCredit:     Option[PaymentSection],
   childTaxCredit:       Option[PaymentSection],
   paymentEnabled:       Option[Boolean] = Some(false),
   specialCircumstances: Option[String] = None,
-  excluded:             Option[Boolean] = None) {
+  excluded:             Option[Boolean] = None,
+  informationMessage:   Option[InformationMessage] = None) {
   def totalsByDate: Option[List[Total]] =
     total(
       workingTaxCredit.map(_.paymentSeq).getOrElse(Seq.empty)
@@ -54,12 +60,6 @@ case class PaymentSummary(
                 date))
           .toList)
     }
-
-  def informationMessage: Option[String] =
-    if (specialCircumstances.isDefined)
-      Some(
-        s"We are currently working out your payments as your child is changing their education or training. This should be done by 7 September ${LocalDateTime.now.getYear}. If your child is staying in education or training, update their details on GOV.UK.")
-    else None
 }
 
 case class PaymentSection(paymentSeq: List[FuturePayment], paymentFrequency: String, previousPaymentSeq: Option[List[PastPayment]] = None)
@@ -149,8 +149,9 @@ object PaymentSummary {
       (JsPath \ "childTaxCredit").readNullable[PaymentSection] and
       (JsPath \ "paymentEnabled").readNullable[Boolean] and
       (JsPath \ "specialCircumstances").readNullable[String] and
-      (JsPath \ "excluded").readNullable[Boolean]
-  )(PaymentSummary.apply _)
+      (JsPath \ "excluded").readNullable[Boolean] and
+      (JsPath \ "informationMessage").readNullable[InformationMessage]
+    )(PaymentSummary.apply _)
 
   implicit val writes: Writes[PaymentSummary] = new Writes[PaymentSummary] {
 
@@ -161,7 +162,7 @@ object PaymentSummary {
           (__ \ "paymentEnabled").writeNullable[Boolean] ~
           (__ \ "specialCircumstances").writeNullable[String] ~
           (__ \ "excluded").writeNullable[Boolean] ~
-          (__ \ "informationMessage").writeNullable[String] ~
+          (__ \ "informationMessage").writeNullable[InformationMessage] ~
           (__ \ "totalsByDate").writeNullable[List[Total]] ~
           (__ \ "previousTotalsByDate").writeNullable[List[Total]]
       ).tupled
@@ -178,5 +179,4 @@ object PaymentSummary {
           paymentSummary.previousTotalsByDate))
     }
   }
-
 }
