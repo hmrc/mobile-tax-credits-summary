@@ -11,7 +11,7 @@ object TaxCreditsBrokerStub {
           "surname": "Smith",
           "dateOfBirth": 936057600000,
           "hasFTNAE": false,
-          "hasConnections": false,
+          "hasConnexions": false,
           "isActive": true
         },
         {
@@ -19,7 +19,7 @@ object TaxCreditsBrokerStub {
           "surname": "Smith",
           "dateOfBirth": 884304000000,
           "hasFTNAE": false,
-          "hasConnections": false,
+          "hasConnexions": false,
           "isActive": true
         },
         {
@@ -27,7 +27,7 @@ object TaxCreditsBrokerStub {
           "surname": "Smith",
           "dateOfBirth": 852768000000,
           "hasFTNAE": false,
-          "hasConnections": false,
+          "hasConnexions": false,
           "isActive": true
         } ] }"""
 

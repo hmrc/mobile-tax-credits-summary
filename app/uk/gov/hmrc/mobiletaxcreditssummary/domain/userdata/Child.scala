@@ -26,7 +26,7 @@ case class Child(
   surname:        String,
   dateOfBirth:    LocalDate,
   hasFTNAE:       Boolean,
-  hasConnections: Boolean,
+  hasConnexions: Boolean,
   isActive:       Boolean,
   dateOfDeath:    Option[LocalDate])
 

@@ -68,13 +68,13 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
   val AGE21:         LocalDate = LocalDate.now.minusYears(21)
   val DECEASED_DATE: LocalDate = LocalDate.now.minusYears(1)
 
-  val SarahSmith  = Child("Sarah", "Smith", AGE16, hasFTNAE  = false, hasConnections = false, isActive = true, None)
-  val SarahSmithFtnae  = Child("Sarah", "Smith", AGE16, hasFTNAE  = true, hasConnections = false, isActive = true, None)
-  val JosephSmith = Child("Joseph", "Smith", AGE15, hasFTNAE = false, hasConnections = false, isActive = true, None)
-  val MarySmith   = Child("Mary", "Smith", AGE13, hasFTNAE   = false, hasConnections = false, isActive = true, None)
-  val JennySmith  = Child("Jenny", "Smith", AGE21, hasFTNAE  = false, hasConnections = false, isActive = true, None)
-  val PeterSmith  = Child("Peter", "Smith", AGE13, hasFTNAE  = false, hasConnections = false, isActive = false, Some(DECEASED_DATE))
-  val SimonSmith  = Child("Simon", "Smith", AGE13, hasFTNAE  = false, hasConnections = false, isActive = true, Some(DECEASED_DATE))
+  val SarahSmith  = Child("Sarah", "Smith", AGE16, hasFTNAE  = false, hasConnexions = false, isActive = true, None)
+  val SarahSmithFtnae  = Child("Sarah", "Smith", AGE16, hasFTNAE  = true, hasConnexions = false, isActive = true, None)
+  val JosephSmith = Child("Joseph", "Smith", AGE15, hasFTNAE = false, hasConnexions = false, isActive = true, None)
+  val MarySmith   = Child("Mary", "Smith", AGE13, hasFTNAE   = false, hasConnexions = false, isActive = true, None)
+  val JennySmith  = Child("Jenny", "Smith", AGE21, hasFTNAE  = false, hasConnexions = false, isActive = true, None)
+  val PeterSmith  = Child("Peter", "Smith", AGE13, hasFTNAE  = false, hasConnexions = false, isActive = false, Some(DECEASED_DATE))
+  val SimonSmith  = Child("Simon", "Smith", AGE13, hasFTNAE  = false, hasConnexions = false, isActive = true, Some(DECEASED_DATE))
 
   val personalDetails = Person(forename = "firstname", surname = "surname")
 
