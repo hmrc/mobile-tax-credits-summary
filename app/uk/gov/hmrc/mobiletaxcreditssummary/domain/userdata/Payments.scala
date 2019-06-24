@@ -34,6 +34,7 @@ case class PaymentSummary(
   paymentEnabled:       Option[Boolean] = Some(false),
   specialCircumstances: Option[String] = None,
   excluded:             Option[Boolean] = None,
+  isMultipleFTNAE:      Option[Boolean] = None,
   informationMessage:   Option[InformationMessage] = None) {
   def totalsByDate: Option[List[Total]] =
     total(
@@ -150,6 +151,7 @@ object PaymentSummary {
       (JsPath \ "paymentEnabled").readNullable[Boolean] and
       (JsPath \ "specialCircumstances").readNullable[String] and
       (JsPath \ "excluded").readNullable[Boolean] and
+      (JsPath \ "isMultipleFTNAE").readNullable[Boolean] and
       (JsPath \ "informationMessage").readNullable[InformationMessage]
     )(PaymentSummary.apply _)
 
@@ -162,6 +164,7 @@ object PaymentSummary {
           (__ \ "paymentEnabled").writeNullable[Boolean] ~
           (__ \ "specialCircumstances").writeNullable[String] ~
           (__ \ "excluded").writeNullable[Boolean] ~
+          (__ \ "isMultipleFTNAE").writeNullable[Boolean] ~
           (__ \ "informationMessage").writeNullable[InformationMessage] ~
           (__ \ "totalsByDate").writeNullable[List[Total]] ~
           (__ \ "previousTotalsByDate").writeNullable[List[Total]]
@@ -174,9 +177,12 @@ object PaymentSummary {
           paymentSummary.paymentEnabled,
           paymentSummary.specialCircumstances,
           paymentSummary.excluded,
+          paymentSummary.isMultipleFTNAE,
           paymentSummary.informationMessage,
           paymentSummary.totalsByDate,
-          paymentSummary.previousTotalsByDate))
+          paymentSummary.previousTotalsByDate
+        )
+      )
     }
   }
 }

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.services
 
-import java.time.{LocalDate, LocalDateTime, Month}
+import java.time.{LocalDate, Month}
 
 import com.google.inject.{Inject, Singleton}
 import uk.gov.hmrc.domain.Nino
@@ -33,7 +33,8 @@ trait TaxCreditsSummaryService {
 }
 
 @Singleton
-class LiveTaxCreditsSummaryService @Inject()(taxCreditsBrokerConnector: TaxCreditsBrokerConnector, localDateProvider: LocalDateProvider) extends TaxCreditsSummaryService {
+class LiveTaxCreditsSummaryService @Inject()(taxCreditsBrokerConnector: TaxCreditsBrokerConnector, localDateProvider: LocalDateProvider)
+    extends TaxCreditsSummaryService {
 
   override def getTaxCreditsSummaryResponse(nino: Nino)(implicit hc: HeaderCarrier, ex: ExecutionContext): Future[TaxCreditsSummaryResponse] = {
     val tcNino = TaxCreditsNino(nino.value)
@@ -48,61 +49,67 @@ class LiveTaxCreditsSummaryService @Inject()(taxCreditsBrokerConnector: TaxCredi
       def isFtnaeDate(payment: FuturePayment): Boolean =
         payment.paymentDate.isAfter(createLocalDate(now.getYear, Month.AUGUST, 31).atStartOfDay()) && payment.paymentDate.getYear == now.getYear
 
+      // Payments after August 31st are hidden if special circumstances is "FTNAE" to work out if payments are FTNAE we check there
+      // are no payments after the 31st and this is coupled with other logic in the match
       def hasAFtnaePayment(paymentSummary: PaymentSummary): Boolean =
-        paymentSummary.childTaxCredit.flatMap(payment => payment.paymentSeq.sortWith((a, b) => a.paymentDate.isAfter(b.paymentDate)).headOption) match {
-          case Some(payment) if isFtnaeDate(payment) => true
-          case _                                     => false
-        }
+        paymentSummary.childTaxCredit.get.paymentSeq.count(payment => isFtnaeDate(payment)) == 0
 
       def getFtnaeLink(children: Seq[Child], paymentSummary: PaymentSummary): Option[String] = {
         val hasFtnaePayment: Boolean = hasAFtnaePayment(paymentSummary)
-        Child.hasFtnaeChildren(children) match {
-          case _ if !hasFtnaePayment => None
-          case true if now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 1)) && hasFtnaePayment =>
+        val hasSpecialCircumstances = paymentSummary.specialCircumstances.isDefined
+
+        (hasFtnaePayment, hasSpecialCircumstances) match {
+          case (false, _) => None
+          case (true, true) if now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 1)) =>
             Some("/tax-credits-service/home/children-and-childcare")
-          case true
-            if now.isAfter(createLocalDate(now.getYear, Month.AUGUST, 31)) &&
-              now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 8)) && hasFtnaePayment =>
+          case (true, true)
+              if now.isAfter(createLocalDate(now.getYear, Month.AUGUST, 31)) &&
+                now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 8)) =>
             Some("/tax-credits-service/children/add-child/who-do-you-want-to-add")
           case _ => None
         }
       }
 
       def getInformationMessage(children: Seq[Child]): Option[InformationMessage] =
-        if (paymentSummary.specialCircumstances.isDefined){
-          val childFtnaeCount = Child.countFtnaeChildren(children)
-          val childChildren = childFtnaeCount match {
-            case 0 | 1 =>  "child is"
-            case _ => "children are"
-          }
+        if (paymentSummary.specialCircumstances.isDefined) {
+          val isMultipleFTNAE: Boolean = paymentSummary.isMultipleFTNAE.getOrElse(false)
+          val childChildren = if (isMultipleFTNAE) "children are" else "child is"
 
-          if(now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 1)) && childFtnaeCount > 0){
-            Some(InformationMessage(f"We are currently working out your payments as your $childChildren changing their education or training. This should be done by 7 September ${now.getYear}.",f"If your $childChildren staying in education or training, you should update their details."))
+          if (now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 1)) && isMultipleFTNAE) {
+            Some(
+              InformationMessage(
+                f"We are currently working out your payments as your $childChildren changing their education or training. This should be done by 7 September ${now.getYear}.",
+                f"If your $childChildren staying in education or training, you should update their details."
+              ))
           } else if (now.isAfter(createLocalDate(now.getYear, Month.AUGUST, 31)) &&
-            now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 8)) && childFtnaeCount > 0){
-            Some(InformationMessage(f"We are currently working out your payments as your $childChildren changing their education or training. This should be done by 7 September ${now.getYear}.",f"If you have let us know that your $childChildren staying in education or training, they will be added back automatically. Otherwise, you can add them back to your claim."))
-          } else{
+                     now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 8)) && isMultipleFTNAE) {
+            Some(
+              InformationMessage(
+                f"We are currently working out your payments as your $childChildren changing their education or training. This should be done by 7 September ${now.getYear}.",
+                f"If you have let us know that your $childChildren staying in education or training, they will be added back automatically. Otherwise, you can add them back to your claim."
+              ))
+          } else {
             None
           }
-        }
-        else None
+        } else None
 
       val childrenFuture        = getChildrenAge16AndUnder
       val partnerDetailsFuture  = taxCreditsBrokerConnector.getPartnerDetails(tcNino)
       val personalDetailsFuture = taxCreditsBrokerConnector.getPersonalDetails(tcNino)
 
       (for {
-        children        <- childrenFuture
+        children: Seq[Child] <- childrenFuture
         partnerDetails  <- partnerDetailsFuture
         personalDetails <- personalDetailsFuture
       } yield {
         val childConvertedToPerson = children.map(child => Person(forename = child.firstNames, surname = child.surname))
-        val ftnaeLink              = getFtnaeLink(children, paymentSummary)
+        val ftnaeLink:  Option[String] = getFtnaeLink(children, paymentSummary)
         val newPayment: PaymentSummary = paymentSummary.copy(informationMessage = getInformationMessage(children)) //Update for child or children
-       TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary( newPayment, Some(Claimants(personalDetails, partnerDetails, childConvertedToPerson, ftnaeLink)))))
+        TaxCreditsSummaryResponse(taxCreditsSummary =
+          Some(TaxCreditsSummary(newPayment, Some(Claimants(personalDetails, partnerDetails, childConvertedToPerson, ftnaeLink)))))
       }).recover {
         case _ => TaxCreditsSummaryResponse(taxCreditsSummary = None)
-        }
+      }
     }
 
     def buildResponseFromPaymentSummary: Future[TaxCreditsSummaryResponse] =

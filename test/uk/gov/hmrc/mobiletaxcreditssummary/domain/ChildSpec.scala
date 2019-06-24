@@ -45,39 +45,6 @@ class ChildSpec extends WordSpecLike with Matchers {
     }
   }
 
-  "Check for any child with FTNAE" should {
-    "return false if none are in list" in {
-      val childB = Child("first", "second", LocalDate.now.minusYears(16), hasFTNAE = false, hasConnexions = false, isActive = false, None)
-
-      Child.hasFtnaeChildren(List(childB)) shouldBe false
-    }
-    "return true if one or more are in list" in {
-      val childB = Child("first", "second", LocalDate.now.minusYears(16), hasFTNAE = true, hasConnexions = false, isActive = false, None)
-
-      Child.hasFtnaeChildren(List(childB)) shouldBe true
-    }
-  }
-
-  "Count children with FTNAE" should {
-    "return 0 if none are in list" in {
-      val childB = Child("first", "second", LocalDate.now.minusYears(16), hasFTNAE = false, hasConnexions = false, isActive = false, None)
-
-      Child.countFtnaeChildren(List(childB)) shouldBe 0
-    }
-    "return 1 if there is a ftnae child" in {
-      val childB = Child("first", "second", LocalDate.now.minusYears(16), hasFTNAE = true, hasConnexions = false, isActive = false, None)
-
-      Child.countFtnaeChildren(List(childB)) shouldBe 1
-    }
-    "return 2 if there is a ftnae child" in {
-      val childB = Child("first", "second", LocalDate.now.minusYears(16), hasFTNAE = true, hasConnexions = false, isActive = false, None)
-
-      Child.countFtnaeChildren(List(childB,childB)) shouldBe 2
-    }
-  }
-
-
-
   "Converting Child to json" should {
     "render the birth date as a Long" in {
       val expected = Json.parse("""{"firstNames":"","surname":"","dateOfBirth":1546300800000,"hasFTNAE":false,"hasConnexions":false,"isActive":false}""")

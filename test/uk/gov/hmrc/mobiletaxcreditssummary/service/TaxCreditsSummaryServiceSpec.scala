@@ -227,9 +227,6 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
     }
   }
 
-
-
-
   def getExpected(testName: String, link: Option[String], ftnae: Boolean, preSeptember: Boolean): TaxCreditsSummaryResponse =
     if(testName.equals("with FTNAE")){
       taxCreditsSummaryWithFtnae(preSeptember = preSeptember, link = link, ftnae = ftnae)
