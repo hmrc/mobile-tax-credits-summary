@@ -43,13 +43,4 @@ object Child {
         child.isActive &&
         child.dateOfDeath.isEmpty
       }
-
-  def hasFtnaeChildren(children: Seq[Child]): Boolean =
-    children.exists {
-      child => child.hasFTNAE
-    }
-
-  def countFtnaeChildren(children: Seq[Child]): Int = {
-    children.count(child => child.hasFTNAE)
-  }
 }
