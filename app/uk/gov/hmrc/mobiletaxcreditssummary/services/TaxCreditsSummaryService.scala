@@ -103,7 +103,6 @@ class LiveTaxCreditsSummaryService @Inject()(taxCreditsBrokerConnector: TaxCredi
         personalDetails <- personalDetailsFuture
       } yield {
         val childConvertedToPerson = children.map(child => Person(forename = child.firstNames, surname = child.surname))
-        print(">>>>>>>>>>>>" + paymentSummary)
         val ftnaeLink:  Option[String] = getFtnaeLink(children, paymentSummary)
         val newPayment: PaymentSummary = paymentSummary.copy(informationMessage = getInformationMessage(children)) //Update for child or children
         TaxCreditsSummaryResponse(taxCreditsSummary =
