@@ -54,7 +54,7 @@ class LiveTaxCreditsSummaryService @Inject()(taxCreditsBrokerConnector: TaxCredi
       def hasAFtnaePayment(paymentSummary: PaymentSummary): Boolean =
         paymentSummary.childTaxCredit.get.paymentSeq.count(payment => isFtnaeDate(payment)) == 0
 
-      def getFtnaeLink(children: Seq[Child], paymentSummary: PaymentSummary): Option[FtnaeLink] = {
+      def getFtnaeLink(paymentSummary: PaymentSummary): Option[FtnaeLink] = {
         val hasFtnaePayment: Boolean = hasAFtnaePayment(paymentSummary)
         val hasSpecialCircumstances = paymentSummary.specialCircumstances.isDefined
 
@@ -70,7 +70,7 @@ class LiveTaxCreditsSummaryService @Inject()(taxCreditsBrokerConnector: TaxCredi
         }
       }
 
-      def getInformationMessage(children: Seq[Child]): Option[InformationMessage] =
+      def getInformationMessage: Option[InformationMessage] =
         if (paymentSummary.specialCircumstances.isDefined) {
           val isMultipleFTNAE: Boolean = paymentSummary.isMultipleFTNAE.getOrElse(false)
           val childChildren = if (isMultipleFTNAE) "children are" else "child is"
@@ -98,19 +98,19 @@ class LiveTaxCreditsSummaryService @Inject()(taxCreditsBrokerConnector: TaxCredi
       val partnerDetailsFuture  = taxCreditsBrokerConnector.getPartnerDetails(tcNino)
       val personalDetailsFuture = taxCreditsBrokerConnector.getPersonalDetails(tcNino)
 
-      (for {
-        children: Seq[Child] <- childrenFuture
+      val claimants: Future[Option[Claimants]] = (for {
+        children <- childrenFuture
         partnerDetails  <- partnerDetailsFuture
         personalDetails <- personalDetailsFuture
       } yield {
         val childConvertedToPerson = children.map(child => Person(forename = child.firstNames, surname = child.surname))
-        val ftnaeLink:  Option[FtnaeLink] = getFtnaeLink(children, paymentSummary)
-        val newPayment: PaymentSummary = paymentSummary.copy(informationMessage = getInformationMessage(children)) //Update for child or children
-        TaxCreditsSummaryResponse(taxCreditsSummary =
-          Some(TaxCreditsSummary(newPayment, Some(Claimants(personalDetails, partnerDetails, childConvertedToPerson, ftnaeLink)))))
+        val ftnaeLink:  Option[FtnaeLink] = getFtnaeLink(paymentSummary)
+        Some(Claimants(personalDetails, partnerDetails, childConvertedToPerson,ftnaeLink))
       }).recover {
-        case _ => TaxCreditsSummaryResponse(taxCreditsSummary = None)
+        case _ => None
       }
+      val newPayment: PaymentSummary = paymentSummary.copy(informationMessage = getInformationMessage) //Update for child or children
+      claimants.map(c => TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(newPayment, c))))
     }
 
     def buildResponseFromPaymentSummary: Future[TaxCreditsSummaryResponse] =
