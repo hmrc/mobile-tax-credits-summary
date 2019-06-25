@@ -170,7 +170,6 @@ object PaymentSummary {
           (__ \ "paymentEnabled").writeNullable[Boolean] ~
           (__ \ "specialCircumstances").writeNullable[String] ~
           (__ \ "excluded").writeNullable[Boolean] ~
-          (__ \ "isMultipleFTNAE").writeNullable[Boolean] ~
           (__ \ "informationMessage").writeNullable[InformationMessage] ~
           (__ \ "totalsByDate").writeNullable[List[Total]] ~
           (__ \ "previousTotalsByDate").writeNullable[List[Total]]
@@ -183,7 +182,6 @@ object PaymentSummary {
           paymentSummary.paymentEnabled,
           paymentSummary.specialCircumstances,
           paymentSummary.excluded,
-          paymentSummary.isMultipleFTNAE,
           paymentSummary.informationMessage,
           paymentSummary.totalsByDate,
           paymentSummary.previousTotalsByDate
