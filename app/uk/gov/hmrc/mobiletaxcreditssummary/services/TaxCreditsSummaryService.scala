@@ -54,18 +54,18 @@ class LiveTaxCreditsSummaryService @Inject()(taxCreditsBrokerConnector: TaxCredi
       def hasAFtnaePayment(paymentSummary: PaymentSummary): Boolean =
         paymentSummary.childTaxCredit.get.paymentSeq.count(payment => isFtnaeDate(payment)) == 0
 
-      def getFtnaeLink(children: Seq[Child], paymentSummary: PaymentSummary): Option[String] = {
+      def getFtnaeLink(children: Seq[Child], paymentSummary: PaymentSummary): Option[FtnaeLink] = {
         val hasFtnaePayment: Boolean = hasAFtnaePayment(paymentSummary)
         val hasSpecialCircumstances = paymentSummary.specialCircumstances.isDefined
 
         (hasFtnaePayment, hasSpecialCircumstances) match {
           case (false, _) => None
           case (true, true) if now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 1)) =>
-            Some("/tax-credits-service/home/children-and-childcare")
+            Some(FtnaeLink(preFtnaeDeadline = true, "/tax-credits-service/home/children-and-childcare"))
           case (true, true)
               if now.isAfter(createLocalDate(now.getYear, Month.AUGUST, 31)) &&
                 now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 8)) =>
-            Some("/tax-credits-service/children/add-child/who-do-you-want-to-add")
+            Some(FtnaeLink(preFtnaeDeadline = false, "/tax-credits-service/children/add-child/who-do-you-want-to-add"))
           case _ => None
         }
       }
@@ -74,15 +74,16 @@ class LiveTaxCreditsSummaryService @Inject()(taxCreditsBrokerConnector: TaxCredi
         if (paymentSummary.specialCircumstances.isDefined) {
           val isMultipleFTNAE: Boolean = paymentSummary.isMultipleFTNAE.getOrElse(false)
           val childChildren = if (isMultipleFTNAE) "children are" else "child is"
+          val hasSpecialCircumstances = paymentSummary.specialCircumstances.isDefined
 
-          if (now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 1)) && isMultipleFTNAE) {
+          if (now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 1)) && hasSpecialCircumstances) {
             Some(
               InformationMessage(
                 f"We are currently working out your payments as your $childChildren changing their education or training. This should be done by 7 September ${now.getYear}.",
                 f"If your $childChildren staying in education or training, you should update their details."
               ))
           } else if (now.isAfter(createLocalDate(now.getYear, Month.AUGUST, 31)) &&
-                     now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 8)) && isMultipleFTNAE) {
+                     now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 8)) && hasSpecialCircumstances) {
             Some(
               InformationMessage(
                 f"We are currently working out your payments as your $childChildren changing their education or training. This should be done by 7 September ${now.getYear}.",
@@ -103,7 +104,7 @@ class LiveTaxCreditsSummaryService @Inject()(taxCreditsBrokerConnector: TaxCredi
         personalDetails <- personalDetailsFuture
       } yield {
         val childConvertedToPerson = children.map(child => Person(forename = child.firstNames, surname = child.surname))
-        val ftnaeLink:  Option[String] = getFtnaeLink(children, paymentSummary)
+        val ftnaeLink:  Option[FtnaeLink] = getFtnaeLink(children, paymentSummary)
         val newPayment: PaymentSummary = paymentSummary.copy(informationMessage = getInformationMessage(children)) //Update for child or children
         TaxCreditsSummaryResponse(taxCreditsSummary =
           Some(TaxCreditsSummary(newPayment, Some(Claimants(personalDetails, partnerDetails, childConvertedToPerson, ftnaeLink)))))

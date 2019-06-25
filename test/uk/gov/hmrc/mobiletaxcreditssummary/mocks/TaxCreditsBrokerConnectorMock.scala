@@ -50,6 +50,7 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
     workingTaxCredit = Some(paymentSectionWTC),
     childTaxCredit=  Some(paymentSectionCTCWithFtnae),
     paymentEnabled = Some(true),
+    isMultipleFTNAE = Some(false),
     specialCircumstances = Some("FTNAE"),
     informationMessage = if(currentYear && ftnae) if(preSeptember) pre31stAugust("child is") else sept1stTo7th("child is") else None
   )
@@ -87,14 +88,14 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
     Seq(Person(forename = "Sarah", surname = "Smith"), Person(forename = "Joseph", surname = "Smith"), Person(forename = "Mary", surname = "Smith"))
   )
 
-  def claimantsFtnae(link: Option[String] = None) = Claimants(
+  def claimantsFtnae(link: Option[FtnaeLink] = None) = Claimants(
     personalDetails,
     Some(partnerDetails),
     Seq(Person(forename = "Sarah", surname = "Smith"), Person(forename = "Joseph", surname = "Smith"), Person(forename = "Mary", surname = "Smith")),
     link
   )
 
-  def claimantsMultipleFtnae(link: Option[String] = None) = Claimants(
+  def claimantsMultipleFtnae(link: Option[FtnaeLink] = None) = Claimants(
     personalDetails,
     Some(partnerDetails),
     Seq(Person(forename = "Sarah", surname = "Smith"), Person(forename = "Sarah", surname = "Smith"), Person(forename = "Sarah", surname = "Smith")),

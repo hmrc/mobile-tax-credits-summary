@@ -18,7 +18,7 @@ package uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata
 
 import play.api.libs.json.{Json, OFormat}
 
-case class Claimants(personalDetails: Person, partnerDetails: Option[Person], children: Seq[Person], ftnaeLink: Option[String] = None)
+case class Claimants(personalDetails: Person, partnerDetails: Option[Person], children: Seq[Person], ftnaeLink: Option[FtnaeLink] = None)
 
 object Claimants {
   implicit val format: OFormat[Claimants] = Json.format[Claimants]
