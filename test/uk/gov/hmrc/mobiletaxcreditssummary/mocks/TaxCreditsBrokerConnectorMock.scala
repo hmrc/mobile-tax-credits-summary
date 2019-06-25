@@ -87,14 +87,14 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
     Seq(Person(forename = "Sarah", surname = "Smith"), Person(forename = "Joseph", surname = "Smith"), Person(forename = "Mary", surname = "Smith"))
   )
 
-  def claimantsFtnae(link: Option[String] = None) = Claimants(
+  def claimantsFtnae(link: Option[FtnaeLink] = None) = Claimants(
     personalDetails,
     Some(partnerDetails),
     Seq(Person(forename = "Sarah", surname = "Smith"), Person(forename = "Joseph", surname = "Smith"), Person(forename = "Mary", surname = "Smith")),
     link
   )
 
-  def claimantsMultipleFtnae(link: Option[String] = None) = Claimants(
+  def claimantsMultipleFtnae(link: Option[FtnaeLink] = None) = Claimants(
     personalDetails,
     Some(partnerDetails),
     Seq(Person(forename = "Sarah", surname = "Smith"), Person(forename = "Sarah", surname = "Smith"), Person(forename = "Sarah", surname = "Smith")),

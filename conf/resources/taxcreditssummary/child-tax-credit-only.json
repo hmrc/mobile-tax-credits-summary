@@ -130,7 +130,10 @@
     ]
   },
   "claimants": {
-    "ftnaeLink":"/tax-credits-service/home/children-and-childcare",
+    "ftnaeLink": {
+      "link":  "/tax-credits-service/home/children-and-childcare",
+      "preFtnaeDeadline": true
+    },
     "personalDetails": {
       "forename": "Nuala",
       "surname": "O'Shea"

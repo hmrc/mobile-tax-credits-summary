@@ -23,6 +23,12 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.PaymentReadWriteUtils.{paymentReads, paymentWrites}
 
+case class FtnaeLink(preFtnaeDeadline: Boolean, link: String)
+
+object FtnaeLink {
+  implicit val formats: OFormat[FtnaeLink] =  Json.format[FtnaeLink]
+}
+
 case class InformationMessage(title: String, message: String)
 object InformationMessage {
   implicit val formats: OFormat[InformationMessage] = Json.format[InformationMessage]
