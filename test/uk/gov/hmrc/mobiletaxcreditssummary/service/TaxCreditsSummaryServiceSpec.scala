@@ -19,11 +19,12 @@ package uk.gov.hmrc.mobiletaxcreditssummary.service
 import java.time.LocalDate
 
 import javax.inject.Inject
+import org.scalatest.prop.TableDrivenPropertyChecks._
 import org.scalatest.{Tag, TestData}
 import org.scalatestplus.play.OneAppPerTest
-import play.api.{Application, Configuration}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
+import play.api.{Application, Configuration}
 import uk.gov.hmrc.api.sandbox.FileResource
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{Upstream4xxResponse, Upstream5xxResponse}
@@ -32,20 +33,24 @@ import uk.gov.hmrc.mobiletaxcreditssummary.controllers.TestSetup
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.TaxCreditsNino
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
 import uk.gov.hmrc.mobiletaxcreditssummary.services.LiveTaxCreditsSummaryService
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import org.scalatest.prop.TableDrivenPropertyChecks._
 import uk.gov.hmrc.mobiletaxcreditssummary.utils.LocalDateProvider
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvider) extends TestSetup with FileResource with FutureAwaits with DefaultAwaitTimeout with OneAppPerTest{
+class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvider)
+    extends TestSetup
+    with FileResource
+    with FutureAwaits
+    with DefaultAwaitTimeout
+    with OneAppPerTest {
   implicit val taxCreditsBrokerConnector: TaxCreditsBrokerConnector = mock[TaxCreditsBrokerConnector]
   implicit val auditConnector:            AuditConnector            = mock[AuditConnector]
   val configuration:                      Configuration             = mock[Configuration]
 
   val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
-  val currentYear: Int =LocalDate.now().getYear
-  val lastYear: Int = currentYear - 1
+  val currentYear: Int = LocalDate.now().getYear
+  val lastYear:    Int = currentYear - 1
 
   val exclusionPaymentSummary = PaymentSummary(None, None, None, None, excluded = Some(true))
   val taxCreditsNino          = TaxCreditsNino(nino)
@@ -57,10 +62,16 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
     TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummary, Some(claimants))))
 
   def taxCreditsSummaryWithFtnae(link: Option[FtnaeLink] = None, preSeptember: Boolean = false, currentYear: Boolean = true, ftnae: Boolean = true) =
-    TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummaryFtnae(preSeptember, currentYear, ftnae), Some(claimantsFtnae(link)))))
+    TaxCreditsSummaryResponse(
+      taxCreditsSummary = Some(TaxCreditsSummary(paymentSummaryFtnae(preSeptember, currentYear, ftnae), Some(claimantsFtnae(link)))))
 
-  def taxCreditsSummaryWithMultipleFtnae(link: Option[FtnaeLink] = None, preSeptember: Boolean = false, currentYear:  Boolean = true, ftnae: Boolean = true) =
-    TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummaryMultipleFtnae(preSeptember, currentYear, ftnae), Some(claimantsMultipleFtnae(link)))))
+  def taxCreditsSummaryWithMultipleFtnae(
+    link:         Option[FtnaeLink] = None,
+    preSeptember: Boolean           = false,
+    currentYear:  Boolean           = true,
+    ftnae:        Boolean           = true) =
+    TaxCreditsSummaryResponse(
+      taxCreditsSummary = Some(TaxCreditsSummary(paymentSummaryMultipleFtnae(preSeptember, currentYear, ftnae), Some(claimantsMultipleFtnae(link)))))
 
   val taxCreditsSummaryNoPartnerDetails =
     TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummary, Some(claimantsNoPartnerDetails))))
@@ -167,8 +178,6 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
     )
 
     forAll(scenarios) { (testName: String, child: Child, ftnae: Boolean) =>
-
-
       f"return a tax-credits user payload $testName but date is after 7th September ($currentYear-09-08)" taggedAs Tag(f"$currentYear-09-08") in {
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae), taxCreditsNino)
@@ -179,23 +188,33 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
         await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithFtnae(ftnae = false)
       }
 
-      f"return a tax-credits user payload $testName but date is after 31st August and before 8th September ($currentYear-09-01)" taggedAs Tag(f"$currentYear-09-01") in {
+      f"return a tax-credits user payload $testName but date is after 31st August and before 8th September ($currentYear-09-01)" taggedAs Tag(
+        f"$currentYear-09-01") in {
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
 
-        await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe getExpected(testName, Some(FtnaeLink(preFtnaeDeadline = false, "/tax-credits-service/children/add-child/who-do-you-want-to-add")), ftnae, preSeptember = false)
+        await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe getExpected(
+          testName,
+          Some(FtnaeLink(preFtnaeDeadline = false, "/tax-credits-service/children/add-child/who-do-you-want-to-add")),
+          ftnae,
+          preSeptember = false)
       }
-      f"return a tax-credits user payload $testName but date is after 31st August and before 8th September ($currentYear-09-07)" taggedAs Tag(f"$currentYear-09-07") in {
+      f"return a tax-credits user payload $testName but date is after 31st August and before 8th September ($currentYear-09-07)" taggedAs Tag(
+        f"$currentYear-09-07") in {
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
 
-        await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe getExpected(testName, Some(FtnaeLink(preFtnaeDeadline = false, "/tax-credits-service/children/add-child/who-do-you-want-to-add")), ftnae, preSeptember = false)
+        await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe getExpected(
+          testName,
+          Some(FtnaeLink(preFtnaeDeadline = false, "/tax-credits-service/children/add-child/who-do-you-want-to-add")),
+          ftnae,
+          preSeptember = false)
       }
 
       f"return a tax-credits user payload $testName but date is before 1st September ($currentYear-08-31)" taggedAs Tag(f"$currentYear-08-31") in {
@@ -205,7 +224,11 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
 
-        await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe getExpected(testName, Some(FtnaeLink(preFtnaeDeadline = true, "/tax-credits-service/home/children-and-childcare")), ftnae = ftnae, preSeptember = true)
+        await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe getExpected(
+          testName,
+          Some(FtnaeLink(preFtnaeDeadline = true, "/tax-credits-service/home/children-and-childcare")),
+          ftnae        = ftnae,
+          preSeptember = true)
       }
 
       f"return a tax-credits user payload $testName but date is before 1st September but in PY ($lastYear-12-31)" taggedAs Tag(f"$lastYear-12-31") in {
@@ -214,13 +237,16 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
-        await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithFtnae(currentYear = false,ftnae = ftnae)
+        await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithFtnae(currentYear = false, ftnae = ftnae)
       }
     }
-    f"return a tax-credits user payload but date is before 1st September but in PY ($lastYear-12-31) and there are multiple FTNAE children" taggedAs Tag(f"$lastYear-12-31") in {
+    f"return a tax-credits user payload but date is before 1st September but in PY ($lastYear-12-31) and there are multiple FTNAE children" taggedAs Tag(
+      f"$lastYear-12-31") in {
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummaryFtnae(preSeptember = false, currentYear = false), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmithFtnae, SarahSmithFtnae, SarahSmithFtnae, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetChildren(
+        Seq(SarahSmithFtnae, SarahSmithFtnae, SarahSmithFtnae, JennySmith, PeterSmith, SimonSmith),
+        taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
       await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithMultipleFtnae(currentYear = false)
@@ -228,20 +254,17 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
   }
 
   def getExpected(testName: String, link: Option[FtnaeLink], ftnae: Boolean, preSeptember: Boolean): TaxCreditsSummaryResponse =
-    if(testName.equals("with FTNAE")){
+    if (testName.equals("with FTNAE")) {
       taxCreditsSummaryWithFtnae(preSeptember = preSeptember, link = link, ftnae = ftnae)
-    } else if(testName.equals("without FTNAE")){
-      taxCreditsSummaryWithFtnae(preSeptember = preSeptember, ftnae= ftnae)
-    } else{
+    } else if (testName.equals("without FTNAE")) {
+      taxCreditsSummaryWithFtnae(preSeptember = preSeptember, ftnae = ftnae)
+    } else {
       throw new IllegalArgumentException("Invalid test name - check tests")
     }
 
-
-
-  override def newAppForTest(testData: TestData): Application = {
+  override def newAppForTest(testData: TestData): Application =
     testData.tags.headOption match {
-      case Some(tag) =>  GuiceApplicationBuilder().configure("dateOverride" -> tag).build()
-      case _ => GuiceApplicationBuilder().configure("dateOverride" -> LocalDate.now().toString).build()
+      case Some(tag) => GuiceApplicationBuilder().configure("dateOverride" -> tag).build()
+      case _         => GuiceApplicationBuilder().configure("dateOverride" -> LocalDate.now().toString).build()
     }
-  }
 }

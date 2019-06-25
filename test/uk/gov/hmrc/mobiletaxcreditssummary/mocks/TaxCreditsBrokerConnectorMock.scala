@@ -50,6 +50,7 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
     workingTaxCredit = Some(paymentSectionWTC),
     childTaxCredit=  Some(paymentSectionCTCWithFtnae),
     paymentEnabled = Some(true),
+    isMultipleFTNAE = Some(false),
     specialCircumstances = Some("FTNAE"),
     informationMessage = if(currentYear && ftnae) if(preSeptember) pre31stAugust("child is") else sept1stTo7th("child is") else None
   )
