@@ -1,0 +1,78 @@
+{
+    "paymentSummary": {
+      "workingTaxCredit": {
+        "paymentSeq": [
+          {
+            "amount": 160.45,
+            "paymentDate": 1566428400000,
+            "oneOffPayment": false,
+            "earlyPayment": false
+          },
+          {
+            "amount": 160.45,
+            "paymentDate": 1567033200000,
+            "oneOffPayment": false,
+            "earlyPayment": false
+          }
+        ],
+        "paymentFrequency": "WEEKLY"
+      },
+      "childTaxCredit": {
+        "paymentSeq": [
+          {
+            "amount": 120.45,
+            "paymentDate": 1566428400000,
+            "oneOffPayment": false,
+            "earlyPayment": false
+          },
+          {
+            "amount": 120.45,
+            "paymentDate": 1567033200000,
+            "oneOffPayment": false,
+            "earlyPayment": false
+          }
+        ],
+        "paymentFrequency": "WEEKLY"
+      },
+      "paymentEnabled": true,
+      "specialCircumstances": "FTNAE",
+      "informationMessage": {
+        "title": "We are currently working out your payments as your children are changing their education or training. This should be done by 7 September 2019.",
+        "message": "If your children are staying in education or training, you should update their details."
+      },
+      "totalsByDate": [
+        {
+          "amount": 280.9,
+          "paymentDate": 1566428400000
+        },
+        {
+          "amount": 280.9,
+          "paymentDate": 1567033200000
+        }
+      ]
+    },
+    "claimants": {
+      "personalDetails": {
+        "forename": "Betty",
+        "surname": "Cooper"
+      },
+      "children": [
+        {
+          "forename": "Maya",
+          "surname": "Cooper"
+        },
+        {
+          "forename": "Leah",
+          "surname": "Cooper"
+        },
+        {
+          "forename": "Leah",
+          "surname": "Coops"
+        }
+      ],
+      "ftnaeLink": {
+        "preFtnaeDeadline": true,
+        "link": "/tax-credits-service/home/children-and-childcare"
+      }
+    }
+  }

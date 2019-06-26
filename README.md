@@ -35,6 +35,8 @@ To test different scenarios, add a header "SANDBOX-CONTROL" with one of the foll
 | "TAX-CREDITS-USER" | Happy path, non-excluded Tax Credits User with full summary |
 | "WORKING-TAX-CREDIT-ONLY" | Happy path, non-excluded Tax Credits User with working tax credit data but no child tax credit data |
 | "CHILD-TAX-CREDIT-ONLY" | Happy path, non-excluded Tax Credits User with child tax credit data but no working tax credit data |
+| "PRE_FTNAE" | Happy path, where they have FTNAE children but it is BEFORE the 31st August deadline |
+| "POST_FTNAE" | Happy path, where they have FTNAE children but it is AFTER the 31st August deadline |
 | "NON-TAX-CREDITS-USER" | Happy path, non-excluded, Non Tax Credits User with no summary |
 | "EXCLUDED-TAX-CREDITS-USER" | Happy path, excluded Tax Credits User with no summary |
 | "CLAIMANTS_FAILURE" | Unhappy path, non-excluded Tax Credits User with partial summary missing claimants section | 
