@@ -36,11 +36,11 @@ object Child {
   def getAge(child: Child): Long =
     Period.between(child.dateOfBirth, LocalDate.now).get(ChronoUnit.YEARS)
 
-  def getEligibleChildren(children: Seq[Child]): Seq[Child] =
+  def getEligibleChildren(children: Seq[Child]): Seq[Person] =
     children
       .filter { child =>
         getAge(child) < 20 &&
         child.isActive &&
         child.dateOfDeath.isEmpty
-      }
+      }.map(child => Person(forename = child.firstNames, surname = child.surname))
 }
