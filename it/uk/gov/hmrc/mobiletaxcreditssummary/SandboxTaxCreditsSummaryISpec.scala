@@ -19,6 +19,7 @@ package uk.gov.hmrc.mobiletaxcreditssummary
 import play.api.libs.ws.{WSRequest, WSResponse}
 import uk.gov.hmrc.api.sandbox.FileResource
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.Person
 import uk.gov.hmrc.mobiletaxcreditssummary.support.BaseISpec
 
 class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
@@ -37,8 +38,14 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
       val response = await(request(sandboxNino).addHttpHeaders(mobileHeader).get())
       response.status                                                                                               shouldBe 200
       (response.json \ "excluded").as[Boolean]                                                                      shouldBe false
+
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "title").as[String] shouldBe "We are currently working out your payments as your child is changing their education or training. This should be done by 7 September CY."
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "message").as[String] shouldBe "If your child is staying in education or training, you should update their details."
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "WEEKLY"
       (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String]               shouldBe "Nuala"
+      (response.json \ "taxCreditsSummary" \ "claimants" \ "children").as[List[Person]].head.forename shouldBe "Sarah"
+      (response.json \ "taxCreditsSummary" \ "claimants" \ "ftnaeLink" \ "link").as[String]             shouldBe "/tax-credits-service/home/children-and-childcare"
+
     }
 
     "return excluded = false and a tax credit summary with only working tax credit data where SANDBOX-CONTROL is WORKING-TAX-CREDIT-ONLY" in {
@@ -48,6 +55,8 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "WEEKLY"
       (response.json \\ "childTaxCredit")                                                                           shouldBe empty
       (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String]               shouldBe "Nuala"
+      (response.json \ "taxCreditsSummary" \ "claimants" \\ "ftnaeLink")             shouldBe empty
+      (response.json \ "taxCreditsSummary" \ "claimants" \ "children").as[List[Person]].head.forename shouldBe "Sarah"
     }
 
     "return excluded = false and a tax credit summary with only working tax credit data where SANDBOX-CONTROL is CHILD-TAX-CREDIT-ONLY" in {
@@ -57,6 +66,10 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "childTaxCredit" \ "paymentFrequency").as[String] shouldBe "WEEKLY"
       (response.json \\ "workingTaxCredit")                                                                       shouldBe empty
       (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String]             shouldBe "Nuala"
+      (response.json \ "taxCreditsSummary" \ "claimants" \ "ftnaeLink" \ "link").as[String]             shouldBe "/tax-credits-service/home/children-and-childcare"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "title").as[String] shouldBe "We are currently working out your payments as your child is changing their education or training. This should be done by 7 September CY."
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "message").as[String] shouldBe "If your child is staying in education or training, you should update their details."
+
     }
 
     "return excluded = false and a tax credit summary where SANDBOX-CONTROL is any other value" in {

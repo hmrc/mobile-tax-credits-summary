@@ -60,7 +60,7 @@ The Tax Credits Summary response
     },
     "paymentEnabled": true,
     "specialCircumstances":"FTNAE",
-             "informationTitle":{
+             "informationMessage":{
                 "title":"We are currently working out your payments as your child is changing their education or training. This should be done by 7 September CY.",
                 "message":"If your child is staying in education or training, you should update their details."
              },
