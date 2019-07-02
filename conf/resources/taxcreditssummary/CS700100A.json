@@ -55,6 +55,11 @@
         }
       ],
       "paymentFrequency": "WEEKLY",
+      "specialCircumstances": "FTNAE",
+      "informationMessage": {
+        "title": "We are currently working out your payments as your children are changing their education or training. This should be done by 7 September 2019.",
+        "message": "If your children are staying in education or training, you should update their details."
+      },
       "previousPaymentSeq": [
         {
           "amount": 100,
@@ -209,6 +214,10 @@
     ]
   },
   "claimants": {
+    "ftnaeLink": {
+      "preFtnaeDeadline": true,
+      "link": "/tax-credits-service/home/children-and-childcare"
+    },
     "personalDetails": {
       "forename": "Nuala",
       "surname": "O'Shea"

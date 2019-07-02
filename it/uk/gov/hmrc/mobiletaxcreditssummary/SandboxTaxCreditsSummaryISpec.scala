@@ -39,11 +39,9 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
       response.status                                                                                               shouldBe 200
       (response.json \ "excluded").as[Boolean]                                                                      shouldBe false
 
-      (response.json \ "taxCreditsSummary" \ "paymentSummary" \\ "informationMessage") shouldBe empty
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "WEEKLY"
       (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String]               shouldBe "Nuala"
       (response.json \ "taxCreditsSummary" \ "claimants" \ "children").as[List[Person]].head.forename shouldBe "Sarah"
-      (response.json \ "taxCreditsSummary" \ "claimants" \\ "ftnaeLink")            shouldBe empty
 
     }
 
