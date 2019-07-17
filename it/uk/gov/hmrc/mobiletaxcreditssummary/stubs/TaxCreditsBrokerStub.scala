@@ -101,7 +101,7 @@ object TaxCreditsBrokerStub {
       |          "paymentDate": 1514282158781,
       |          "oneOffPayment": true,
       |          "earlyPayment": false,
-      |          "explanatoryText" : "This is because of a recent change and is to help you get the right amount of tax credits."
+      |          "explanatoryText" : "One off payment because of a recent change to help you get the right amount of tax credits."
       |        }
       |      ],
       |      "paymentFrequency": "WEEKLY",
@@ -150,7 +150,7 @@ object TaxCreditsBrokerStub {
       |          "paymentDate": 1514282158781,
       |          "oneOffPayment": true,
       |          "earlyPayment": false,
-      |          "explanatoryText" : "This is because of a recent change and is to help you get the right amount of tax credits."
+      |          "explanatoryText" : "One off payment because of a recent change to help you get the right amount of tax credits."
       |        }
       |      ],
       |      "paymentFrequency": "WEEKLY"
