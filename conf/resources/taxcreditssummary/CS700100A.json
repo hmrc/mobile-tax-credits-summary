@@ -21,7 +21,7 @@
           "paymentDate": date3,
           "oneOffPayment": true,
           "earlyPayment": false,
-          "explanatoryText": "One off payment because of a recent change to help you get the right amount of tax credits."
+          "explanatoryText": "One-off payment because of a recent change to help you get the right amount of tax credits."
         },
         {
           "amount": 80.29,
@@ -105,7 +105,7 @@
           "paymentDate": date3,
           "oneOffPayment": true,
           "earlyPayment": false,
-          "explanatoryText": "One off payment because of a recent change to help you get the right amount of tax credits."
+          "explanatoryText": "One-off payment because of a recent change to help you get the right amount of tax credits."
         },
         {
           "amount": 171.84,

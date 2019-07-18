@@ -97,7 +97,7 @@ class LiveTaxCreditsSummaryService @Inject()(taxCreditsBrokerConnector: TaxCredi
           }
         } else None
 
-      val childrenFuture        = getChildrenAge16AndUnder
+      val childrenFuture: Future[Seq[Person]] = getChildrenAge16AndUnder
       val partnerDetailsFuture  = taxCreditsBrokerConnector.getPartnerDetails(tcNino)
       val personalDetailsFuture = taxCreditsBrokerConnector.getPersonalDetails(tcNino)
 

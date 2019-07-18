@@ -89,13 +89,13 @@ sealed trait Payment {
 }
 
 case class FuturePayment(amount: BigDecimal, paymentDate: LocalDateTime, oneOffPayment: Boolean, holidayType: Option[String] = None) extends Payment {
-  override def oneOffPaymentText: String = "One off payment because of a recent change to help you get the right amount of tax credits."
+  override def oneOffPaymentText: String = "One-off payment because of a recent change to help you get the right amount of tax credits."
 
   override def bankHolidayPaymentText: String = "Your payment is early because of UK bank holidays."
 }
 
 case class PastPayment(amount: BigDecimal, paymentDate: LocalDateTime, oneOffPayment: Boolean, holidayType: Option[String] = None) extends Payment {
-  override def oneOffPaymentText: String = "One off payment because of a recent change to help you get the right amount of tax credits."
+  override def oneOffPaymentText: String = "One-off payment because of a recent change to help you get the right amount of tax credits."
 
   override def bankHolidayPaymentText: String = "Your payment was early because of UK bank holidays."
 }
