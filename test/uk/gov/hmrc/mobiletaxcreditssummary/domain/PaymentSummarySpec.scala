@@ -56,8 +56,8 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
 
   private val futureEarlyPaymentText  = Some("Your payment is early because of UK bank holidays.")
   private val pastEarlyPaymentText    = Some("Your payment was early because of UK bank holidays.")
-  private val futureOneOffPaymentText = Some("One off payment because of a recent change to help you get the right amount of tax credits.")
-  private val pastOneOffPaymentText   = Some("One off payment because of a recent change to help you get the right amount of tax credits.")
+  private val futureOneOffPaymentText = Some("One-off payment because of a recent change to help you get the right amount of tax credits.")
+  private val pastOneOffPaymentText   = Some("One-off payment because of a recent change to help you get the right amount of tax credits.")
 
   private val bankHoliday = Some("bankHoliday")
 
@@ -453,7 +453,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
     "return the correct explanatory text for a one-off payment" in {
       FuturePayment(1, now, oneOffPayment = false).explanatoryText shouldBe None
       FuturePayment(1, now, oneOffPayment = true).explanatoryText shouldBe
-        Some("One off payment because of a recent change to help you get the right amount of tax credits.")
+        Some("One-off payment because of a recent change to help you get the right amount of tax credits.")
     }
 
     "return the correct explanatory text for a bank holiday payment" in {
@@ -463,7 +463,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
 
     "return the one-off payment explanatory text for a one-off payment made early due to a bank holiday" in {
       FuturePayment(1, now, oneOffPayment = true, holidayType = Some("bankHoliday")).explanatoryText shouldBe
-        Some("One off payment because of a recent change to help you get the right amount of tax credits.")
+        Some("One-off payment because of a recent change to help you get the right amount of tax credits.")
     }
   }
 
@@ -471,7 +471,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
     "return the correct explanatory text for a one-off payment" in {
       PastPayment(1, now, oneOffPayment = false).explanatoryText shouldBe None
       PastPayment(1, now, oneOffPayment = true).explanatoryText shouldBe
-        Some("One off payment because of a recent change to help you get the right amount of tax credits.")
+        Some("One-off payment because of a recent change to help you get the right amount of tax credits.")
     }
 
     "return the correct explanatory text for a bank holiday payment" in {
@@ -481,7 +481,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
 
     "return the one-off payment explanatory text for a one-off payment made early due to a bank holiday" in {
       PastPayment(1, now, oneOffPayment = true, holidayType = Some("bankHoliday")).explanatoryText shouldBe
-        Some("One off payment because of a recent change to help you get the right amount of tax credits.")
+        Some("One-off payment because of a recent change to help you get the right amount of tax credits.")
     }
   }
 }
