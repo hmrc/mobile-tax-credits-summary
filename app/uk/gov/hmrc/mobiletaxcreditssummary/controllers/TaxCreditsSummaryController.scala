@@ -59,7 +59,7 @@ trait ErrorHandling {
 }
 
 trait TaxCreditsSummaryController {
-  def taxCreditsSummary(nino: Nino, journeyId: Option[String] = None): Action[AnyContent]
+  def taxCreditsSummary(nino: Nino, journeyId: String): Action[AnyContent]
 }
 
 @Singleton
@@ -81,7 +81,7 @@ class LiveTaxCreditsSummaryController @Inject()(
 
   override def parser: BodyParser[AnyContent] = cc.parsers.anyContent
 
-  override final def taxCreditsSummary(nino: Nino, journeyId: Option[String] = None): Action[AnyContent] =
+  override final def taxCreditsSummary(nino: Nino, journeyId: String): Action[AnyContent] =
     validateAcceptWithAuth(acceptHeaderValidationRules, Option(nino)).async { implicit request =>
       implicit val hc: HeaderCarrier = fromHeadersAndSession(request.headers, None)
 
