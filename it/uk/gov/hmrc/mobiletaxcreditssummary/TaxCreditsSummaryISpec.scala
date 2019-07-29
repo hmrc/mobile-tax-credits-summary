@@ -27,7 +27,7 @@ import uk.gov.hmrc.mobiletaxcreditssummary.support.BaseISpec
 class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
 
   "GET /income/:nino/tax-credits/tax-credits-summary " should {
-    def request(nino: Nino): WSRequest = wsUrl(s"/income/${nino.value}/tax-credits/tax-credits-summary").addHttpHeaders(acceptJsonHeader)
+    def request(nino: Nino): WSRequest = wsUrl(s"/income/${nino.value}/tax-credits/tax-credits-summary?journeyId=journeyId").addHttpHeaders(acceptJsonHeader)
 
     "return a valid response for TAX-CREDITS-USER - check more details on github.com/hmrc/mobile-tax-credits-summary" in {
       grantAccess(nino1.value)

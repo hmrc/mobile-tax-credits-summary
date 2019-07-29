@@ -52,7 +52,7 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
         .expects(Nino(nino), *, *)
         .returning(Future.successful(expectedResult))
 
-      val result = controller.taxCreditsSummary(Nino(nino))(emptyRequestWithAcceptHeader(renewalReference, Nino(nino)))
+      val result = controller.taxCreditsSummary(Nino(nino), "journeyId")(emptyRequestWithAcceptHeader(renewalReference, Nino(nino)))
       status(result)        shouldBe 200
       contentAsJson(result) shouldBe toJson(expectedResult)
     }
@@ -60,7 +60,7 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
     "return 403 when the nino in the request does not match the authority nino" in {
       mockAuthorisationGrantAccess(Some(nino) and L200)
 
-      status(controller.taxCreditsSummary(incorrectNino)(emptyRequestWithAcceptHeader(renewalReference, Nino(nino)))) shouldBe 403
+      status(controller.taxCreditsSummary(incorrectNino, "journeyId")(emptyRequestWithAcceptHeader(renewalReference, Nino(nino)))) shouldBe 403
     }
 
     "return 500 given a service error" in {
@@ -71,7 +71,7 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
         .expects(Nino(nino), *, *)
         .returning(Future failed Upstream5xxResponse("error", 500, 500))
 
-      status(controller.taxCreditsSummary(Nino(nino))(emptyRequestWithAcceptHeader(renewalReference, Nino(nino)))) shouldBe 500
+      status(controller.taxCreditsSummary(Nino(nino), "journeyId")(emptyRequestWithAcceptHeader(renewalReference, Nino(nino)))) shouldBe 500
     }
 
     "return the summary successfully when journeyId is supplied and user is not excluded" in {
@@ -82,7 +82,7 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
       (mockService.getTaxCreditsSummaryResponse(_: Nino)(_: HeaderCarrier, _: ExecutionContext)).expects(Nino(nino), *, *).returning(Future.successful(expectedResult))
 
       val result =
-        controller.taxCreditsSummary(Nino(nino), Some("journeyId"))(emptyRequestWithAcceptHeader(renewalReference, Nino(nino)))
+        controller.taxCreditsSummary(Nino(nino), "journeyId")(emptyRequestWithAcceptHeader(renewalReference, Nino(nino)))
       status(result)        shouldBe 200
       contentAsJson(result) shouldBe toJson(expectedResult)
     }
@@ -90,7 +90,7 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
     "return unauthorized when authority record does not contain a NINO" in {
       mockAuthorisationGrantAccess(None and L200)
 
-      val result = controller.taxCreditsSummary(Nino(nino))(emptyRequestWithAcceptHeader(renewalReference, Nino(nino)))
+      val result = controller.taxCreditsSummary(Nino(nino), "journeyId")(emptyRequestWithAcceptHeader(renewalReference, Nino(nino)))
       status(result)        shouldBe 401
       contentAsJson(result) shouldBe noNinoFoundOnAccount
     }
@@ -98,13 +98,13 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
     "return unauthorized when authority record has a low CL" in {
       mockAuthorisationGrantAccess(Some(nino) and L100)
 
-      val result = controller.taxCreditsSummary(Nino(nino))(emptyRequestWithAcceptHeader(renewalReference, Nino(nino)))
+      val result = controller.taxCreditsSummary(Nino(nino), "journeyId")(emptyRequestWithAcceptHeader(renewalReference, Nino(nino)))
       status(result)        shouldBe 401
       contentAsJson(result) shouldBe lowConfidenceLevelError
     }
 
     "return status code 406 when the headers are invalid" in {
-      val result = controller.taxCreditsSummary(Nino(nino))(requestInvalidHeaders)
+      val result = controller.taxCreditsSummary(Nino(nino), "journeyId")(requestInvalidHeaders)
       status(result) shouldBe 406
     }
 
@@ -113,7 +113,7 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
   "tax credits summary Sandbox" should {
     "return the summary response from a resource" in {
       val controller  = new SandboxTaxCreditsSummaryController(stubControllerComponents())
-      val result      = controller.taxCreditsSummary(Nino(nino)).apply(fakeRequest)
+      val result      = controller.taxCreditsSummary(Nino(nino), "journeyId").apply(fakeRequest)
       val currentTime = new LocalDate().toDateTimeAtStartOfDay
       val expectedTaxCreditsSummary: TaxCreditsSummary =
         Json

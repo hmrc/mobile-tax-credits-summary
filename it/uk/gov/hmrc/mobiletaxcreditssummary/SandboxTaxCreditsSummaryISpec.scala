@@ -27,7 +27,7 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
   private val mobileHeader = "X-MOBILE-USER-ID" -> "208606423740"
 
   "GET /sandbox/income/:nino/tax-credits/tax-credits-summary " should {
-    def request(nino: Nino): WSRequest = wsUrl(s"/income/${nino.value}/tax-credits/tax-credits-summary").addHttpHeaders(acceptJsonHeader)
+    def request(nino: Nino): WSRequest = wsUrl(s"/income/${nino.value}/tax-credits/tax-credits-summary?journeyId=journeyId").addHttpHeaders(acceptJsonHeader)
 
     def assertEmptyTaxCreditsSummary(response: WSResponse): RuntimeException =
       intercept[RuntimeException] {

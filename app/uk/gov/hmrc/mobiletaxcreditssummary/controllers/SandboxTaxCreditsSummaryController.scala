@@ -37,7 +37,7 @@ class SandboxTaxCreditsSummaryController @Inject()(cc: ControllerComponents)(imp
     with HeaderValidator {
 
   override def parser: BodyParser[AnyContent] = cc.parsers.anyContent
-  override final def taxCreditsSummary(nino: Nino, journeyId: Option[String] = None): Action[AnyContent] =
+  override final def taxCreditsSummary(nino: Nino, journeyId: String): Action[AnyContent] =
     validateAccept(acceptHeaderValidationRules).async { implicit request =>
       Future successful (request.headers.get("SANDBOX-CONTROL") match {
         case Some("NON-TAX-CREDITS-USER")      => Ok(toJson(TaxCreditsSummaryResponse(taxCreditsSummary = None)))
