@@ -139,5 +139,10 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
       val response = await(request(sandboxNino).addHttpHeaders(mobileHeader, "SANDBOX-CONTROL" -> "ERROR-500").get())
       response.status shouldBe 500
     }
+
+    "return 400 if journeyId not supplied" in {
+      val response = await(wsUrl(s"/income/${sandboxNino}/tax-credits/tax-credits-summary").addHttpHeaders(mobileHeader).get())
+      response.status shouldBe 400
+    }
   }
 }

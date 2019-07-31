@@ -242,5 +242,10 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (response.json \ "excluded").as[Boolean] shouldBe false
       (response.json \\ "claimants").isEmpty   shouldBe true
     }
+
+    "return 400 if journeyId not supplied" in {
+      val response = await(wsUrl(s"/income/${nino1}/tax-credits/tax-credits-summary").get())
+      response.status shouldBe 400
+    }
   }
 }
