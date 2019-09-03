@@ -9,7 +9,7 @@ object TaxCreditsBrokerStub {
         {
           "firstNames": "Sarah",
           "surname": "Smith",
-          "dateOfBirth": 936057600000,
+          "dateOfBirth": 967676400000,
           "hasFTNAE": false,
           "hasConnexions": false,
           "isActive": true
