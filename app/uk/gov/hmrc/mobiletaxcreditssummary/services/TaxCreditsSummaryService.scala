@@ -53,8 +53,9 @@ class LiveTaxCreditsSummaryService @Inject()(taxCreditsBrokerConnector: TaxCredi
       // are no payments after the 31st and this is coupled with other logic in the match
       def hasAFtnaePayment(paymentSummary: PaymentSummary): Boolean =
         paymentSummary.childTaxCredit match {
-          case None      => false
-          case Some(ctc) => ctc.paymentSeq.count(payment => isFtnaeDate(payment)) == 0
+          case None if (now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 8))) => true
+          case None                                                                     => false
+          case Some(ctc)                                                                => ctc.paymentSeq.count(payment => isFtnaeDate(payment)) > 0 //TODO check if should be >
         }
 
       def getFtnaeLink(paymentSummary: PaymentSummary): Option[FtnaeLink] = {
