@@ -18,22 +18,24 @@ package uk.gov.hmrc.mobiletaxcreditssummary.utils
 
 import java.time.{LocalDate, Month}
 
-import javax.inject.Inject
 import org.scalatest.{Matchers, Tag, TestData, WordSpecLike}
-import org.scalatestplus.play.OneAppPerTest
+import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.test.Injecting
 
-class LocalDateProviderSpec @Inject()(localDateProvider: LocalDateProvider) extends WordSpecLike with Matchers with OneAppPerTest {
+class LocalDateProviderSpec extends WordSpecLike with Matchers with GuiceOneAppPerTest with Injecting {
 
 
   "LocalDateProviderSpec" should {
 
     "return today's date if no config found" in {
+      val localDateProvider = app.injector.instanceOf[LocalDateProvider]
       localDateProvider.now shouldBe LocalDate.now()
     }
 
     "return today's date with config set to 2019-09-12" taggedAs Tag("2019-09-12") in {
+      val localDateProvider = app.injector.instanceOf[LocalDateProvider]
       localDateProvider.now shouldBe LocalDate.of(2019, Month.SEPTEMBER, 12)
     }
   }
@@ -41,8 +43,9 @@ class LocalDateProviderSpec @Inject()(localDateProvider: LocalDateProvider) exte
 
   override def newAppForTest(testData: TestData): Application = {
     testData.tags.headOption match {
-      case Some(tag) =>  GuiceApplicationBuilder().configure("dateOverride" -> tag).build()
-      case _ => GuiceApplicationBuilder().configure("dateOverride" -> LocalDate.now().toString).build()
+      case Some(tag) => GuiceApplicationBuilder().configure("dateOverride" -> tag).disable[com.kenshoo.play.metrics.PlayModule].configure("metrics.enabled" -> false).build()
+      case _ => GuiceApplicationBuilder().configure("dateOverride" -> LocalDate.now().toString).disable[com.kenshoo.play.metrics.PlayModule].configure("metrics.enabled" -> false).build()
     }
   }
 }
+
