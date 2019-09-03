@@ -1,15 +1,17 @@
 package uk.gov.hmrc.mobiletaxcreditssummary.stubs
 
+import java.time.{LocalDate, ZoneId}
+
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, stubFor, urlPathEqualTo}
 import uk.gov.hmrc.domain.Nino
 
 object TaxCreditsBrokerStub {
   val childrenJson =
-    """{ "child": [
+    s"""{ "child": [
         {
           "firstNames": "Sarah",
           "surname": "Smith",
-          "dateOfBirth": 967676400000,
+          "dateOfBirth": ${LocalDate.of(LocalDate.now.minusYears(19).getYear, 8, 31).atStartOfDay(ZoneId.systemDefault()).toEpochSecond() * 1000},
           "hasFTNAE": false,
           "hasConnexions": false,
           "isActive": true
