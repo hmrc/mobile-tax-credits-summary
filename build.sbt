@@ -14,7 +14,8 @@ lazy val microservice = Project(appName, file("."))
       SbtAutoBuildPlugin,
       SbtGitVersioning,
       SbtDistributablesPlugin,
-      SbtArtifactory
+      SbtArtifactory,
+      ScoverageSbtPlugin
     ): _*
   )
   .configs(IntegrationTest)
@@ -41,7 +42,11 @@ lazy val microservice = Project(appName, file("."))
     ).value,
     testGrouping in IntegrationTest := oneForkedJvmPerTest(
       (definedTests in IntegrationTest).value
-    )
+    ),
+    coverageMinimum := 90,
+    coverageFailOnMinimum := true,
+    coverageHighlighting := true,
+    coverageExcludedPackages := "<empty>;.*Routes.*;app.*;.*prod;.*definition;.*testOnlyDoNotUseInAppConf;.*com.kenshoo.*;.*javascript.*;.*BuildInfo;.*Reverse.*;.*Base64.*"
   )
 
 def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] =
@@ -62,9 +67,9 @@ val compile = Seq(
 val scalatestPlusPlayVersion = "3.1.2"
 
 val test = Seq(
-  "org.scalatest" %% "scalatest" % "3.0.5" % Test,
-  "org.scalamock" %% "scalamock" % "4.1.0" % Test,
-  "org.pegdown"   % "pegdown"    % "1.6.0" % Test,
+  "org.scalatest"          %% "scalatest"          % "3.0.5"                  % Test,
+  "org.scalamock"          %% "scalamock"          % "4.1.0"                  % Test,
+  "org.pegdown"            % "pegdown"             % "1.6.0"                  % Test,
   "org.scalatestplus.play" %% "scalatestplus-play" % scalatestPlusPlayVersion % Test
 )
 
