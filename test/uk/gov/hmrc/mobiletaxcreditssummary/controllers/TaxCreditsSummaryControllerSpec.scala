@@ -41,10 +41,11 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
       mockService,
       mockAuditConnector,
       mockConfiguration,
-      stubControllerComponents())
+      stubControllerComponents(),
+      mockShutteringConnector)
     "process the request successfully and filter children older than 20 and where deceased flags are active and user is not excluded" in {
       val expectedResult = TaxCreditsSummaryResponse(excluded = false, Some(TaxCreditsSummary(paymentSummary, Some(claimants))))
-
+      mockShutteringResponse(notShuttered)
       mockAuthorisationGrantAccess(Some(nino) and L200)
       mockAudit(Nino(nino), expectedResult)
       (mockService
@@ -65,7 +66,7 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
 
     "return 500 given a service error" in {
       mockAuthorisationGrantAccess(Some(nino) and L200)
-
+      mockShutteringResponse(notShuttered)
       (mockService
         .getTaxCreditsSummaryResponse(_: Nino)(_: HeaderCarrier, _: ExecutionContext))
         .expects(Nino(nino), *, *)
@@ -76,7 +77,7 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
 
     "return the summary successfully when journeyId is supplied and user is not excluded" in {
       val expectedResult = TaxCreditsSummaryResponse(excluded = false, Some(TaxCreditsSummary(paymentSummary, Some(claimants))))
-
+      mockShutteringResponse(notShuttered)
       mockAuthorisationGrantAccess(Some(nino) and L200)
       mockAudit(Nino(nino), expectedResult)
       (mockService.getTaxCreditsSummaryResponse(_: Nino)(_: HeaderCarrier, _: ExecutionContext)).expects(Nino(nino), *, *).returning(Future.successful(expectedResult))
@@ -108,6 +109,17 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
       status(result) shouldBe 406
     }
 
+    "return 521 when shuttered" in {
+      mockShutteringResponse(shuttered)
+      mockAuthorisationGrantAccess(Some(nino) and L200)
+      val result = controller.taxCreditsSummary(Nino(nino), "journeyId")(emptyRequestWithAcceptHeader(renewalReference, Nino(nino)))
+
+      status(result) shouldBe 521
+      val jsonBody = contentAsJson(result)
+      (jsonBody \ "shuttered").as[Boolean] shouldBe true
+      (jsonBody \ "title").as[String]      shouldBe "Shuttered"
+      (jsonBody \ "message").as[String]    shouldBe "Tax Credits Summary is currently not available"
+    }
   }
 
   "tax credits summary Sandbox" should {

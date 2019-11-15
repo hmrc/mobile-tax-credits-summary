@@ -52,6 +52,7 @@ class BaseISpec
       "microservice.services.auth.port"               -> wireMockPort,
       "microservice.services.datastream.port"         -> wireMockPort,
       "microservice.services.tax-credits-broker.port" -> wireMockPort,
+      "microservice.services.shuttering.port"         -> wireMockPort,
       "auditing.consumer.baseUri.port"                -> wireMockPort
     )
 
