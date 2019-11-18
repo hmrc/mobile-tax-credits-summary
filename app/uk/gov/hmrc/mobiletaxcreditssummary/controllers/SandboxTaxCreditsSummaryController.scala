@@ -24,6 +24,7 @@ import play.api.mvc._
 import uk.gov.hmrc.api.controllers._
 import uk.gov.hmrc.api.sandbox.FileResource
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.Shuttering
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
@@ -35,6 +36,10 @@ class SandboxTaxCreditsSummaryController @Inject()(cc: ControllerComponents)(imp
     with TaxCreditsSummaryController
     with FileResource
     with HeaderValidator {
+
+  private final val WebServerIsDown = new Status(521)
+  private val shuttered =
+    Json.toJson(Shuttering(shuttered = true, title = Some("Shuttered"), message = Some("Tax Credits Summary is currently shuttered")))
 
   override def parser: BodyParser[AnyContent] = cc.parsers.anyContent
   override final def taxCreditsSummary(nino: Nino, journeyId: String): Action[AnyContent] =
@@ -71,6 +76,7 @@ class SandboxTaxCreditsSummaryController @Inject()(cc: ControllerComponents)(imp
           val taxCreditsSummary: TaxCreditsSummary = TaxCreditsSummary(Json.parse(updateDates(resource)).as[TaxCreditsSummary].paymentSummary, None)
           val response = TaxCreditsSummaryResponse(excluded = false, Some(taxCreditsSummary))
           Ok(toJson(response))
+        case Some("SHUTTERED") => WebServerIsDown(shuttered)
         case _ => //TAX-CREDITS-USER
           val resource: String = findResource(s"/resources/taxcreditssummary/${nino.value}.json")
             .getOrElse(throw new IllegalArgumentException("Resource not found!"))

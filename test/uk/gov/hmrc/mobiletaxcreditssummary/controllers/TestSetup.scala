@@ -25,13 +25,13 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.mobiletaxcreditssummary.connectors.TaxCreditsBrokerConnector
+import uk.gov.hmrc.mobiletaxcreditssummary.connectors.{ShutteringConnector, TaxCreditsBrokerConnector}
 import uk.gov.hmrc.mobiletaxcreditssummary.domain._
-import uk.gov.hmrc.mobiletaxcreditssummary.mocks.{AuditMock, AuthorisationMock, TaxCreditsBrokerConnectorMock}
+import uk.gov.hmrc.mobiletaxcreditssummary.mocks.{AuditMock, AuthorisationMock, ShutteringMock, TaxCreditsBrokerConnectorMock}
 import uk.gov.hmrc.mobiletaxcreditssummary.services.LiveTaxCreditsSummaryService
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
-trait TestSetup extends WordSpecLike with Matchers with MockFactory with TaxCreditsBrokerConnectorMock with AuthorisationMock with AuditMock {
+trait TestSetup extends WordSpecLike with Matchers with MockFactory with TaxCreditsBrokerConnectorMock with AuthorisationMock with AuditMock with ShutteringMock {
 
   implicit val hc:                            HeaderCarrier                = HeaderCarrier()
   implicit val mockAuthConnector:             AuthConnector                = mock[AuthConnector]
@@ -39,6 +39,10 @@ trait TestSetup extends WordSpecLike with Matchers with MockFactory with TaxCred
   implicit val mockAuditConnector:            AuditConnector               = mock[AuditConnector]
   implicit val mockService:                   LiveTaxCreditsSummaryService = mock[LiveTaxCreditsSummaryService]
   implicit val mockConfiguration:             Configuration                = mock[Configuration]
+  implicit val mockShutteringConnector:       ShutteringConnector          = mock[ShutteringConnector]
+
+  val shuttered    = Shuttering(shuttered = true, Some("Shuttered"), Some("Tax Credits Summary is currently not available"))
+  val notShuttered = Shuttering.shutteringDisabled
 
   val noNinoFoundOnAccount: JsValue = Json.parse("""{"code":"UNAUTHORIZED","message":"NINO does not exist on account"}""")
   val lowConfidenceLevelError: JsValue =
