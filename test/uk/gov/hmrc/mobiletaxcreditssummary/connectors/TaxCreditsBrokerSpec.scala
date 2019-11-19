@@ -60,6 +60,7 @@ class TaxCreditsBrokerSpec extends WordSpecLike with Matchers with ScalaFutures 
     lazy val http404NoPartner:   Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(404, None))
     lazy val http200Children:    Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(200, Some(Json.toJson(tcbChildren))))
     lazy val http200Payment:     Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(200, Some(Json.toJson(paymentSummary))))
+    lazy val http404Payment:     Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(404, None))
     lazy val http200Exclusion:   Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(200, Some(Json.toJson(exclusion))))
     lazy val http200NotExcluded: Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(200, Some(Json.toJson(notExcluded))))
     lazy val http404Exclusion:   Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(404, None))
@@ -157,14 +158,20 @@ class TaxCreditsBrokerSpec extends WordSpecLike with Matchers with ScalaFutures 
 
     "return a valid response for getPaymentSummary when a 200 response is received with a valid json payload" in new Setup {
       override lazy val response: Future[AnyRef with HttpResponse] = http200Payment
-      val result:                 PaymentSummary                   = await(connector.getPaymentSummary(TaxCreditsNino(nino.value)))
-      result shouldBe paymentSummary
+      val result:                 Option[PaymentSummary]                  = await(connector.getPaymentSummary(TaxCreditsNino(nino.value)))
+      result shouldBe Some(paymentSummary)
     }
 
     "return excluded payment summary response" in new Setup {
       override lazy val response: Future[AnyRef with HttpResponse] = http200Exclusion
-      val result:                 PaymentSummary                   = await(connector.getPaymentSummary(TaxCreditsNino(nino.value)))
-      result shouldBe exclusionPaymentSummary
+      val result:                 Option[PaymentSummary]                  = await(connector.getPaymentSummary(TaxCreditsNino(nino.value)))
+      result shouldBe Some(exclusionPaymentSummary)
+    }
+
+    "return None when payment summary response is 404" in new Setup {
+      override lazy val response: Future[AnyRef with HttpResponse] = http404Payment
+      val result:                 Option[PaymentSummary]                  = await(connector.getPaymentSummary(TaxCreditsNino(nino.value)))
+      result shouldBe None
     }
   }
 }

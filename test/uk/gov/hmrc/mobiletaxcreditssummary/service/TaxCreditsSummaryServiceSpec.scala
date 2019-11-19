@@ -98,7 +98,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
       val localDateProvider = app.injector.instanceOf[LocalDateProvider]
       val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummary, taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -110,7 +110,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
       val localDateProvider = app.injector.instanceOf[LocalDateProvider]
       val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummary, taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPartnerDetails(None, taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -122,7 +122,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
       val localDateProvider = app.injector.instanceOf[LocalDateProvider]
       val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummary, taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetChildren(Seq.empty, taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -141,7 +141,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
       val localDateProvider = app.injector.instanceOf[LocalDateProvider]
       val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummary, taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetChildrenFailure(upstream5xxException, taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -153,7 +153,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
       val localDateProvider = app.injector.instanceOf[LocalDateProvider]
       val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummary, taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetailsFailure(upstream4xxException, taxCreditsNino)
@@ -165,7 +165,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
       val localDateProvider = app.injector.instanceOf[LocalDateProvider]
       val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummary, taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPartnerDetailsFailure(upstream5xxException, taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -205,7 +205,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
         val localDateProvider = app.injector.instanceOf[LocalDateProvider]
         val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -218,7 +218,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
         val localDateProvider = app.injector.instanceOf[LocalDateProvider]
         val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -234,7 +234,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
         val localDateProvider = app.injector.instanceOf[LocalDateProvider]
         val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -251,7 +251,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
         val localDateProvider = app.injector.instanceOf[LocalDateProvider]
         val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae, ctc = false), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae, ctc = false)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -269,7 +269,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
         val localDateProvider = app.injector.instanceOf[LocalDateProvider]
         val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummaryFtnae(preSeptember = false, ftnae = false, ctc = false), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, ftnae = false, ctc = false)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -277,7 +277,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
         await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe getExpected(
           testName,
           None,
-          false,
+          ftnae = false,
           preSeptember = false,
           ctc = false)
       }
@@ -286,7 +286,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
         val localDateProvider = app.injector.instanceOf[LocalDateProvider]
         val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummaryFtnae(preSeptember = true, ftnae = ftnae), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = true, ftnae = ftnae)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -302,7 +302,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
         val localDateProvider = app.injector.instanceOf[LocalDateProvider]
         val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummaryFtnae(preSeptember = false, currentYear = false, ftnae = ftnae), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, currentYear = false, ftnae = ftnae)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -315,7 +315,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
       val localDateProvider = app.injector.instanceOf[LocalDateProvider]
       val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummaryMultipleFtnae(preSeptember = false, currentYear = false), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryMultipleFtnae(preSeptember = false, currentYear = false)), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetChildren(
         Seq(SarahSmithFtnae, SarahSmithFtnae, SarahSmithFtnae, JennySmith, PeterSmith, SimonSmith),
         taxCreditsNino)

@@ -123,7 +123,7 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
       .expects(nino, *, *)
       .returning(Future failed response)
 
-  def mockTaxCreditsBrokerConnectorGetPaymentSummary(response: PaymentSummary, nino: TaxCreditsNino)(
+  def mockTaxCreditsBrokerConnectorGetPaymentSummary(response: Option[PaymentSummary], nino: TaxCreditsNino)(
     implicit taxCreditsBrokerConnector:                        TaxCreditsBrokerConnector): Unit =
     (taxCreditsBrokerConnector
       .getPaymentSummary(_: TaxCreditsNino)(_: HeaderCarrier, _: ExecutionContext))

@@ -205,6 +205,10 @@ object TaxCreditsBrokerStub {
     stubFor(get(urlPathEqualTo(s"/tcs/${nino.value}/payment-summary")).willReturn(
       aResponse().withStatus(503).withHeader("Content-Type", "application/json")))
 
+  def paymentSummary404(nino: Nino): Unit =
+    stubFor(get(urlPathEqualTo(s"/tcs/${nino.value}/payment-summary")).willReturn(
+      aResponse().withStatus(404).withHeader("Content-Type", "application/json")))
+
   def personalDetailsJson(nino: Nino) =
     s"""
       {
