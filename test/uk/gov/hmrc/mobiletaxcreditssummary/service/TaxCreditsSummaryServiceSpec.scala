@@ -251,7 +251,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
         val localDateProvider = app.injector.instanceOf[LocalDateProvider]
         val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae, ctc = false), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae, ctc = false)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -269,7 +269,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
         val localDateProvider = app.injector.instanceOf[LocalDateProvider]
         val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummaryFtnae(preSeptember = false, ftnae = false, ctc = false), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, ftnae = false, ctc = false)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -277,7 +277,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
         await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe getExpected(
           testName,
           None,
-          false,
+          ftnae = false,
           preSeptember = false,
           ctc = false)
       }
