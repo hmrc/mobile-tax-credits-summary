@@ -16,12 +16,14 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary
 
-import play.api.libs.json.JsArray
+import play.api.libs.json.{JsArray, Json}
 import play.api.libs.ws.WSRequest
 import uk.gov.hmrc.api.sandbox.FileResource
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.Shuttering
 import uk.gov.hmrc.mobiletaxcreditssummary.stubs.AuthStub.grantAccess
 import uk.gov.hmrc.mobiletaxcreditssummary.stubs.TaxCreditsBrokerStub._
+import uk.gov.hmrc.mobiletaxcreditssummary.stubs.ShutteringStub._
 import uk.gov.hmrc.mobiletaxcreditssummary.support.BaseISpec
 
 class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
@@ -246,6 +248,18 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
     "return 400 if journeyId not supplied" in {
       val response = await(wsUrl(s"/income/${nino1}/tax-credits/tax-credits-summary").get())
       response.status shouldBe 400
+    }
+
+    "return SHUTTERED when shuttered" in {
+      stubForShutteringEnabled
+      grantAccess(nino1.value)
+
+      val response = await(request(nino1).get())
+      response.status shouldBe 521
+      val shuttering: Shuttering = Json.parse(response.body).as[Shuttering]
+      shuttering.shuttered shouldBe true
+      shuttering.title     shouldBe Some("Shuttered")
+      shuttering.message   shouldBe Some("Tax Credits Summary is currently not available")
     }
   }
 }

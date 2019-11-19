@@ -16,9 +16,11 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary
 
+import play.api.libs.json.Json
 import play.api.libs.ws.{WSRequest, WSResponse}
 import uk.gov.hmrc.api.sandbox.FileResource
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.Shuttering
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.Person
 import uk.gov.hmrc.mobiletaxcreditssummary.support.BaseISpec
 
@@ -143,6 +145,16 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
     "return 400 if journeyId not supplied" in {
       val response = await(wsUrl(s"/income/${sandboxNino}/tax-credits/tax-credits-summary").addHttpHeaders(mobileHeader).get())
       response.status shouldBe 400
+    }
+
+    "return 521 if there is an error where SANDBOX-CONTROL is SHUTTERED" in {
+      val response = await(request(sandboxNino).addHttpHeaders(mobileHeader, "SANDBOX-CONTROL" -> "SHUTTERED").get())
+      response.status shouldBe 521
+
+      val shuttering = Json.parse(response.body).as[Shuttering]
+      shuttering.shuttered shouldBe true
+      shuttering.title     shouldBe Some("Shuttered")
+      shuttering.message   shouldBe Some("Tax Credits Summary is currently shuttered")
     }
   }
 }

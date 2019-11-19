@@ -24,7 +24,8 @@ import uk.gov.hmrc.api.controllers._
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, ServiceUnavailableException}
-import uk.gov.hmrc.mobiletaxcreditssummary.controllers.action.AccessControl
+import uk.gov.hmrc.mobiletaxcreditssummary.connectors.ShutteringConnector
+import uk.gov.hmrc.mobiletaxcreditssummary.controllers.action.{AccessControl, ShutteredCheck}
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
 import uk.gov.hmrc.mobiletaxcreditssummary.services.LiveTaxCreditsSummaryService
 import uk.gov.hmrc.play.HeaderCarrierConverter.fromHeadersAndSession
@@ -70,26 +71,31 @@ class LiveTaxCreditsSummaryController @Inject()(
   val service:                                                  LiveTaxCreditsSummaryService,
   val auditConnector:                                           AuditConnector,
   val appNameConfiguration:                                     Configuration,
-  cc:                                                           ControllerComponents
+  cc:                                                           ControllerComponents,
+  shutteringConnector:                                          ShutteringConnector
 )(
   implicit override val executionContext: ExecutionContext
 ) extends BackendController(cc)
     with TaxCreditsSummaryController
     with AccessControl
     with ErrorHandling
-    with Auditor {
+    with Auditor
+    with ShutteredCheck {
 
   override def parser: BodyParser[AnyContent] = cc.parsers.anyContent
 
   override final def taxCreditsSummary(nino: Nino, journeyId: String): Action[AnyContent] =
     validateAcceptWithAuth(acceptHeaderValidationRules, Option(nino)).async { implicit request =>
       implicit val hc: HeaderCarrier = fromHeadersAndSession(request.headers, None)
-
-      errorWrapper {
-        val eventualResponse: Future[TaxCreditsSummaryResponse] = service.getTaxCreditsSummaryResponse(nino)
-        eventualResponse.map { summary =>
-          sendAuditEvent(nino, summary, request.path)
-          Ok(toJson(summary))
+      shutteringConnector.getShutteringStatus(journeyId).flatMap { shuttered =>
+        withShuttering(shuttered) {
+          errorWrapper {
+            val eventualResponse: Future[TaxCreditsSummaryResponse] = service.getTaxCreditsSummaryResponse(nino)
+            eventualResponse.map { summary =>
+              sendAuditEvent(nino, summary, request.path)
+              Ok(toJson(summary))
+            }
+          }
         }
       }
     }

@@ -21,7 +21,7 @@ import java.time.LocalDate
 import javax.inject.Inject
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import org.scalatest.{Tag, TestData}
-import org.scalatestplus.play.OneAppPerTest
+import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import play.api.{Application, Configuration}
@@ -38,17 +38,11 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvider)
-    extends TestSetup
-    with FileResource
-    with FutureAwaits
-    with DefaultAwaitTimeout
-    with OneAppPerTest {
+class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with FutureAwaits with DefaultAwaitTimeout with GuiceOneAppPerTest {
   implicit val taxCreditsBrokerConnector: TaxCreditsBrokerConnector = mock[TaxCreditsBrokerConnector]
   implicit val auditConnector:            AuditConnector            = mock[AuditConnector]
   val configuration:                      Configuration             = mock[Configuration]
 
-  val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
   val currentYear: Int = LocalDate.now().getYear
   val lastYear:    Int = currentYear - 1
 
@@ -61,17 +55,24 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
   val taxCreditsSummary =
     TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummary, Some(claimants))))
 
-  def taxCreditsSummaryWithFtnae(link: Option[FtnaeLink] = None, preSeptember: Boolean = false, currentYear: Boolean = true, ftnae: Boolean = true) =
+  def taxCreditsSummaryWithFtnae(
+    link:         Option[FtnaeLink] = None,
+    preSeptember: Boolean           = false,
+    currentYear:  Boolean           = true,
+    ftnae:        Boolean           = true,
+    ctc:          Boolean           = true) =
     TaxCreditsSummaryResponse(
-      taxCreditsSummary = Some(TaxCreditsSummary(paymentSummaryFtnae(preSeptember, currentYear, ftnae), Some(claimantsFtnae(link)))))
+      taxCreditsSummary = Some(TaxCreditsSummary(paymentSummaryFtnae(preSeptember, currentYear, ftnae, ctc), Some(claimantsFtnae(link)))))
 
   def taxCreditsSummaryWithMultipleFtnae(
     link:         Option[FtnaeLink] = None,
     preSeptember: Boolean           = false,
     currentYear:  Boolean           = true,
-    ftnae:        Boolean           = true) =
+    ftnae:        Boolean           = true,
+    ctc:          Boolean           = true) =
     TaxCreditsSummaryResponse(
-      taxCreditsSummary = Some(TaxCreditsSummary(paymentSummaryMultipleFtnae(preSeptember, currentYear, ftnae), Some(claimantsMultipleFtnae(link)))))
+      taxCreditsSummary =
+        Some(TaxCreditsSummary(paymentSummaryMultipleFtnae(preSeptember, currentYear, ftnae, ctc), Some(claimantsMultipleFtnae(link)))))
 
   val taxCreditsSummaryNoPartnerDetails =
     TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummary, Some(claimantsNoPartnerDetails))))
@@ -79,16 +80,23 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
   val taxCreditsSummaryNoChildren =
     TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummary, Some(claimantsNoChildren))))
 
+  val taxCreditsSummaryNoClaimants =
+    TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummary, None)))
+
   val taxCreditsSummaryEmpty = TaxCreditsSummaryResponse(taxCreditsSummary = None)
 
   "getTaxCreditsSummaryResponse" should {
     "return a non-tax-credits user payload when exclusion returns None" in {
+      val localDateProvider = app.injector.instanceOf[LocalDateProvider]
+      val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
       mockTaxCreditsBrokerConnectorGetExclusion(None, taxCreditsNino)
 
       await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe TaxCreditsSummaryResponse(excluded = false, None)
     }
 
     "return a tax-credits user payload when a payment summary is returned" in {
+      val localDateProvider = app.injector.instanceOf[LocalDateProvider]
+      val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
@@ -99,6 +107,8 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
     }
 
     "return a tax-credits user payload when a payment summary is returned but when there are no partner details" in {
+      val localDateProvider = app.injector.instanceOf[LocalDateProvider]
+      val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
@@ -109,6 +119,8 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
     }
 
     "return a tax-credits user payload when a payment summary is returned but when there are no children" in {
+      val localDateProvider = app.injector.instanceOf[LocalDateProvider]
+      val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetChildren(Seq.empty, taxCreditsNino)
@@ -119,42 +131,51 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
     }
 
     "return an excluded user payload when exclusion returns true" in {
+      val localDateProvider = app.injector.instanceOf[LocalDateProvider]
+      val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(true)), taxCreditsNino)
-
       await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe TaxCreditsSummaryResponse(excluded = true, None)
     }
 
     "return TaxCreditsSummaryResponse with payment summary but empty claimants when Get Children fails" in {
+      val localDateProvider = app.injector.instanceOf[LocalDateProvider]
+      val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetChildrenFailure(upstream5xxException, taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
 
-      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryEmpty
+      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryNoClaimants
     }
 
     "return TaxCreditsSummaryResponse with payment summary but empty claimants when Get Personal Details fails" in {
+      val localDateProvider = app.injector.instanceOf[LocalDateProvider]
+      val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetailsFailure(upstream4xxException, taxCreditsNino)
 
-      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryEmpty
+      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryNoClaimants
     }
 
     "return TaxCreditsSummaryResponse with payment summary but empty claimants when Get Partner Details fails" in {
+      val localDateProvider = app.injector.instanceOf[LocalDateProvider]
+      val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPartnerDetailsFailure(upstream5xxException, taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
 
-      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryEmpty
+      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryNoClaimants
     }
 
     "return an error when payment summary fails and exclusion returns false" in {
+      val localDateProvider = app.injector.instanceOf[LocalDateProvider]
+      val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPaymentFailure(upstream5xxException, taxCreditsNino)
 
@@ -164,6 +185,8 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
     }
 
     "return an error when exclusion errors" in {
+      val localDateProvider = app.injector.instanceOf[LocalDateProvider]
+      val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
       mockTaxCreditsBrokerConnectorGetExclusionFailure(Upstream4xxResponse("blows up for excluded users", 400, 400), taxCreditsNino)
 
       intercept[Upstream4xxResponse] {
@@ -179,17 +202,21 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
 
     forAll(scenarios) { (testName: String, child: Child, ftnae: Boolean) =>
       f"return a tax-credits user payload $testName but date is after 7th September ($currentYear-09-08)" taggedAs Tag(f"$currentYear-09-08") in {
+        val localDateProvider = app.injector.instanceOf[LocalDateProvider]
+        val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
 
-        await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithFtnae(ftnae = false)
+        await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithFtnae(ftnae = ftnae, currentYear = false)
       }
 
       f"return a tax-credits user payload $testName but date is after 31st August and before 8th September ($currentYear-09-01)" taggedAs Tag(
         f"$currentYear-09-01") in {
+        val localDateProvider = app.injector.instanceOf[LocalDateProvider]
+        val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
@@ -204,6 +231,8 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
       }
       f"return a tax-credits user payload $testName but date is after 31st August and before 8th September ($currentYear-09-07)" taggedAs Tag(
         f"$currentYear-09-07") in {
+        val localDateProvider = app.injector.instanceOf[LocalDateProvider]
+        val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
@@ -217,7 +246,45 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
           preSeptember = false)
       }
 
+      f"return a tax-credits user payload $testName but date is after 31st August and before 8th September with no ctc ($currentYear-09-07)" taggedAs Tag(
+        f"$currentYear-09-07") in {
+        val localDateProvider = app.injector.instanceOf[LocalDateProvider]
+        val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
+        mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae, ctc = false), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
+
+        await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe getExpected(
+          testName,
+          Some(FtnaeLink(preFtnaeDeadline = false, "/tax-credits-service/children/add-child/who-do-you-want-to-add")),
+          ftnae,
+          preSeptember = false,
+          ctc = false)
+      }
+
+      f"return a tax-credits user payload $testName but date is after 8th September with no ctc ($currentYear-09-09)" taggedAs Tag(
+        f"$currentYear-09-09") in {
+        val localDateProvider = app.injector.instanceOf[LocalDateProvider]
+        val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
+        mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummaryFtnae(preSeptember = false, ftnae = false, ctc = false), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
+
+        await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe getExpected(
+          testName,
+          None,
+          false,
+          preSeptember = false,
+          ctc = false)
+      }
+
       f"return a tax-credits user payload $testName but date is before 1st September ($currentYear-08-31)" taggedAs Tag(f"$currentYear-08-31") in {
+        val localDateProvider = app.injector.instanceOf[LocalDateProvider]
+        val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = true, ftnae = ftnae)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
@@ -232,6 +299,8 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
       }
 
       f"return a tax-credits user payload $testName but date is before 1st September but in PY ($lastYear-12-31)" taggedAs Tag(f"$lastYear-12-31") in {
+        val localDateProvider = app.injector.instanceOf[LocalDateProvider]
+        val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, currentYear = false, ftnae = ftnae)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
@@ -239,11 +308,14 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
         await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithFtnae(currentYear = false, ftnae = ftnae)
       }
+
     }
     f"return a tax-credits user payload but date is before 1st September but in PY ($lastYear-12-31) and there are multiple FTNAE children" taggedAs Tag(
       f"$lastYear-12-31") in {
+      val localDateProvider = app.injector.instanceOf[LocalDateProvider]
+      val service           = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector, localDateProvider)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, currentYear = false)), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryMultipleFtnae(preSeptember = false, currentYear = false)), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetChildren(
         Seq(SarahSmithFtnae, SarahSmithFtnae, SarahSmithFtnae, JennySmith, PeterSmith, SimonSmith),
         taxCreditsNino)
@@ -251,20 +323,31 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
       await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithMultipleFtnae(currentYear = false)
     }
+
   }
 
-  def getExpected(testName: String, link: Option[FtnaeLink], ftnae: Boolean, preSeptember: Boolean): TaxCreditsSummaryResponse =
+  def getExpected(testName: String, link: Option[FtnaeLink], ftnae: Boolean, preSeptember: Boolean, ctc: Boolean = true): TaxCreditsSummaryResponse =
     if (testName.equals("with FTNAE")) {
-      taxCreditsSummaryWithFtnae(preSeptember = preSeptember, link = link, ftnae = ftnae)
+      taxCreditsSummaryWithFtnae(preSeptember = preSeptember, link = link, ftnae = ftnae, ctc = ctc)
     } else if (testName.equals("without FTNAE")) {
-      taxCreditsSummaryWithFtnae(preSeptember = preSeptember, ftnae = ftnae)
+      taxCreditsSummaryWithFtnae(preSeptember = preSeptember, ftnae = ftnae, ctc = ctc)
     } else {
       throw new IllegalArgumentException("Invalid test name - check tests")
     }
 
   override def newAppForTest(testData: TestData): Application =
     testData.tags.headOption match {
-      case Some(tag) => GuiceApplicationBuilder().configure("dateOverride" -> tag).build()
-      case _         => GuiceApplicationBuilder().configure("dateOverride" -> LocalDate.now().toString).build()
+      case Some(tag) =>
+        GuiceApplicationBuilder()
+          .configure("dateOverride" -> tag)
+          .disable[com.kenshoo.play.metrics.PlayModule]
+          .configure("metrics.enabled" -> false)
+          .build()
+      case _ =>
+        GuiceApplicationBuilder()
+          .configure("dateOverride" -> LocalDate.now().toString)
+          .disable[com.kenshoo.play.metrics.PlayModule]
+          .configure("metrics.enabled" -> false)
+          .build()
     }
 }
