@@ -23,7 +23,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobiletaxcreditssummary.connectors._
 import uk.gov.hmrc.mobiletaxcreditssummary.domain._
-import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.{TaxCreditsSummaryResponse, _}
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.{Child, Claimants, FtnaeLink, FuturePayment, InformationMessage, PaymentSummary, Person, TaxCreditsSummary, TaxCreditsSummaryResponse}
 import uk.gov.hmrc.mobiletaxcreditssummary.utils.LocalDateProvider
 
 import scala.concurrent.{ExecutionContext, Future}
