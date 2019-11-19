@@ -90,7 +90,7 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
 
     "return a tax-credits user payload when a payment summary is returned" in {
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummary, taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -100,7 +100,7 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
 
     "return a tax-credits user payload when a payment summary is returned but when there are no partner details" in {
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummary, taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPartnerDetails(None, taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -110,7 +110,7 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
 
     "return a tax-credits user payload when a payment summary is returned but when there are no children" in {
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummary, taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetChildren(Seq.empty, taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -126,7 +126,7 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
 
     "return TaxCreditsSummaryResponse with payment summary but empty claimants when Get Children fails" in {
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummary, taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetChildrenFailure(upstream5xxException, taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -136,7 +136,7 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
 
     "return TaxCreditsSummaryResponse with payment summary but empty claimants when Get Personal Details fails" in {
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummary, taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetailsFailure(upstream4xxException, taxCreditsNino)
@@ -146,7 +146,7 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
 
     "return TaxCreditsSummaryResponse with payment summary but empty claimants when Get Partner Details fails" in {
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummary, taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPartnerDetailsFailure(upstream5xxException, taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -180,7 +180,7 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
     forAll(scenarios) { (testName: String, child: Child, ftnae: Boolean) =>
       f"return a tax-credits user payload $testName but date is after 7th September ($currentYear-09-08)" taggedAs Tag(f"$currentYear-09-08") in {
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -191,7 +191,7 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
       f"return a tax-credits user payload $testName but date is after 31st August and before 8th September ($currentYear-09-01)" taggedAs Tag(
         f"$currentYear-09-01") in {
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -205,7 +205,7 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
       f"return a tax-credits user payload $testName but date is after 31st August and before 8th September ($currentYear-09-07)" taggedAs Tag(
         f"$currentYear-09-07") in {
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -219,7 +219,7 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
 
       f"return a tax-credits user payload $testName but date is before 1st September ($currentYear-08-31)" taggedAs Tag(f"$currentYear-08-31") in {
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummaryFtnae(preSeptember = true, ftnae = ftnae), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = true, ftnae = ftnae)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -233,7 +233,7 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
 
       f"return a tax-credits user payload $testName but date is before 1st September but in PY ($lastYear-12-31)" taggedAs Tag(f"$lastYear-12-31") in {
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummaryFtnae(preSeptember = false, currentYear = false, ftnae = ftnae), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, currentYear = false, ftnae = ftnae)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
@@ -243,7 +243,7 @@ class TaxCreditsSummaryServiceSpec @Inject()(localDateProvider: LocalDateProvide
     f"return a tax-credits user payload but date is before 1st September but in PY ($lastYear-12-31) and there are multiple FTNAE children" taggedAs Tag(
       f"$lastYear-12-31") in {
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetPaymentSummary(paymentSummaryFtnae(preSeptember = false, currentYear = false), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, currentYear = false)), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetChildren(
         Seq(SarahSmithFtnae, SarahSmithFtnae, SarahSmithFtnae, JennySmith, PeterSmith, SimonSmith),
         taxCreditsNino)

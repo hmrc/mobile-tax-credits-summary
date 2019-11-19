@@ -157,14 +157,14 @@ class TaxCreditsBrokerSpec extends WordSpecLike with Matchers with ScalaFutures 
 
     "return a valid response for getPaymentSummary when a 200 response is received with a valid json payload" in new Setup {
       override lazy val response: Future[AnyRef with HttpResponse] = http200Payment
-      val result:                 PaymentSummary                   = await(connector.getPaymentSummary(TaxCreditsNino(nino.value)))
-      result shouldBe paymentSummary
+      val result:                 Option[PaymentSummary]                  = await(connector.getPaymentSummary(TaxCreditsNino(nino.value)))
+      result shouldBe Some(paymentSummary)
     }
 
     "return excluded payment summary response" in new Setup {
       override lazy val response: Future[AnyRef with HttpResponse] = http200Exclusion
-      val result:                 PaymentSummary                   = await(connector.getPaymentSummary(TaxCreditsNino(nino.value)))
-      result shouldBe exclusionPaymentSummary
+      val result:                 Option[PaymentSummary]                  = await(connector.getPaymentSummary(TaxCreditsNino(nino.value)))
+      result shouldBe Some(exclusionPaymentSummary)
     }
   }
 }

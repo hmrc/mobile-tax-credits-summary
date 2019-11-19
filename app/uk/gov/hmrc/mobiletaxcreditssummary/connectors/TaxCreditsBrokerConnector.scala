@@ -31,8 +31,10 @@ class TaxCreditsBrokerConnector @Inject()(http: CoreGet,
 
   def url(nino: TaxCreditsNino, route: String) = s"$serviceUrl/tcs/${nino.value}/$route"
 
-  def getPaymentSummary(nino: TaxCreditsNino)(implicit headerCarrier: HeaderCarrier, ex: ExecutionContext): Future[PaymentSummary] =
-    http.GET[PaymentSummary](url(nino, "payment-summary"))
+  def getPaymentSummary(nino: TaxCreditsNino)(implicit headerCarrier: HeaderCarrier, ex: ExecutionContext): Future[Option[PaymentSummary]] =
+    http.GET[Option[PaymentSummary]](url(nino, "payment-summary")).recover {
+      case _: NotFoundException => None
+    }
 
   def getPersonalDetails(nino: TaxCreditsNino)(implicit headerCarrier: HeaderCarrier, ex: ExecutionContext): Future[Person] =
     http.GET[Person](url(nino, "personal-details"))

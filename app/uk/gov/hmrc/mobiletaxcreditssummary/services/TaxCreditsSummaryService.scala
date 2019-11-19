@@ -23,7 +23,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobiletaxcreditssummary.connectors._
 import uk.gov.hmrc.mobiletaxcreditssummary.domain._
-import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.{TaxCreditsSummaryResponse, _}
 import uk.gov.hmrc.mobiletaxcreditssummary.utils.LocalDateProvider
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -116,13 +116,16 @@ class LiveTaxCreditsSummaryService @Inject()(taxCreditsBrokerConnector: TaxCredi
     }
 
     def buildResponseFromPaymentSummary: Future[TaxCreditsSummaryResponse] =
-      taxCreditsBrokerConnector.getPaymentSummary(tcNino).flatMap { summary =>
-        if (summary.excluded.getOrElse(false)) {
-          // in the context of getPaymentSummary, 'excluded == true' means a non-tax credits user
-          Future successful TaxCreditsSummaryResponse(excluded = false, None)
-        } else {
-          buildTaxCreditsSummary(summary)
-        }
+      taxCreditsBrokerConnector.getPaymentSummary(tcNino).flatMap {
+        case Some(summary) =>
+          if (summary.excluded.getOrElse(false)) {
+            // in the context of getPaymentSummary, 'excluded == true' means a non-tax credits user
+            // as the app treats excluded false and not other body as no TC
+            Future successful TaxCreditsSummaryResponse(excluded = false, None)
+          } else {
+            buildTaxCreditsSummary(summary)
+          }
+        case None => Future successful TaxCreditsSummaryResponse(excluded = false, None)
       }
 
     taxCreditsBrokerConnector.getExclusion(tcNino).flatMap {
