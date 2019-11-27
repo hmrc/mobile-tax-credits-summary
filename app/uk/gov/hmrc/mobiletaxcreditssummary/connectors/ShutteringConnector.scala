@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class ShutteringConnector @Inject() (
                                       http:                            CoreGet,
-                                      @Named("shuttering") serviceUrl: String) {
+                                      @Named("mobile-shuttering") serviceUrl: String) {
 
   def getShutteringStatus(
                            journeyId: String
