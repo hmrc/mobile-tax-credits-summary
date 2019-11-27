@@ -43,7 +43,7 @@ class GuiceModule(environment: Environment, configuration: Configuration) extend
     bindConfigString("appUrl", "appUrl")
 
     bind(classOf[String]).annotatedWith(named("tax-credits-broker")).toInstance(servicesConfig.baseUrl("tax-credits-broker"))
-    bind(classOf[String]).annotatedWith(named("shuttering")).toInstance(servicesConfig.baseUrl("shuttering"))
+    bind(classOf[String]).annotatedWith(named("mobile-shuttering")).toInstance(servicesConfig.baseUrl("mobile-shuttering"))
 
     bind(classOf[ApiAccess]).toInstance(ApiAccess("PRIVATE", configuration.underlying.getStringList("api.access.white-list.applicationIds").asScala))
   }
