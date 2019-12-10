@@ -29,7 +29,7 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
   private val mobileHeader = "X-MOBILE-USER-ID" -> "208606423740"
 
   "GET /sandbox/income/:nino/tax-credits/tax-credits-summary " should {
-    def request(nino: Nino): WSRequest = wsUrl(s"/income/${nino.value}/tax-credits/tax-credits-summary?journeyId=journeyId").addHttpHeaders(acceptJsonHeader)
+    def request(nino: Nino): WSRequest = wsUrl(s"/income/${nino.value}/tax-credits/tax-credits-summary?journeyId=17d2420c-4fc6-4eee-9311-a37325066704").addHttpHeaders(acceptJsonHeader)
 
     def assertEmptyTaxCreditsSummary(response: WSResponse): RuntimeException =
       intercept[RuntimeException] {
@@ -144,6 +144,11 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
 
     "return 400 if journeyId not supplied" in {
       val response = await(wsUrl(s"/income/${sandboxNino}/tax-credits/tax-credits-summary").addHttpHeaders(mobileHeader).get())
+      response.status shouldBe 400
+    }
+
+    "return 400 if journeyId invalid" in {
+      val response = await(wsUrl(s"/income/${sandboxNino}/tax-credits/tax-credits-summary?journeyId=XXXXXXXXXXXXXXXXXX").addHttpHeaders(mobileHeader).get())
       response.status shouldBe 400
     }
 

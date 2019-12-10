@@ -25,6 +25,7 @@ import uk.gov.hmrc.api.controllers._
 import uk.gov.hmrc.api.sandbox.FileResource
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.Shuttering
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
@@ -42,7 +43,7 @@ class SandboxTaxCreditsSummaryController @Inject()(cc: ControllerComponents)(imp
     Json.toJson(Shuttering(shuttered = true, title = Some("Shuttered"), message = Some("Tax Credits Summary is currently shuttered")))
 
   override def parser: BodyParser[AnyContent] = cc.parsers.anyContent
-  override final def taxCreditsSummary(nino: Nino, journeyId: String): Action[AnyContent] =
+  override final def taxCreditsSummary(nino: Nino, journeyId: JourneyId): Action[AnyContent] =
     validateAccept(acceptHeaderValidationRules).async { implicit request =>
       Future successful (request.headers.get("SANDBOX-CONTROL") match {
         case Some("NON-TAX-CREDITS-USER")      => Ok(toJson(TaxCreditsSummaryResponse(taxCreditsSummary = None)))

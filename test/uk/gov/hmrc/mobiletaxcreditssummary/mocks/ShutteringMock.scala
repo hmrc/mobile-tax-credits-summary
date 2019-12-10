@@ -21,6 +21,7 @@ import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobiletaxcreditssummary.connectors.ShutteringConnector
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.Shuttering
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -32,7 +33,7 @@ trait ShutteringMock extends MockFactory {
     implicit shutteringConnector: ShutteringConnector
   ): CallHandler[Future[Shuttering]] =
     (shutteringConnector
-      .getShutteringStatus(_: String)(_: HeaderCarrier, _: ExecutionContext))
+      .getShutteringStatus(_: JourneyId)(_: HeaderCarrier, _: ExecutionContext))
       .expects(*, *, *)
       .returning(Future successful response)
 
