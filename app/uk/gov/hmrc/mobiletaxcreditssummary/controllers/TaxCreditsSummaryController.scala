@@ -26,6 +26,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, ServiceUnavailableException}
 import uk.gov.hmrc.mobiletaxcreditssummary.connectors.ShutteringConnector
 import uk.gov.hmrc.mobiletaxcreditssummary.controllers.action.{AccessControl, ShutteredCheck}
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
 import uk.gov.hmrc.mobiletaxcreditssummary.services.LiveTaxCreditsSummaryService
 import uk.gov.hmrc.play.HeaderCarrierConverter.fromHeadersAndSession
@@ -60,7 +61,7 @@ trait ErrorHandling {
 }
 
 trait TaxCreditsSummaryController {
-  def taxCreditsSummary(nino: Nino, journeyId: String): Action[AnyContent]
+  def taxCreditsSummary(nino: Nino, journeyId: JourneyId): Action[AnyContent]
 }
 
 @Singleton
@@ -84,7 +85,7 @@ class LiveTaxCreditsSummaryController @Inject()(
 
   override def parser: BodyParser[AnyContent] = cc.parsers.anyContent
 
-  override final def taxCreditsSummary(nino: Nino, journeyId: String): Action[AnyContent] =
+  override final def taxCreditsSummary(nino: Nino, journeyId: JourneyId): Action[AnyContent] =
     validateAcceptWithAuth(acceptHeaderValidationRules, Option(nino)).async { implicit request =>
       implicit val hc: HeaderCarrier = fromHeadersAndSession(request.headers, None)
       shutteringConnector.getShutteringStatus(journeyId).flatMap { shuttered =>

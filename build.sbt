@@ -24,7 +24,9 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     routesImport ++= Seq(
       "uk.gov.hmrc.domain._",
-      "uk.gov.hmrc.mobiletaxcreditssummary.binders.Binders._"
+      "uk.gov.hmrc.mobiletaxcreditssummary.binders.Binders._",
+      "uk.gov.hmrc.mobiletaxcreditssummary.domain.types._",
+      "uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes._"
     )
   )
   .settings(
@@ -61,7 +63,8 @@ def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] =
 val compile = Seq(
   "uk.gov.hmrc" %% "bootstrap-play-26" % "0.35.0",
   "uk.gov.hmrc" %% "play-hmrc-api"     % "3.4.0-play-26",
-  "uk.gov.hmrc" %% "domain"            % "5.6.0-play-26"
+  "uk.gov.hmrc" %% "domain"            % "5.6.0-play-26",
+  "eu.timepit"  %% "refined"           % "0.9.4"
 )
 
 val scalatestPlusPlayVersion = "3.1.2"

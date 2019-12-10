@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.connectors
 
+import eu.timepit.refined.auto._
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.mobiletaxcreditssummary.controllers.TestSetup
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.Shuttering
 
-import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{ExecutionContext, Future}
 
 class ShutteringConnectorSpec extends TestSetup with FutureAwaits with DefaultAwaitTimeout {
   val mockCoreGet: CoreGet             = mock[CoreGet]
@@ -31,21 +32,21 @@ class ShutteringConnectorSpec extends TestSetup with FutureAwaits with DefaultAw
   def mockShutteringGet[T](f: Future[T]) =
     (mockCoreGet
       .GET(_: String)(_: HttpReads[T], _: HeaderCarrier, _: ExecutionContext))
-      .expects("/mobile-shuttering/service/mobile-tax-credits-summary/shuttered-status?journeyId=journeyId", *, *, *)
+      .expects("/mobile-shuttering/service/mobile-tax-credits-summary/shuttered-status?journeyId=f65442f9-8716-4de8-9e17-3bfe4ba50a93", *, *, *)
       .returning(f)
 
   "getShutteredStatus" should {
     "Assume unshuttered for InternalServerException response" in {
       mockShutteringGet(Future.successful(new InternalServerException("")))
 
-      val result: Shuttering = await(connector.getShutteringStatus("journeyId"))
+      val result: Shuttering = await(connector.getShutteringStatus("f65442f9-8716-4de8-9e17-3bfe4ba50a93"))
       result shouldBe Shuttering.shutteringDisabled
     }
 
     "Assume unshuttered for BadGatewayException response" in {
       mockShutteringGet(Future.successful(new BadGatewayException("")))
 
-      val result: Shuttering = await(connector.getShutteringStatus("journeyId"))
+      val result: Shuttering = await(connector.getShutteringStatus("f65442f9-8716-4de8-9e17-3bfe4ba50a93"))
       result shouldBe Shuttering.shutteringDisabled
     }
   }
