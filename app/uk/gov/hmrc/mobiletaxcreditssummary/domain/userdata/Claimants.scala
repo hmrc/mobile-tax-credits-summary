@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,25 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata
 
+import java.time.LocalDateTime
+
 import play.api.libs.json.{Json, OFormat}
 
-case class Claimants(personalDetails: Person, partnerDetails: Option[Person], children: Seq[Person], ftnaeLink: Option[FtnaeLink] = None)
+case class Claimants(personalDetails: Person, partnerDetails: Option[Person], children: Seq[Person], ftnaeLink: Option[FtnaeLink] = None, reportActualProfit: Option[ReportActualProfit] = None)
 
 object Claimants {
   implicit val format: OFormat[Claimants] = Json.format[Claimants]
 }
+
+case class ReportActualProfit(link: String, endDate: LocalDateTime, userMustReportIncome: Boolean, partnerMustReportIncome: Boolean)
+
+object ReportActualProfit {
+  implicit val formats: OFormat[ReportActualProfit] = Json.format[ReportActualProfit]
+}
+
+case class FtnaeLink(preFtnaeDeadline: Boolean, link: String)
+
+object FtnaeLink {
+  implicit val formats: OFormat[FtnaeLink] =  Json.format[FtnaeLink]
+}
+

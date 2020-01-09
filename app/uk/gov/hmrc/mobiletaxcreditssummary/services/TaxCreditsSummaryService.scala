@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,15 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.services
 
-import java.time.{LocalDate, Month}
+import java.time.{LocalDate, LocalDateTime, Month, ZonedDateTime}
 
 import com.google.inject.{Inject, Singleton}
+import javax.inject.Named
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobiletaxcreditssummary.connectors._
 import uk.gov.hmrc.mobiletaxcreditssummary.domain._
-import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.{Child, Claimants, FtnaeLink, FuturePayment, InformationMessage, PaymentSummary, Person, TaxCreditsSummary, TaxCreditsSummaryResponse}
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.{Child, ClaimActualIncomeEligibilityStatus, Claimants, FtnaeLink, FuturePayment, InformationMessage, PaymentSummary, Person, ReportActualProfit, TaxCreditsSummary, TaxCreditsSummaryResponse}
 import uk.gov.hmrc.mobiletaxcreditssummary.utils.LocalDateProvider
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,7 +34,11 @@ trait TaxCreditsSummaryService {
 }
 
 @Singleton
-class LiveTaxCreditsSummaryService @Inject()(taxCreditsBrokerConnector: TaxCreditsBrokerConnector, localDateProvider: LocalDateProvider)
+class LiveTaxCreditsSummaryService @Inject()(
+  taxCreditsBrokerConnector:                                                TaxCreditsBrokerConnector,
+  localDateProvider:                                                        LocalDateProvider,
+  @Named("reportActualProfitPeriod.startDate") reportActualProfitStartDate: String,
+  @Named("reportActualProfitPeriod.endDate") reportActualProfitEndDate:     String)
     extends TaxCreditsSummaryService {
 
   override def getTaxCreditsSummaryResponse(nino: Nino)(implicit hc: HeaderCarrier, ex: ExecutionContext): Future[TaxCreditsSummaryResponse] = {
@@ -74,6 +79,70 @@ class LiveTaxCreditsSummaryService @Inject()(taxCreditsBrokerConnector: TaxCredi
         }
       }
 
+      def getReportActualProfitDetails: Future[Option[ReportActualProfit]] =
+        if (!reportActualProfitPeriodOpen)
+          Future.successful(None)
+        else
+          taxCreditsBrokerConnector.getDashboardData(tcNino).flatMap {
+            case None                => Future.successful(None)
+            case Some(dashboardData) => buildReportActualProfit(dashboardData.actualIncomeStatus, dashboardData.awardDetails.mainApplicantNino)
+          }
+
+      def buildReportActualProfit(
+        status:            ClaimActualIncomeEligibilityStatus,
+        mainApplicantNino: TaxCreditsNino): Future[Option[ReportActualProfit]] = {
+        val userLoggedInIsMainApplicant = tcNino.value == mainApplicantNino.value
+        (status.applicant1, status.applicant2, userLoggedInIsMainApplicant) match {
+          case (ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, _) =>
+            Future successful Some(
+              ReportActualProfit(
+                "/tax-credits-service/actual-profit",
+                ZonedDateTime.parse(reportActualProfitEndDate).toLocalDateTime,
+                userMustReportIncome    = true,
+                partnerMustReportIncome = true
+              ))
+          case (ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, _, true) =>
+            Future successful Some(
+              ReportActualProfit(
+                "/tax-credits-service/actual-self-employed-profit-or-loss",
+                ZonedDateTime.parse(reportActualProfitEndDate).toLocalDateTime,
+                userMustReportIncome    = true,
+                partnerMustReportIncome = false
+              ))
+          case (ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, _, false) =>
+            Future successful Some(
+              ReportActualProfit(
+                "/tax-credits-service/actual-self-employed-profit-or-loss-partner",
+                ZonedDateTime.parse(reportActualProfitEndDate).toLocalDateTime,
+                userMustReportIncome    = false,
+                partnerMustReportIncome = true
+              ))
+          case (_, ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, false) =>
+            Future successful Some(
+              ReportActualProfit(
+                "/tax-credits-service/actual-self-employed-profit-or-loss",
+                ZonedDateTime.parse(reportActualProfitEndDate).toLocalDateTime,
+                userMustReportIncome    = true,
+                partnerMustReportIncome = false
+              ))
+          case (_, ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, true) =>
+            Future successful Some(
+              ReportActualProfit(
+                "/tax-credits-service/actual-self-employed-profit-or-loss-partner",
+                ZonedDateTime.parse(reportActualProfitEndDate).toLocalDateTime,
+                userMustReportIncome    = false,
+                partnerMustReportIncome = true
+              ))
+          case (_, _, _) => Future successful None
+        }
+      }
+
+      def reportActualProfitPeriodOpen: Boolean = {
+        val startDate = ZonedDateTime.parse(reportActualProfitStartDate)
+        val endDate   = ZonedDateTime.parse(reportActualProfitEndDate)
+        (LocalDateTime.now().isAfter(startDate.toLocalDateTime) && LocalDateTime.now().isBefore(endDate.toLocalDateTime))
+      }
+
       def getInformationMessage: Option[InformationMessage] =
         if (paymentSummary.specialCircumstances.isDefined) {
           val isMultipleFTNAE: Boolean = paymentSummary.isMultipleFTNAE.getOrElse(false)
@@ -103,12 +172,13 @@ class LiveTaxCreditsSummaryService @Inject()(taxCreditsBrokerConnector: TaxCredi
       val personalDetailsFuture = taxCreditsBrokerConnector.getPersonalDetails(tcNino)
 
       val claimants: Future[Option[Claimants]] = (for {
-        children        <- childrenFuture
-        partnerDetails  <- partnerDetailsFuture
-        personalDetails <- personalDetailsFuture
+        children           <- childrenFuture
+        partnerDetails     <- partnerDetailsFuture
+        personalDetails    <- personalDetailsFuture
+        reportActualProfit <- getReportActualProfitDetails
       } yield {
         val ftnaeLink: Option[FtnaeLink] = getFtnaeLink(paymentSummary)
-        Some(Claimants(personalDetails, partnerDetails, children, ftnaeLink))
+        Some(Claimants(personalDetails, partnerDetails, children, ftnaeLink, reportActualProfit))
       }).recover {
         case _ => None
       }
@@ -135,5 +205,6 @@ class LiveTaxCreditsSummaryService @Inject()(taxCreditsBrokerConnector: TaxCredi
         else buildResponseFromPaymentSummary
       case None => Future successful TaxCreditsSummaryResponse(excluded = false, None)
     }
+
   }
 }

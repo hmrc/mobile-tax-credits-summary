@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mobiletaxcreditssummary.domain
-import play.api.libs.json.{Json, OFormat}
+package uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata
 
-case class Shuttering(
-                       shuttered: Boolean,
-                       title:     Option[String] = None,
-                       message:   Option[String] = None
-                     )
+import play.api.libs.json.Json
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.TaxCreditsNino
 
-case object Shuttering {
-  implicit val format: OFormat[Shuttering] = Json.format[Shuttering]
+case class AwardDetails(applicationId: String,
+                        isJoint: Boolean,
+                        claimantNumber: Int,
+                        mainApplicantNino: TaxCreditsNino,
+                        availableForCOCAutomation: Boolean,
+                        renewalsJourney: Boolean)
 
-  def shutteringDisabled = this.apply(false)
+object AwardDetails {
+  implicit val formats = Json.format[AwardDetails]
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,11 @@ class TaxCreditsBrokerConnector @Inject()(http: CoreGet,
 
   def getExclusion(nino: TaxCreditsNino)(implicit headerCarrier: HeaderCarrier, ex: ExecutionContext): Future[Option[Exclusion]] =
     http.GET[Option[Exclusion]](url(nino, "exclusion")).recover {
+      case _: NotFoundException => None
+    }
+
+  def getDashboardData(nino: TaxCreditsNino)(implicit headerCarrier: HeaderCarrier, ex: ExecutionContext): Future[Option[DashboardData]] =
+    http.GET[Option[DashboardData]](url(nino, "dashboard-data")).recover {
       case _: NotFoundException => None
     }
 }

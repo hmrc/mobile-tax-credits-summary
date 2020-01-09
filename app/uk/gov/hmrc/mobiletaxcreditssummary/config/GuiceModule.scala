@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,8 @@ class GuiceModule(environment: Environment, configuration: Configuration) extend
 
     bind(classOf[String]).annotatedWith(named("tax-credits-broker")).toInstance(servicesConfig.baseUrl("tax-credits-broker"))
     bind(classOf[String]).annotatedWith(named("mobile-shuttering")).toInstance(servicesConfig.baseUrl("mobile-shuttering"))
+    bindConfigString("reportActualProfitPeriod.startDate", "microservice.reportActualProfitPeriod.startDate")
+    bindConfigString("reportActualProfitPeriod.endDate", "microservice.reportActualProfitPeriod.endDate")
 
     bind(classOf[ApiAccess]).toInstance(ApiAccess("PRIVATE", configuration.underlying.getStringList("api.access.white-list.applicationIds").asScala))
   }
