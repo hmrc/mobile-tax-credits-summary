@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,6 @@ import play.api.libs.functional.FunctionalBuilder
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.PaymentReadWriteUtils.{paymentReads, paymentWrites}
-
-case class FtnaeLink(preFtnaeDeadline: Boolean, link: String)
-
-object FtnaeLink {
-  implicit val formats: OFormat[FtnaeLink] =  Json.format[FtnaeLink]
-}
 
 case class InformationMessage(title: String, message: String)
 object InformationMessage {

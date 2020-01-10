@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package uk.gov.hmrc.mobiletaxcreditssummary.connectors
 
 import com.google.inject.name.Named
 import com.google.inject.{Inject, Singleton}
+import play.api.Logger
 import uk.gov.hmrc.http.{CoreGet, HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.TaxCreditsNino
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
@@ -50,5 +51,11 @@ class TaxCreditsBrokerConnector @Inject()(http: CoreGet,
   def getExclusion(nino: TaxCreditsNino)(implicit headerCarrier: HeaderCarrier, ex: ExecutionContext): Future[Option[Exclusion]] =
     http.GET[Option[Exclusion]](url(nino, "exclusion")).recover {
       case _: NotFoundException => None
+    }
+
+  def getDashboardData(nino: TaxCreditsNino)(implicit headerCarrier: HeaderCarrier, ex: ExecutionContext): Future[Option[DashboardData]] =
+    http.GET[Option[DashboardData]](url(nino, "dashboard-data")).fallbackTo {
+      Logger.error("dashboard-data call failed. No report actual profit link will be returned")
+      Future successful None
     }
 }
