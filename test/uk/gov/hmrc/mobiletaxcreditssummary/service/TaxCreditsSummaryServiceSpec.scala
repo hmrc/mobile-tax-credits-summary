@@ -549,6 +549,24 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
       await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummary
     }
 
+    "return no actual profit link during a valid period when one applicant has estimated their income but the other is excluded" in {
+      val localDateProvider = app.injector.instanceOf[LocalDateProvider]
+      val reportActualProfitPeriodEndDate = currentYear + "-12-31T23:59:59.000Z"
+      val service = new LiveTaxCreditsSummaryService(
+        taxCreditsBrokerConnector,
+        localDateProvider,
+        reportActualProfitPeriodStartDate,
+        reportActualProfitPeriodEndDate)
+      mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetActualSelfEmployedIncome(dashboardData.copy(actualIncomeStatus = actualIncomeOneExcluded), taxCreditsNino)
+
+      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummary
+    }
+
   }
 
   def getExpected(testName: String, link: Option[FtnaeLink], ftnae: Boolean, preSeptember: Boolean, ctc: Boolean = true): TaxCreditsSummaryResponse =

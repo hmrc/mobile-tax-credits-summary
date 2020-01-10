@@ -634,7 +634,7 @@ object TaxCreditsBrokerStub {
     },
     "actualIncomeStatus": {
       "applicant1": "ApplicantAllowed",
-      "applicant2": "ApplicantNotAllowed"
+      "applicant2": "ApplicantNotApplicable"
     },
     "awardDetails": {
       "applicationId": "198765432134567",
