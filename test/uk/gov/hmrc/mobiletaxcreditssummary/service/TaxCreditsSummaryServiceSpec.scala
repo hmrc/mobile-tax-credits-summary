@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.service
 
-import java.time.{LocalDate, ZonedDateTime}
+import java.time.LocalDate
 
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import org.scalatest.{Tag, TestData}
@@ -406,8 +406,8 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
       val reportActualProfitPeriodEndDate = currentYear + "-12-31T23:59:59.000Z"
       val reportActualProfit = ReportActualProfit(
         "/tax-credits-service/actual-profit",
-        ZonedDateTime.parse(reportActualProfitPeriodEndDate).toLocalDateTime,
-        userMustReportIncome    = true,
+        reportActualProfitPeriodEndDate,
+        userMustReportIncome = true,
         partnerMustReportIncome = true
       )
       val service = new LiveTaxCreditsSummaryService(
@@ -430,8 +430,8 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
       val reportActualProfitPeriodEndDate = currentYear + "-12-31T23:59:59.000Z"
       val reportActualProfit = ReportActualProfit(
         "/tax-credits-service/actual-self-employed-profit-or-loss",
-        ZonedDateTime.parse(reportActualProfitPeriodEndDate).toLocalDateTime,
-        userMustReportIncome    = true,
+        reportActualProfitPeriodEndDate,
+        userMustReportIncome = true,
         partnerMustReportIncome = false
       )
       val service = new LiveTaxCreditsSummaryService(
@@ -454,8 +454,8 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
       val reportActualProfitPeriodEndDate = currentYear + "-12-31T23:59:59.000Z"
       val reportActualProfit = ReportActualProfit(
         "/tax-credits-service/actual-self-employed-profit-or-loss-partner",
-        ZonedDateTime.parse(reportActualProfitPeriodEndDate).toLocalDateTime,
-        userMustReportIncome    = false,
+        reportActualProfitPeriodEndDate,
+        userMustReportIncome = false,
         partnerMustReportIncome = true
       )
       val service = new LiveTaxCreditsSummaryService(
@@ -478,8 +478,8 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
       val reportActualProfitPeriodEndDate = currentYear + "-12-31T23:59:59.000Z"
       val reportActualProfit = ReportActualProfit(
         "/tax-credits-service/actual-self-employed-profit-or-loss-partner",
-        ZonedDateTime.parse(reportActualProfitPeriodEndDate).toLocalDateTime,
-        userMustReportIncome    = false,
+        reportActualProfitPeriodEndDate,
+        userMustReportIncome = false,
         partnerMustReportIncome = true
       )
       val service = new LiveTaxCreditsSummaryService(
@@ -507,8 +507,8 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
       val reportActualProfitPeriodEndDate = currentYear + "-12-31T23:59:59.000Z"
       val reportActualProfit = ReportActualProfit(
         "/tax-credits-service/actual-self-employed-profit-or-loss",
-        ZonedDateTime.parse(reportActualProfitPeriodEndDate).toLocalDateTime,
-        userMustReportIncome    = true,
+        reportActualProfitPeriodEndDate,
+        userMustReportIncome = true,
         partnerMustReportIncome = false
       )
       val service = new LiveTaxCreditsSummaryService(
@@ -548,6 +548,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
 
       await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummary
     }
+
   }
 
   def getExpected(testName: String, link: Option[FtnaeLink], ftnae: Boolean, preSeptember: Boolean, ctc: Boolean = true): TaxCreditsSummaryResponse =

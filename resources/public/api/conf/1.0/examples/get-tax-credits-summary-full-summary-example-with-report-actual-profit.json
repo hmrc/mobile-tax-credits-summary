@@ -1,0 +1,142 @@
+{
+  "excluded": false,
+  "taxCreditsSummary": {
+    "paymentSummary": {
+      "workingTaxCredit": {
+        "paymentSeq": [
+          {
+            "amount": 55,
+            "paymentDate": 1509008158781,
+            "oneOffPayment": false,
+            "earlyPayment": false
+          },
+          {
+            "amount": 55,
+            "paymentDate": 1511690158781,
+            "oneOffPayment": false,
+            "holidayType": "bankHoliday",
+            "earlyPayment": true,
+            "explanatoryText": "Your payment is early because of UK bank holidays."
+          },
+          {
+            "amount": 55,
+            "paymentDate": 1514282158781,
+            "oneOffPayment": true,
+            "earlyPayment": false,
+            "explanatoryText": "One-off payment because of a recent change to help you get the right amount of tax credits."
+          }
+        ],
+        "paymentFrequency": "WEEKLY",
+        "previousPaymentSeq": [
+          {
+            "amount": 33,
+            "paymentDate": 1503737758781,
+            "oneOffPayment": false,
+            "earlyPayment": false
+          },
+          {
+            "amount": 43,
+            "paymentDate": 1501059358781,
+            "oneOffPayment": false,
+            "holidayType": "bankHoliday",
+            "earlyPayment": true,
+            "explanatoryText": "Your payment was early because of UK bank holidays."
+          },
+          {
+            "amount": 53,
+            "paymentDate": 1498467358781,
+            "oneOffPayment": true,
+            "earlyPayment": false,
+            "explanatoryText": "This was because of a recent change and was to help you get the right amount of tax credits."
+          }
+        ]
+      },
+      "childTaxCredit": {
+        "paymentSeq": [
+          {
+            "amount": 55,
+            "paymentDate": 1509008158781,
+            "oneOffPayment": false,
+            "earlyPayment": false
+          },
+          {
+            "amount": 55,
+            "paymentDate": 1511690158781,
+            "oneOffPayment": false,
+            "holidayType": "bankHoliday",
+            "earlyPayment": true,
+            "explanatoryText": "Your payment is early because of UK bank holidays."
+          },
+          {
+            "amount": 55,
+            "paymentDate": 1514282158781,
+            "oneOffPayment": true,
+            "earlyPayment": false,
+            "explanatoryText": "One-off payment because of a recent change to help you get the right amount of tax credits."
+          }
+        ],
+        "paymentFrequency": "WEEKLY"
+      },
+      "paymentEnabled": true,
+      "totalsByDate": [
+        {
+          "amount": 110,
+          "paymentDate": 1509008158781
+        },
+        {
+          "amount": 110,
+          "paymentDate": 1511690158781
+        },
+        {
+          "amount": 110,
+          "paymentDate": 1514282158781
+        }
+      ],
+      "previousTotalsByDate": [
+        {
+          "amount": 53,
+          "paymentDate": 1498467358781
+        },
+        {
+          "amount": 43,
+          "paymentDate": 1501059358781
+        },
+        {
+          "amount": 33,
+          "paymentDate": 1503737758781
+        }
+      ]
+    },
+    "claimants": {
+      "personalDetails": {
+        "forename": "firstname",
+        "surname": "surname"
+      },
+      "partnerDetails": {
+        "forename": "Frederick",
+        "otherForenames": "Tarquin",
+        "surname": "Hunter-Smith"
+      },
+      "children": [
+        {
+          "firstNames": "Sarah",
+          "surname": "Smith"
+        },
+        {
+          "firstNames": "Joseph",
+          "surname": "Smith"
+        },
+        {
+          "firstNames": "Mary",
+          "surname": "Smith"
+        }
+      ],
+      "reportActualProfit": {
+        "link": "/tax-credits-service/actual-self-employed-profit-or-loss",
+        "endDate": "2021-01-31T10:00:00.000Z",
+        "userMustReportIncome": true,
+        "partnerMustReportIncome": false
+      }
+    }
+  }
+}

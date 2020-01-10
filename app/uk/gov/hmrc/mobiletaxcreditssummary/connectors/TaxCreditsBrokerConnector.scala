@@ -18,6 +18,7 @@ package uk.gov.hmrc.mobiletaxcreditssummary.connectors
 
 import com.google.inject.name.Named
 import com.google.inject.{Inject, Singleton}
+import play.api.Logger
 import uk.gov.hmrc.http.{CoreGet, HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.TaxCreditsNino
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
@@ -53,7 +54,8 @@ class TaxCreditsBrokerConnector @Inject()(http: CoreGet,
     }
 
   def getDashboardData(nino: TaxCreditsNino)(implicit headerCarrier: HeaderCarrier, ex: ExecutionContext): Future[Option[DashboardData]] =
-    http.GET[Option[DashboardData]](url(nino, "dashboard-data")).recover {
-      case _: NotFoundException => None
+    http.GET[Option[DashboardData]](url(nino, "dashboard-data")).fallbackTo {
+      Logger.error("dashboard-data call failed. No report actual profit link will be returned")
+      Future successful None
     }
 }

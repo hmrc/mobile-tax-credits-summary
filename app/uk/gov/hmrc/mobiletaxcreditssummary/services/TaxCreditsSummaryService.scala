@@ -84,7 +84,7 @@ class LiveTaxCreditsSummaryService @Inject()(
           Future.successful(None)
         else
           taxCreditsBrokerConnector.getDashboardData(tcNino).flatMap {
-            case None                => Future.successful(None)
+            case None => Future successful None
             case Some(dashboardData) => buildReportActualProfit(dashboardData.actualIncomeStatus, dashboardData.awardDetails.mainApplicantNino)
           }
 
@@ -97,40 +97,40 @@ class LiveTaxCreditsSummaryService @Inject()(
             Future successful Some(
               ReportActualProfit(
                 "/tax-credits-service/actual-profit",
-                ZonedDateTime.parse(reportActualProfitEndDate).toLocalDateTime,
-                userMustReportIncome    = true,
+                reportActualProfitEndDate,
+                userMustReportIncome = true,
                 partnerMustReportIncome = true
               ))
           case (ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, _, true) =>
             Future successful Some(
               ReportActualProfit(
                 "/tax-credits-service/actual-self-employed-profit-or-loss",
-                ZonedDateTime.parse(reportActualProfitEndDate).toLocalDateTime,
-                userMustReportIncome    = true,
+                reportActualProfitEndDate,
+                userMustReportIncome = true,
                 partnerMustReportIncome = false
               ))
           case (ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, _, false) =>
             Future successful Some(
               ReportActualProfit(
                 "/tax-credits-service/actual-self-employed-profit-or-loss-partner",
-                ZonedDateTime.parse(reportActualProfitEndDate).toLocalDateTime,
-                userMustReportIncome    = false,
+                reportActualProfitEndDate,
+                userMustReportIncome = false,
                 partnerMustReportIncome = true
               ))
           case (_, ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, false) =>
             Future successful Some(
               ReportActualProfit(
                 "/tax-credits-service/actual-self-employed-profit-or-loss",
-                ZonedDateTime.parse(reportActualProfitEndDate).toLocalDateTime,
-                userMustReportIncome    = true,
+                reportActualProfitEndDate,
+                userMustReportIncome = true,
                 partnerMustReportIncome = false
               ))
           case (_, ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, true) =>
             Future successful Some(
               ReportActualProfit(
                 "/tax-credits-service/actual-self-employed-profit-or-loss-partner",
-                ZonedDateTime.parse(reportActualProfitEndDate).toLocalDateTime,
-                userMustReportIncome    = false,
+                reportActualProfitEndDate,
+                userMustReportIncome = false,
                 partnerMustReportIncome = true
               ))
           case (_, _, _) => Future successful None
