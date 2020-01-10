@@ -54,6 +54,10 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
     ClaimActualIncomeEligibilityStatus.APPLICANT_NOT_APPLICABLE,
     ClaimActualIncomeEligibilityStatus.APPLICANT_NOT_APPLICABLE)
 
+  val actualIncomeOneExcluded: ClaimActualIncomeEligibilityStatus = ClaimActualIncomeEligibilityStatus(
+    ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED,
+    ClaimActualIncomeEligibilityStatus.APPLICANT_EXCLUDED)
+
   private def pre31stAugust(child: String) =
     Some(
       InformationMessage(

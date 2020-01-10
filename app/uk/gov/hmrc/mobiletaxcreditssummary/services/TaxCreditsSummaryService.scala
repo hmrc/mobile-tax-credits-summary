@@ -101,7 +101,7 @@ class LiveTaxCreditsSummaryService @Inject()(
                 userMustReportIncome = true,
                 partnerMustReportIncome = true
               ))
-          case (ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, _, true) =>
+          case (ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, ClaimActualIncomeEligibilityStatus.APPLICANT_NOT_APPLICABLE, true) =>
             Future successful Some(
               ReportActualProfit(
                 "/tax-credits-service/actual-self-employed-profit-or-loss",
@@ -109,7 +109,7 @@ class LiveTaxCreditsSummaryService @Inject()(
                 userMustReportIncome = true,
                 partnerMustReportIncome = false
               ))
-          case (ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, _, false) =>
+          case (ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, ClaimActualIncomeEligibilityStatus.APPLICANT_NOT_APPLICABLE, false) =>
             Future successful Some(
               ReportActualProfit(
                 "/tax-credits-service/actual-self-employed-profit-or-loss-partner",
@@ -117,7 +117,7 @@ class LiveTaxCreditsSummaryService @Inject()(
                 userMustReportIncome = false,
                 partnerMustReportIncome = true
               ))
-          case (_, ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, false) =>
+          case (ClaimActualIncomeEligibilityStatus.APPLICANT_NOT_APPLICABLE, ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, false) =>
             Future successful Some(
               ReportActualProfit(
                 "/tax-credits-service/actual-self-employed-profit-or-loss",
@@ -125,7 +125,7 @@ class LiveTaxCreditsSummaryService @Inject()(
                 userMustReportIncome = true,
                 partnerMustReportIncome = false
               ))
-          case (_, ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, true) =>
+          case (ClaimActualIncomeEligibilityStatus.APPLICANT_NOT_APPLICABLE, ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, true) =>
             Future successful Some(
               ReportActualProfit(
                 "/tax-credits-service/actual-self-employed-profit-or-loss-partner",
