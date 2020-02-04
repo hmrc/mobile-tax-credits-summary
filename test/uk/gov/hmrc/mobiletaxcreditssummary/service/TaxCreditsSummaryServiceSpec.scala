@@ -39,17 +39,22 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with FutureAwaits with DefaultAwaitTimeout with GuiceOneAppPerTest {
+class TaxCreditsSummaryServiceSpec
+  extends TestSetup
+    with FileResource
+    with FutureAwaits
+    with DefaultAwaitTimeout
+    with GuiceOneAppPerTest {
   implicit val taxCreditsBrokerConnector: TaxCreditsBrokerConnector = mock[TaxCreditsBrokerConnector]
-  implicit val auditConnector:            AuditConnector            = mock[AuditConnector]
+  implicit val auditConnector: AuditConnector = mock[AuditConnector]
 
   val currentYear: Int = LocalDate.now().getYear
-  val lastYear:    Int = currentYear - 1
+  val lastYear: Int = currentYear - 1
   val reportActualProfitPeriodStartDate = "2018-11-30T10:00:00.000Z"
-  val reportActualProfitPeriodEndDate   = "2019-01-31T10:00:00.000Z"
+  val reportActualProfitPeriodEndDate = "2019-01-31T10:00:00.000Z"
 
   val exclusionPaymentSummary: PaymentSummary = PaymentSummary(None, None, None, None, excluded = Some(true))
-  val taxCreditsNino:          TaxCreditsNino = TaxCreditsNino(nino)
+  val taxCreditsNino: TaxCreditsNino = TaxCreditsNino(nino)
 
   val upstream4xxException: Upstream4xxResponse = Upstream4xxResponse("blows up for excluded users", 405, 405)
   val upstream5xxException: Upstream5xxResponse = Upstream5xxResponse("blows up for excluded users", 500, 500)
@@ -58,26 +63,35 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
     TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummary, Some(claimants))))
 
   def taxCreditsSummaryWithFtnae(
-    link:         Option[FtnaeLink] = None,
-    preSeptember: Boolean           = false,
-    currentYear:  Boolean           = true,
-    ftnae:        Boolean           = true,
-    ctc:          Boolean           = true): TaxCreditsSummaryResponse =
-    TaxCreditsSummaryResponse(
-      taxCreditsSummary = Some(TaxCreditsSummary(paymentSummaryFtnae(preSeptember, currentYear, ftnae, ctc), Some(claimantsFtnae(link)))))
-
-  def taxCreditsSummaryWithMultipleFtnae(
-    link:         Option[FtnaeLink] = None,
-    preSeptember: Boolean           = false,
-    currentYear:  Boolean           = true,
-    ftnae:        Boolean           = true,
-    ctc:          Boolean           = true): TaxCreditsSummaryResponse =
+                                  link: Option[FtnaeLink] = None,
+                                  preSeptember: Boolean = false,
+                                  currentYear: Boolean = true,
+                                  ftnae: Boolean = true,
+                                  ctc: Boolean = true
+                                ): TaxCreditsSummaryResponse =
     TaxCreditsSummaryResponse(
       taxCreditsSummary =
-        Some(TaxCreditsSummary(paymentSummaryMultipleFtnae(preSeptember, currentYear, ftnae, ctc), Some(claimantsMultipleFtnae(link)))))
+        Some(TaxCreditsSummary(paymentSummaryFtnae(preSeptember, currentYear, ftnae, ctc), Some(claimantsFtnae(link))))
+    )
+
+  def taxCreditsSummaryWithMultipleFtnae(
+                                          link: Option[FtnaeLink] = None,
+                                          preSeptember: Boolean = false,
+                                          currentYear: Boolean = true,
+                                          ftnae: Boolean = true,
+                                          ctc: Boolean = true
+                                        ): TaxCreditsSummaryResponse =
+    TaxCreditsSummaryResponse(
+      taxCreditsSummary = Some(
+        TaxCreditsSummary(paymentSummaryMultipleFtnae(preSeptember, currentYear, ftnae, ctc),
+          Some(claimantsMultipleFtnae(link)))
+      )
+    )
 
   val taxCreditsSummaryNoPartnerDetails: TaxCreditsSummaryResponse =
-    TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummary, Some(claimantsNoPartnerDetails))))
+    TaxCreditsSummaryResponse(taxCreditsSummary =
+      Some(TaxCreditsSummary(paymentSummary, Some(claimantsNoPartnerDetails)))
+    )
 
   val taxCreditsSummaryNoChildren: TaxCreditsSummaryResponse =
     TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummary, Some(claimantsNoChildren))))
@@ -88,16 +102,19 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
   val taxCreditsSummaryEmpty: TaxCreditsSummaryResponse = TaxCreditsSummaryResponse(taxCreditsSummary = None)
 
   def taxCreditsSummaryWithReportActualProfitLink(reportActualProfit: ReportActualProfit): TaxCreditsSummaryResponse =
-    TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummary, Some(claimantsWithReportActualProfit(reportActualProfit)))))
+    TaxCreditsSummaryResponse(taxCreditsSummary =
+      Some(TaxCreditsSummary(paymentSummary, Some(claimantsWithReportActualProfit(reportActualProfit))))
+    )
 
   val dashboardData: DashboardData =
-    Json.fromJson[DashboardData](parse(findResource("/resources/taxcreditssummary/CS700100A-dashboard-data.json").get)).get
+    Json
+      .fromJson[DashboardData](parse(findResource("/resources/taxcreditssummary/CS700100A-dashboard-data.json").get))
+      .get
 
   "getTaxCreditsSummaryResponse" should {
     "return a non-tax-credits user payload when exclusion returns None" in {
       val localDateProvider = app.injector.instanceOf[LocalDateProvider]
-      val service = new LiveTaxCreditsSummaryService(
-        taxCreditsBrokerConnector,
+      val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
         localDateProvider,
         reportActualProfitPeriodStartDate,
         reportActualProfitPeriodEndDate)
@@ -108,14 +125,16 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
 
     "return a tax-credits user payload when a payment summary is returned" in {
       val localDateProvider = app.injector.instanceOf[LocalDateProvider]
-      val service = new LiveTaxCreditsSummaryService(
-        taxCreditsBrokerConnector,
+      val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
         localDateProvider,
         reportActualProfitPeriodStartDate,
         reportActualProfitPeriodEndDate)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetChildren(
+        Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith),
+        taxCreditsNino
+      )
       mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
 
@@ -124,14 +143,16 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
 
     "return a tax-credits user payload when a payment summary is returned but when there are no partner details" in {
       val localDateProvider = app.injector.instanceOf[LocalDateProvider]
-      val service = new LiveTaxCreditsSummaryService(
-        taxCreditsBrokerConnector,
+      val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
         localDateProvider,
         reportActualProfitPeriodStartDate,
         reportActualProfitPeriodEndDate)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetChildren(
+        Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith),
+        taxCreditsNino
+      )
       mockTaxCreditsBrokerConnectorGetPartnerDetails(None, taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
 
@@ -140,8 +161,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
 
     "return a tax-credits user payload when a payment summary is returned but when there are no children" in {
       val localDateProvider = app.injector.instanceOf[LocalDateProvider]
-      val service = new LiveTaxCreditsSummaryService(
-        taxCreditsBrokerConnector,
+      val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
         localDateProvider,
         reportActualProfitPeriodStartDate,
         reportActualProfitPeriodEndDate)
@@ -156,8 +176,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
 
     "return an excluded user payload when exclusion returns true" in {
       val localDateProvider = app.injector.instanceOf[LocalDateProvider]
-      val service = new LiveTaxCreditsSummaryService(
-        taxCreditsBrokerConnector,
+      val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
         localDateProvider,
         reportActualProfitPeriodStartDate,
         reportActualProfitPeriodEndDate)
@@ -167,8 +186,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
 
     "return TaxCreditsSummaryResponse with payment summary but empty claimants when Get Children fails" in {
       val localDateProvider = app.injector.instanceOf[LocalDateProvider]
-      val service = new LiveTaxCreditsSummaryService(
-        taxCreditsBrokerConnector,
+      val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
         localDateProvider,
         reportActualProfitPeriodStartDate,
         reportActualProfitPeriodEndDate)
@@ -183,14 +201,16 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
 
     "return TaxCreditsSummaryResponse with payment summary but empty claimants when Get Personal Details fails" in {
       val localDateProvider = app.injector.instanceOf[LocalDateProvider]
-      val service = new LiveTaxCreditsSummaryService(
-        taxCreditsBrokerConnector,
+      val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
         localDateProvider,
         reportActualProfitPeriodStartDate,
         reportActualProfitPeriodEndDate)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetChildren(
+        Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith),
+        taxCreditsNino
+      )
       mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetailsFailure(upstream4xxException, taxCreditsNino)
 
@@ -199,14 +219,16 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
 
     "return TaxCreditsSummaryResponse with payment summary but empty claimants when Get Partner Details fails" in {
       val localDateProvider = app.injector.instanceOf[LocalDateProvider]
-      val service = new LiveTaxCreditsSummaryService(
-        taxCreditsBrokerConnector,
+      val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
         localDateProvider,
         reportActualProfitPeriodStartDate,
         reportActualProfitPeriodEndDate)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetChildren(
+        Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith),
+        taxCreditsNino
+      )
       mockTaxCreditsBrokerConnectorGetPartnerDetailsFailure(upstream5xxException, taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
 
@@ -215,8 +237,7 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
 
     "return an error when payment summary fails and exclusion returns false" in {
       val localDateProvider = app.injector.instanceOf[LocalDateProvider]
-      val service = new LiveTaxCreditsSummaryService(
-        taxCreditsBrokerConnector,
+      val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
         localDateProvider,
         reportActualProfitPeriodStartDate,
         reportActualProfitPeriodEndDate)
@@ -230,12 +251,12 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
 
     "return an error when exclusion errors" in {
       val localDateProvider = app.injector.instanceOf[LocalDateProvider]
-      val service = new LiveTaxCreditsSummaryService(
-        taxCreditsBrokerConnector,
+      val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
         localDateProvider,
         reportActualProfitPeriodStartDate,
         reportActualProfitPeriodEndDate)
-      mockTaxCreditsBrokerConnectorGetExclusionFailure(Upstream4xxResponse("blows up for excluded users", 400, 400), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetExclusionFailure(Upstream4xxResponse("blows up for excluded users", 400, 400),
+        taxCreditsNino)
 
       intercept[Upstream4xxResponse] {
         await(service.getTaxCreditsSummaryResponse(Nino(nino)))
@@ -249,33 +270,39 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
     )
 
     forAll(scenarios) { (testName: String, child: Child, ftnae: Boolean) =>
-      f"return a tax-credits user payload $testName but date is after 7th September ($currentYear-09-08)" taggedAs Tag(f"$currentYear-09-08") in {
+      f"return a tax-credits user payload $testName but date is after 7th September ($currentYear-09-08)" taggedAs Tag(
+        f"$currentYear-09-08"
+      ) in {
         val localDateProvider = app.injector.instanceOf[LocalDateProvider]
-        val service = new LiveTaxCreditsSummaryService(
-          taxCreditsBrokerConnector,
+        val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
           localDateProvider,
           reportActualProfitPeriodStartDate,
           reportActualProfitPeriodEndDate)
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae)),
+          taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith),
+          taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
 
-        await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithFtnae(ftnae = ftnae, currentYear = false)
+        await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithFtnae(ftnae = ftnae,
+          currentYear = false)
       }
 
       f"return a tax-credits user payload $testName but date is after 31st August and before 8th September ($currentYear-09-01)" taggedAs Tag(
-        f"$currentYear-09-01") in {
+        f"$currentYear-09-01"
+      ) in {
         val localDateProvider = app.injector.instanceOf[LocalDateProvider]
-        val service = new LiveTaxCreditsSummaryService(
-          taxCreditsBrokerConnector,
+        val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
           localDateProvider,
           reportActualProfitPeriodStartDate,
           reportActualProfitPeriodEndDate)
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae)),
+          taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith),
+          taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
 
@@ -283,19 +310,22 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
           testName,
           Some(FtnaeLink(preFtnaeDeadline = false, "/tax-credits-service/children/add-child/who-do-you-want-to-add")),
           ftnae,
-          preSeptember = false)
+          preSeptember = false
+        )
       }
       f"return a tax-credits user payload $testName but date is after 31st August and before 8th September ($currentYear-09-07)" taggedAs Tag(
-        f"$currentYear-09-07") in {
+        f"$currentYear-09-07"
+      ) in {
         val localDateProvider = app.injector.instanceOf[LocalDateProvider]
-        val service = new LiveTaxCreditsSummaryService(
-          taxCreditsBrokerConnector,
+        val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
           localDateProvider,
           reportActualProfitPeriodStartDate,
           reportActualProfitPeriodEndDate)
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae)),
+          taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith),
+          taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
 
@@ -303,20 +333,25 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
           testName,
           Some(FtnaeLink(preFtnaeDeadline = false, "/tax-credits-service/children/add-child/who-do-you-want-to-add")),
           ftnae,
-          preSeptember = false)
+          preSeptember = false
+        )
       }
 
       f"return a tax-credits user payload $testName but date is after 31st August and before 8th September with no ctc ($currentYear-09-07)" taggedAs Tag(
-        f"$currentYear-09-07") in {
+        f"$currentYear-09-07"
+      ) in {
         val localDateProvider = app.injector.instanceOf[LocalDateProvider]
-        val service = new LiveTaxCreditsSummaryService(
-          taxCreditsBrokerConnector,
+        val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
           localDateProvider,
           reportActualProfitPeriodStartDate,
           reportActualProfitPeriodEndDate)
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae, ctc = false)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPaymentSummary(
+          Some(paymentSummaryFtnae(preSeptember = false, ftnae = ftnae, ctc = false)),
+          taxCreditsNino
+        )
+        mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith),
+          taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
 
@@ -325,84 +360,107 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
           Some(FtnaeLink(preFtnaeDeadline = false, "/tax-credits-service/children/add-child/who-do-you-want-to-add")),
           ftnae,
           preSeptember = false,
-          ctc          = false)
+          ctc = false
+        )
       }
 
       f"return a tax-credits user payload $testName but date is after 8th September with no ctc ($currentYear-09-09)" taggedAs Tag(
-        f"$currentYear-09-09") in {
+        f"$currentYear-09-09"
+      ) in {
         val localDateProvider = app.injector.instanceOf[LocalDateProvider]
-        val service = new LiveTaxCreditsSummaryService(
-          taxCreditsBrokerConnector,
+        val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
           localDateProvider,
           reportActualProfitPeriodStartDate,
           reportActualProfitPeriodEndDate)
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = false, ftnae = false, ctc = false)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPaymentSummary(
+          Some(paymentSummaryFtnae(preSeptember = false, ftnae = false, ctc = false)),
+          taxCreditsNino
+        )
+        mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith),
+          taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
 
-        await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe getExpected(testName, None, ftnae = false, preSeptember = false, ctc = false)
+        await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe getExpected(testName,
+          None,
+          ftnae = false,
+          preSeptember = false,
+          ctc = false)
       }
 
-      f"return a tax-credits user payload $testName but date is before 1st September ($currentYear-08-31)" taggedAs Tag(f"$currentYear-08-31") in {
+      f"return a tax-credits user payload $testName but date is before 1st September ($currentYear-08-31)" taggedAs Tag(
+        f"$currentYear-08-31"
+      ) in {
         val localDateProvider = app.injector.instanceOf[LocalDateProvider]
-        val service = new LiveTaxCreditsSummaryService(
-          taxCreditsBrokerConnector,
+        val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
           localDateProvider,
           reportActualProfitPeriodStartDate,
           reportActualProfitPeriodEndDate)
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = true, ftnae = ftnae)), taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryFtnae(preSeptember = true, ftnae = ftnae)),
+          taxCreditsNino)
+        mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith),
+          taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
 
         await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe getExpected(
           testName,
           Some(FtnaeLink(preFtnaeDeadline = true, "/tax-credits-service/home/children-and-childcare")),
-          ftnae        = ftnae,
-          preSeptember = true)
+          ftnae = ftnae,
+          preSeptember = true
+        )
       }
 
-      f"return a tax-credits user payload $testName but date is before 1st September but in PY ($lastYear-12-31)" taggedAs Tag(f"$lastYear-12-31") in {
+      f"return a tax-credits user payload $testName but date is before 1st September but in PY ($lastYear-12-31)" taggedAs Tag(
+        f"$lastYear-12-31"
+      ) in {
         val localDateProvider = app.injector.instanceOf[LocalDateProvider]
-        val service = new LiveTaxCreditsSummaryService(
-          taxCreditsBrokerConnector,
+        val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
           localDateProvider,
           reportActualProfitPeriodStartDate,
           reportActualProfitPeriodEndDate)
         mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPaymentSummary(
           Some(paymentSummaryFtnae(preSeptember = false, currentYear = false, ftnae = ftnae)),
+          taxCreditsNino
+        )
+        mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith),
           taxCreditsNino)
-        mockTaxCreditsBrokerConnectorGetChildren(Seq(child, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
         mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
-        await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithFtnae(currentYear = false, ftnae = ftnae)
+        await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithFtnae(currentYear = false,
+          ftnae = ftnae)
       }
 
     }
     f"return a tax-credits user payload but date is before 1st September but in PY ($lastYear-12-31) and there are multiple FTNAE children" taggedAs Tag(
-      f"$lastYear-12-31") in {
+      f"$lastYear-12-31"
+    ) in {
       val localDateProvider = app.injector.instanceOf[LocalDateProvider]
-      val service = new LiveTaxCreditsSummaryService(
-        taxCreditsBrokerConnector,
+      val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
         localDateProvider,
         reportActualProfitPeriodStartDate,
         reportActualProfitPeriodEndDate)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummaryMultipleFtnae(preSeptember = false, currentYear = false)), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPaymentSummary(
+        Some(paymentSummaryMultipleFtnae(preSeptember = false, currentYear = false)),
+        taxCreditsNino
+      )
       mockTaxCreditsBrokerConnectorGetChildren(
         Seq(SarahSmithFtnae, SarahSmithFtnae, SarahSmithFtnae, JennySmith, PeterSmith, SimonSmith),
-        taxCreditsNino)
+        taxCreditsNino
+      )
       mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
-      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithMultipleFtnae(currentYear = false)
+      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithMultipleFtnae(currentYear =
+        false
+      )
     }
 
     "return the correct actual profit link during a valid period when both the applicant and partner have estimated their income" in {
-      val localDateProvider               = app.injector.instanceOf[LocalDateProvider]
+      val localDateProvider = app.injector.instanceOf[LocalDateProvider]
       val reportActualProfitPeriodEndDate = currentYear + "-12-31T23:59:59.000Z"
       val reportActualProfit = ReportActualProfit(
         "/tax-credits-service/actual-profit",
@@ -410,23 +468,30 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
         userMustReportIncome = true,
         partnerMustReportIncome = true
       )
-      val service = new LiveTaxCreditsSummaryService(
-        taxCreditsBrokerConnector,
+      val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
         localDateProvider,
         reportActualProfitPeriodStartDate,
         reportActualProfitPeriodEndDate)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetChildren(
+        Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith),
+        taxCreditsNino
+      )
       mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetActualSelfEmployedIncome(dashboardData.copy(actualIncomeStatus = actualIncomeBothEligible), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetActualSelfEmployedIncome(
+        dashboardData.copy(actualIncomeStatus = actualIncomeBothEligible),
+        taxCreditsNino
+      )
 
-      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithReportActualProfitLink(reportActualProfit)
+      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithReportActualProfitLink(
+        reportActualProfit
+      )
     }
 
     "return the correct actual profit link during a valid period when only the applicant has estimated their income" in {
-      val localDateProvider               = app.injector.instanceOf[LocalDateProvider]
+      val localDateProvider = app.injector.instanceOf[LocalDateProvider]
       val reportActualProfitPeriodEndDate = currentYear + "-12-31T23:59:59.000Z"
       val reportActualProfit = ReportActualProfit(
         "/tax-credits-service/actual-self-employed-profit-or-loss",
@@ -434,23 +499,30 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
         userMustReportIncome = true,
         partnerMustReportIncome = false
       )
-      val service = new LiveTaxCreditsSummaryService(
-        taxCreditsBrokerConnector,
+      val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
         localDateProvider,
         reportActualProfitPeriodStartDate,
         reportActualProfitPeriodEndDate)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetChildren(
+        Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith),
+        taxCreditsNino
+      )
       mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetActualSelfEmployedIncome(dashboardData.copy(actualIncomeStatus = actualIncomeApp1Eligible), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetActualSelfEmployedIncome(
+        dashboardData.copy(actualIncomeStatus = actualIncomeApp1Eligible),
+        taxCreditsNino
+      )
 
-      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithReportActualProfitLink(reportActualProfit)
+      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithReportActualProfitLink(
+        reportActualProfit
+      )
     }
 
     "return the correct actual profit link during a valid period when only the applicant's partner has estimated their income" in {
-      val localDateProvider               = app.injector.instanceOf[LocalDateProvider]
+      val localDateProvider = app.injector.instanceOf[LocalDateProvider]
       val reportActualProfitPeriodEndDate = currentYear + "-12-31T23:59:59.000Z"
       val reportActualProfit = ReportActualProfit(
         "/tax-credits-service/actual-self-employed-profit-or-loss-partner",
@@ -458,52 +530,63 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
         userMustReportIncome = false,
         partnerMustReportIncome = true
       )
-      val service = new LiveTaxCreditsSummaryService(
-        taxCreditsBrokerConnector,
+      val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
         localDateProvider,
         reportActualProfitPeriodStartDate,
         reportActualProfitPeriodEndDate)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetActualSelfEmployedIncome(dashboardData.copy(actualIncomeStatus = actualIncomeApp2Eligible), taxCreditsNino)
-
-      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithReportActualProfitLink(reportActualProfit)
-    }
-
-    "return the correct actual profit link during a valid period when the logged in user is not the main applicant and their partner has estimated their income" in {
-      val localDateProvider               = app.injector.instanceOf[LocalDateProvider]
-      val reportActualProfitPeriodEndDate = currentYear + "-12-31T23:59:59.000Z"
-      val reportActualProfit = ReportActualProfit(
-        "/tax-credits-service/actual-self-employed-profit-or-loss-partner",
-        reportActualProfitPeriodEndDate,
-        userMustReportIncome = false,
-        partnerMustReportIncome = true
+      mockTaxCreditsBrokerConnectorGetChildren(
+        Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith),
+        taxCreditsNino
       )
-      val service = new LiveTaxCreditsSummaryService(
-        taxCreditsBrokerConnector,
-        localDateProvider,
-        reportActualProfitPeriodStartDate,
-        reportActualProfitPeriodEndDate)
-      mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetActualSelfEmployedIncome(
-        dashboardData.copy(
-          actualIncomeStatus = actualIncomeApp1Eligible,
-          awardDetails       = dashboardData.awardDetails.copy(mainApplicantNino = TaxCreditsNino(incorrectNino.value))),
+        dashboardData.copy(actualIncomeStatus = actualIncomeApp2Eligible),
         taxCreditsNino
       )
 
-      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithReportActualProfitLink(reportActualProfit)
+      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithReportActualProfitLink(
+        reportActualProfit
+      )
+    }
+
+    "return the correct actual profit link during a valid period when the logged in user is not the main applicant and their partner has estimated their income" in {
+      val localDateProvider = app.injector.instanceOf[LocalDateProvider]
+      val reportActualProfitPeriodEndDate = currentYear + "-12-31T23:59:59.000Z"
+      val reportActualProfit = ReportActualProfit(
+        "/tax-credits-service/actual-self-employed-profit-or-loss-partner",
+        reportActualProfitPeriodEndDate,
+        userMustReportIncome = false,
+        partnerMustReportIncome = true
+      )
+      val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
+        localDateProvider,
+        reportActualProfitPeriodStartDate,
+        reportActualProfitPeriodEndDate)
+      mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetChildren(
+        Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith),
+        taxCreditsNino
+      )
+      mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetActualSelfEmployedIncome(
+        dashboardData.copy(actualIncomeStatus = actualIncomeApp1Eligible,
+          awardDetails =
+            dashboardData.awardDetails.copy(mainApplicantNino = TaxCreditsNino(incorrectNino.value))),
+        taxCreditsNino
+      )
+
+      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithReportActualProfitLink(
+        reportActualProfit
+      )
     }
 
     "return the correct actual profit link during a valid period when the logged in user is not the main applicant, but they have estimated their income" in {
-      val localDateProvider               = app.injector.instanceOf[LocalDateProvider]
+      val localDateProvider = app.injector.instanceOf[LocalDateProvider]
       val reportActualProfitPeriodEndDate = currentYear + "-12-31T23:59:59.000Z"
       val reportActualProfit = ReportActualProfit(
         "/tax-credits-service/actual-self-employed-profit-or-loss",
@@ -511,40 +594,49 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
         userMustReportIncome = true,
         partnerMustReportIncome = false
       )
-      val service = new LiveTaxCreditsSummaryService(
-        taxCreditsBrokerConnector,
+      val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
         localDateProvider,
         reportActualProfitPeriodStartDate,
         reportActualProfitPeriodEndDate)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetChildren(
+        Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith),
+        taxCreditsNino
+      )
       mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetActualSelfEmployedIncome(
-        dashboardData.copy(
-          actualIncomeStatus = actualIncomeApp2Eligible,
-          awardDetails       = dashboardData.awardDetails.copy(mainApplicantNino = TaxCreditsNino(incorrectNino.value))),
+        dashboardData.copy(actualIncomeStatus = actualIncomeApp2Eligible,
+          awardDetails =
+            dashboardData.awardDetails.copy(mainApplicantNino = TaxCreditsNino(incorrectNino.value))),
         taxCreditsNino
       )
 
-      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithReportActualProfitLink(reportActualProfit)
+      await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithReportActualProfitLink(
+        reportActualProfit
+      )
     }
 
     "return no actual profit link during a valid period when both the applicant and partner have not estimated their income" in {
-      val localDateProvider               = app.injector.instanceOf[LocalDateProvider]
+      val localDateProvider = app.injector.instanceOf[LocalDateProvider]
       val reportActualProfitPeriodEndDate = currentYear + "-12-31T23:59:59.000Z"
-      val service = new LiveTaxCreditsSummaryService(
-        taxCreditsBrokerConnector,
+      val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
         localDateProvider,
         reportActualProfitPeriodStartDate,
         reportActualProfitPeriodEndDate)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetChildren(
+        Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith),
+        taxCreditsNino
+      )
       mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetActualSelfEmployedIncome(dashboardData.copy(actualIncomeStatus = actualIncomeNeitherEligible), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetActualSelfEmployedIncome(
+        dashboardData.copy(actualIncomeStatus = actualIncomeNeitherEligible),
+        taxCreditsNino
+      )
 
       await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummary
     }
@@ -552,24 +644,35 @@ class TaxCreditsSummaryServiceSpec extends TestSetup with FileResource with Futu
     "return no actual profit link during a valid period when one applicant has estimated their income but the other is excluded" in {
       val localDateProvider = app.injector.instanceOf[LocalDateProvider]
       val reportActualProfitPeriodEndDate = currentYear + "-12-31T23:59:59.000Z"
-      val service = new LiveTaxCreditsSummaryService(
-        taxCreditsBrokerConnector,
+      val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
         localDateProvider,
         reportActualProfitPeriodStartDate,
         reportActualProfitPeriodEndDate)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPaymentSummary(Some(paymentSummary), taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetChildren(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetChildren(
+        Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith),
+        taxCreditsNino
+      )
       mockTaxCreditsBrokerConnectorGetPartnerDetails(Some(partnerDetails), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPersonalDetails(personalDetails, taxCreditsNino)
-      mockTaxCreditsBrokerConnectorGetActualSelfEmployedIncome(dashboardData.copy(actualIncomeStatus = actualIncomeOneExcluded), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetActualSelfEmployedIncome(
+        dashboardData.copy(actualIncomeStatus = actualIncomeOneExcluded),
+        taxCreditsNino
+      )
 
       await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummary
     }
 
   }
 
-  def getExpected(testName: String, link: Option[FtnaeLink], ftnae: Boolean, preSeptember: Boolean, ctc: Boolean = true): TaxCreditsSummaryResponse =
+  def getExpected(
+                   testName: String,
+                   link: Option[FtnaeLink],
+                   ftnae: Boolean,
+                   preSeptember: Boolean,
+                   ctc: Boolean = true
+                 ): TaxCreditsSummaryResponse =
     if (testName.equals("with FTNAE")) {
       taxCreditsSummaryWithFtnae(preSeptember = preSeptember, link = link, ftnae = ftnae, ctc = ctc)
     } else if (testName.equals("without FTNAE")) {

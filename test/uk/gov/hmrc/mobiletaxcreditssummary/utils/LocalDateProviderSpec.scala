@@ -26,7 +26,6 @@ import play.api.test.Injecting
 
 class LocalDateProviderSpec extends WordSpecLike with Matchers with GuiceOneAppPerTest with Injecting {
 
-
   "LocalDateProviderSpec" should {
 
     "return today's date if no config found" in {
@@ -40,12 +39,19 @@ class LocalDateProviderSpec extends WordSpecLike with Matchers with GuiceOneAppP
     }
   }
 
-
-  override def newAppForTest(testData: TestData): Application = {
+  override def newAppForTest(testData: TestData): Application =
     testData.tags.headOption match {
-      case Some(tag) => GuiceApplicationBuilder().configure("dateOverride" -> tag).disable[com.kenshoo.play.metrics.PlayModule].configure("metrics.enabled" -> false).build()
-      case _ => GuiceApplicationBuilder().configure("dateOverride" -> LocalDate.now().toString).disable[com.kenshoo.play.metrics.PlayModule].configure("metrics.enabled" -> false).build()
+      case Some(tag) =>
+        GuiceApplicationBuilder()
+          .configure("dateOverride" -> tag)
+          .disable[com.kenshoo.play.metrics.PlayModule]
+          .configure("metrics.enabled" -> false)
+          .build()
+      case _ =>
+        GuiceApplicationBuilder()
+          .configure("dateOverride" -> LocalDate.now().toString)
+          .disable[com.kenshoo.play.metrics.PlayModule]
+          .configure("metrics.enabled" -> false)
+          .build()
     }
-  }
 }
-

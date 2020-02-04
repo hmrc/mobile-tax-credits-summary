@@ -24,18 +24,30 @@ object Binders {
 
   implicit def ninoBinder(implicit stringBinder: PathBindable[String]): PathBindable[Nino] = new PathBindable[Nino] {
 
-    def unbind(key: String, nino: Nino): String = stringBinder.unbind(key, nino.value)
+    def unbind(
+                key: String,
+                nino: Nino
+              ): String = stringBinder.unbind(key, nino.value)
 
-    def bind(key: String, value: String): Either[String, Nino] = {
+    def bind(
+              key: String,
+              value: String
+            ): Either[String, Nino] =
       if (Nino.isValid(value)) Right(Nino(value))
       else Left("ERROR_NINO_INVALID")
+  }
+
+  implicit def renewalReferenceBinder(implicit stringBinder: PathBindable[String]): PathBindable[RenewalReference] =
+    new PathBindable[RenewalReference] {
+
+      def unbind(
+                  key: String,
+                  renewalReference: RenewalReference
+                ): String = stringBinder.unbind(key, renewalReference.value)
+
+      def bind(
+                key: String,
+                value: String
+              ): Either[String, RenewalReference] = Right(RenewalReference(value))
     }
-  }
-
-  implicit def renewalReferenceBinder(implicit stringBinder: PathBindable[String]): PathBindable[RenewalReference] = new PathBindable[RenewalReference] {
-
-    def unbind(key: String, renewalReference: RenewalReference): String = stringBinder.unbind(key, renewalReference.value)
-
-    def bind(key: String, value: String): Either[String, RenewalReference] = Right(RenewalReference(value))
-  }
 }

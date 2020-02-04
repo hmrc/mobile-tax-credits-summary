@@ -18,21 +18,31 @@ package uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata
 
 import play.api.libs.json.{Json, OFormat}
 
-case class Claimants(personalDetails: Person, partnerDetails: Option[Person], children: Seq[Person], ftnaeLink: Option[FtnaeLink] = None, reportActualProfit: Option[ReportActualProfit] = None)
+case class Claimants(
+                      personalDetails: Person,
+                      partnerDetails: Option[Person],
+                      children: Seq[Person],
+                      ftnaeLink: Option[FtnaeLink] = None,
+                      reportActualProfit: Option[ReportActualProfit] = None)
 
 object Claimants {
   implicit val format: OFormat[Claimants] = Json.format[Claimants]
 }
 
-case class ReportActualProfit(link: String, endDate: String, userMustReportIncome: Boolean, partnerMustReportIncome: Boolean)
+case class ReportActualProfit(
+                               link: String,
+                               endDate: String,
+                               userMustReportIncome: Boolean,
+                               partnerMustReportIncome: Boolean)
 
 object ReportActualProfit {
   implicit val formats: OFormat[ReportActualProfit] = Json.format[ReportActualProfit]
 }
 
-case class FtnaeLink(preFtnaeDeadline: Boolean, link: String)
+case class FtnaeLink(
+                      preFtnaeDeadline: Boolean,
+                      link: String)
 
 object FtnaeLink {
-  implicit val formats: OFormat[FtnaeLink] =  Json.format[FtnaeLink]
+  implicit val formats: OFormat[FtnaeLink] = Json.format[FtnaeLink]
 }
-

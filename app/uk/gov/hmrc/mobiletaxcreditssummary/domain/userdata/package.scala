@@ -28,11 +28,13 @@ package object userdata {
     * instances in the package they will be picked up in preference to the defaults.
     */
   implicit val localDateTimeWrites: Writes[LocalDateTime] = new Writes[LocalDateTime] {
+
     override def writes(o: LocalDateTime): JsValue =
       JsNumber(o.toInstant(ZoneOffset.UTC).toEpochMilli)
   }
 
   implicit val LocalDateTimeFormat: Format[LocalDateTime] = new Format[LocalDateTime] {
+
     override def writes(o: LocalDateTime): JsValue =
       localDateTimeWrites.writes(o)
 
@@ -41,11 +43,13 @@ package object userdata {
   }
 
   implicit val localDateWrites: Writes[LocalDate] = new Writes[LocalDate] {
+
     override def writes(o: LocalDate): JsValue =
       JsNumber(o.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli)
   }
 
   implicit val LocalDateFormat: Format[LocalDate] = new Format[LocalDate] {
+
     override def writes(o: LocalDate): JsValue =
       localDateWrites.writes(o)
 

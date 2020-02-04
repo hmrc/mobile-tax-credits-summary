@@ -28,10 +28,9 @@ import scala.concurrent.{ExecutionContext, Future}
 trait ShutteringMock extends MockFactory {
 
   def mockShutteringResponse(
-    response: Shuttering
-  )(
-    implicit shutteringConnector: ShutteringConnector
-  ): CallHandler[Future[Shuttering]] =
+                              response: Shuttering
+                            )(implicit shutteringConnector: ShutteringConnector
+                            ): CallHandler[Future[Shuttering]] =
     (shutteringConnector
       .getShutteringStatus(_: JourneyId)(_: HeaderCarrier, _: ExecutionContext))
       .expects(*, *, *)

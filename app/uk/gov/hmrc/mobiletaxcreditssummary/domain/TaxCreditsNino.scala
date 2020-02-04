@@ -33,9 +33,12 @@ case class TaxCreditsNino(taxCreditsNino: String) extends TaxIdentifier with Sim
 
 object TaxCreditsNino {
   implicit val ninoWrite: Writes[TaxCreditsNino] = new SimpleObjectWrites[TaxCreditsNino](_.value)
-  implicit val ninoRead: Reads[TaxCreditsNino] = new SimpleObjectReads[TaxCreditsNino]("taxCreditsNino", TaxCreditsNino.apply)
+
+  implicit val ninoRead: Reads[TaxCreditsNino] =
+    new SimpleObjectReads[TaxCreditsNino]("taxCreditsNino", TaxCreditsNino.apply)
 
   private val validTaxCreditsNinoFormat = "^[A-Za-z]{2}( )?([0-9]{2} ?){3}[A-Da-d]{0,1}$"
 
-  def isValid(taxCreditsNino: String): Boolean = taxCreditsNino != null && taxCreditsNino.matches(validTaxCreditsNinoFormat)
+  def isValid(taxCreditsNino: String): Boolean =
+    taxCreditsNino != null && taxCreditsNino.matches(validTaxCreditsNinoFormat)
 }

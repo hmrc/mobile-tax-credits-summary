@@ -32,56 +32,74 @@ import uk.gov.hmrc.play.bootstrap.controller.BackendController
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SandboxTaxCreditsSummaryController @Inject()(cc: ControllerComponents)(implicit val executionContext: ExecutionContext)
-    extends BackendController(cc)
+class SandboxTaxCreditsSummaryController @Inject()(
+                                                    cc: ControllerComponents
+                                                  )(implicit val executionContext: ExecutionContext)
+  extends BackendController(cc)
     with TaxCreditsSummaryController
     with FileResource
     with HeaderValidator {
 
   private final val WebServerIsDown = new Status(521)
+
   private val shuttered =
-    Json.toJson(Shuttering(shuttered = true, title = Some("Shuttered"), message = Some("Tax Credits Summary is currently shuttered")))
+    Json.toJson(
+      Shuttering(shuttered = true,
+        title = Some("Shuttered"),
+        message = Some("Tax Credits Summary is currently shuttered"))
+    )
 
   override def parser: BodyParser[AnyContent] = cc.parsers.anyContent
-  override final def taxCreditsSummary(nino: Nino, journeyId: JourneyId): Action[AnyContent] =
+
+  override final def taxCreditsSummary(
+                                        nino: Nino,
+                                        journeyId: JourneyId
+                                      ): Action[AnyContent] =
     validateAccept(acceptHeaderValidationRules).async { implicit request =>
       Future successful (request.headers.get("SANDBOX-CONTROL") match {
-        case Some("NON-TAX-CREDITS-USER")      => Ok(toJson(TaxCreditsSummaryResponse(taxCreditsSummary = None)))
-        case Some("EXCLUDED-TAX-CREDITS-USER") => Ok(toJson(TaxCreditsSummaryResponse(excluded = true, taxCreditsSummary = None)))
-        case Some("ERROR-401")                 => Unauthorized
-        case Some("ERROR-403")                 => Forbidden
-        case Some("ERROR-500")                 => InternalServerError
+        case Some("NON-TAX-CREDITS-USER") => Ok(toJson(TaxCreditsSummaryResponse(taxCreditsSummary = None)))
+        case Some("EXCLUDED-TAX-CREDITS-USER") =>
+          Ok(toJson(TaxCreditsSummaryResponse(excluded = true, taxCreditsSummary = None)))
+        case Some("ERROR-401") => Unauthorized
+        case Some("ERROR-403") => Forbidden
+        case Some("ERROR-500") => InternalServerError
         case Some("WORKING-TAX-CREDIT-ONLY") =>
           val resource: String = findResource(s"/resources/taxcreditssummary/working-tax-credit-only.json")
             .getOrElse(throw new IllegalArgumentException("Resource not found!"))
-          val response = TaxCreditsSummaryResponse(excluded = false, Some(Json.parse(updateDates(resource)).as[TaxCreditsSummary]))
+          val response =
+            TaxCreditsSummaryResponse(excluded = false, Some(Json.parse(updateDates(resource)).as[TaxCreditsSummary]))
           Ok(toJson(response))
         case Some("CHILD-TAX-CREDIT-ONLY") =>
           val resource: String = findResource(s"/resources/taxcreditssummary/child-tax-credit-only.json")
             .getOrElse(throw new IllegalArgumentException("Resource not found!"))
-          val response = TaxCreditsSummaryResponse(excluded = false, Some(Json.parse(updateDates(resource)).as[TaxCreditsSummary]))
+          val response =
+            TaxCreditsSummaryResponse(excluded = false, Some(Json.parse(updateDates(resource)).as[TaxCreditsSummary]))
           Ok(toJson(response))
         case Some("PRE-FTNAE") =>
           val resource: String = findResource(s"/resources/taxcreditssummary/pre-ftnae.json")
             .getOrElse(throw new IllegalArgumentException("Resource not found!"))
-          val response = TaxCreditsSummaryResponse(excluded = false, Some(Json.parse(updateDates(resource)).as[TaxCreditsSummary]))
+          val response =
+            TaxCreditsSummaryResponse(excluded = false, Some(Json.parse(updateDates(resource)).as[TaxCreditsSummary]))
           Ok(toJson(response))
         case Some("POST-FTNAE") =>
           val resource: String = findResource(s"/resources/taxcreditssummary/post-ftnae.json")
             .getOrElse(throw new IllegalArgumentException("Resource not found!"))
-          val response = TaxCreditsSummaryResponse(excluded = false, Some(Json.parse(updateDates(resource)).as[TaxCreditsSummary]))
+          val response =
+            TaxCreditsSummaryResponse(excluded = false, Some(Json.parse(updateDates(resource)).as[TaxCreditsSummary]))
           Ok(toJson(response))
         case Some("CLAIMANTS_FAILURE") =>
           val resource: String = findResource(s"/resources/taxcreditssummary/${nino.value}.json")
             .getOrElse(throw new IllegalArgumentException("Resource not found!"))
-          val taxCreditsSummary: TaxCreditsSummary = TaxCreditsSummary(Json.parse(updateDates(resource)).as[TaxCreditsSummary].paymentSummary, None)
+          val taxCreditsSummary: TaxCreditsSummary =
+            TaxCreditsSummary(Json.parse(updateDates(resource)).as[TaxCreditsSummary].paymentSummary, None)
           val response = TaxCreditsSummaryResponse(excluded = false, Some(taxCreditsSummary))
           Ok(toJson(response))
         case Some("SHUTTERED") => WebServerIsDown(shuttered)
         case _ => //TAX-CREDITS-USER
           val resource: String = findResource(s"/resources/taxcreditssummary/${nino.value}.json")
             .getOrElse(throw new IllegalArgumentException("Resource not found!"))
-          val response = TaxCreditsSummaryResponse(excluded = false, Some(Json.parse(updateDates(resource)).as[TaxCreditsSummary]))
+          val response =
+            TaxCreditsSummaryResponse(excluded = false, Some(Json.parse(updateDates(resource)).as[TaxCreditsSummary]))
           Ok(toJson(response))
       })
     }
