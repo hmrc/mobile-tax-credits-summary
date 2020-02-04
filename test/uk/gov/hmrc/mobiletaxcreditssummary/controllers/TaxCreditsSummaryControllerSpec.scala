@@ -16,9 +16,8 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.controllers
 
-import com.typesafe.config.Config
+import eu.timepit.refined.auto._
 import org.joda.time.LocalDate
-import org.scalatest.Matchers
 import play.api.libs.json.Json
 import play.api.libs.json.Json.toJson
 import play.api.test.Helpers._
@@ -28,15 +27,13 @@ import uk.gov.hmrc.auth.core.syntax.retrieved._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
-import eu.timepit.refined.auto._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
 class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
   "tax credits summary live" should {
-    val controller = new LiveTaxCreditsSummaryController(
-      mockAuthConnector,
+    val controller = new LiveTaxCreditsSummaryController(mockAuthConnector,
       200,
       "mobile-tax-credits-summary",
       mockService,
@@ -45,7 +42,8 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
       stubControllerComponents(),
       mockShutteringConnector)
     "process the request successfully and filter children older than 20 and where deceased flags are active and user is not excluded" in {
-      val expectedResult = TaxCreditsSummaryResponse(excluded = false, Some(TaxCreditsSummary(paymentSummary, Some(claimants))))
+      val expectedResult =
+        TaxCreditsSummaryResponse(excluded = false, Some(TaxCreditsSummary(paymentSummary, Some(claimants))))
       mockShutteringResponse(notShuttered)
       mockAuthorisationGrantAccess(Some(nino) and L200)
       mockAudit(Nino(nino), expectedResult)
@@ -54,15 +52,21 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
         .expects(Nino(nino), *, *)
         .returning(Future.successful(expectedResult))
 
-      val result = controller.taxCreditsSummary(Nino(nino), "17d2420c-4fc6-4eee-9311-a37325066704")(emptyRequestWithAcceptHeader(renewalReference, Nino(nino)))
-      status(result)        shouldBe 200
+      val result = controller.taxCreditsSummary(Nino(nino), "17d2420c-4fc6-4eee-9311-a37325066704")(
+        emptyRequestWithAcceptHeader(renewalReference, Nino(nino))
+      )
+      status(result) shouldBe 200
       contentAsJson(result) shouldBe toJson(expectedResult)
     }
 
     "return 403 when the nino in the request does not match the authority nino" in {
       mockAuthorisationGrantAccess(Some(nino) and L200)
 
-      status(controller.taxCreditsSummary(incorrectNino, "17d2420c-4fc6-4eee-9311-a37325066704")(emptyRequestWithAcceptHeader(renewalReference, Nino(nino)))) shouldBe 403
+      status(
+        controller.taxCreditsSummary(incorrectNino, "17d2420c-4fc6-4eee-9311-a37325066704")(
+          emptyRequestWithAcceptHeader(renewalReference, Nino(nino))
+        )
+      ) shouldBe 403
     }
 
     "return 500 given a service error" in {
@@ -73,53 +77,70 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
         .expects(Nino(nino), *, *)
         .returning(Future failed Upstream5xxResponse("error", 500, 500))
 
-      status(controller.taxCreditsSummary(Nino(nino), "17d2420c-4fc6-4eee-9311-a37325066704")(emptyRequestWithAcceptHeader(renewalReference, Nino(nino)))) shouldBe 500
+      status(
+        controller.taxCreditsSummary(Nino(nino), "17d2420c-4fc6-4eee-9311-a37325066704")(
+          emptyRequestWithAcceptHeader(renewalReference, Nino(nino))
+        )
+      ) shouldBe 500
     }
 
     "return the summary successfully when journeyId is supplied and user is not excluded" in {
-      val expectedResult = TaxCreditsSummaryResponse(excluded = false, Some(TaxCreditsSummary(paymentSummary, Some(claimants))))
+      val expectedResult =
+        TaxCreditsSummaryResponse(excluded = false, Some(TaxCreditsSummary(paymentSummary, Some(claimants))))
       mockShutteringResponse(notShuttered)
       mockAuthorisationGrantAccess(Some(nino) and L200)
       mockAudit(Nino(nino), expectedResult)
-      (mockService.getTaxCreditsSummaryResponse(_: Nino)(_: HeaderCarrier, _: ExecutionContext)).expects(Nino(nino), *, *).returning(Future.successful(expectedResult))
+      (mockService
+        .getTaxCreditsSummaryResponse(_: Nino)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(Nino(nino), *, *)
+        .returning(Future.successful(expectedResult))
 
       val result =
-        controller.taxCreditsSummary(Nino(nino), "17d2420c-4fc6-4eee-9311-a37325066704")(emptyRequestWithAcceptHeader(renewalReference, Nino(nino)))
-      status(result)        shouldBe 200
+        controller.taxCreditsSummary(Nino(nino), "17d2420c-4fc6-4eee-9311-a37325066704")(
+          emptyRequestWithAcceptHeader(renewalReference, Nino(nino))
+        )
+      status(result) shouldBe 200
       contentAsJson(result) shouldBe toJson(expectedResult)
     }
 
     "return unauthorized when authority record does not contain a NINO" in {
       mockAuthorisationGrantAccess(None and L200)
 
-      val result = controller.taxCreditsSummary(Nino(nino), "17d2420c-4fc6-4eee-9311-a37325066704")(emptyRequestWithAcceptHeader(renewalReference, Nino(nino)))
-      status(result)        shouldBe 401
+      val result = controller.taxCreditsSummary(Nino(nino), "17d2420c-4fc6-4eee-9311-a37325066704")(
+        emptyRequestWithAcceptHeader(renewalReference, Nino(nino))
+      )
+      status(result) shouldBe 401
       contentAsJson(result) shouldBe noNinoFoundOnAccount
     }
 
     "return unauthorized when authority record has a low CL" in {
       mockAuthorisationGrantAccess(Some(nino) and L100)
 
-      val result = controller.taxCreditsSummary(Nino(nino), "17d2420c-4fc6-4eee-9311-a37325066704")(emptyRequestWithAcceptHeader(renewalReference, Nino(nino)))
-      status(result)        shouldBe 401
+      val result = controller.taxCreditsSummary(Nino(nino), "17d2420c-4fc6-4eee-9311-a37325066704")(
+        emptyRequestWithAcceptHeader(renewalReference, Nino(nino))
+      )
+      status(result) shouldBe 401
       contentAsJson(result) shouldBe lowConfidenceLevelError
     }
 
     "return status code 406 when the headers are invalid" in {
-      val result = controller.taxCreditsSummary(Nino(nino), "17d2420c-4fc6-4eee-9311-a37325066704")(requestInvalidHeaders)
+      val result =
+        controller.taxCreditsSummary(Nino(nino), "17d2420c-4fc6-4eee-9311-a37325066704")(requestInvalidHeaders)
       status(result) shouldBe 406
     }
 
     "return 521 when shuttered" in {
       mockShutteringResponse(shuttered)
       mockAuthorisationGrantAccess(Some(nino) and L200)
-      val result = controller.taxCreditsSummary(Nino(nino), "17d2420c-4fc6-4eee-9311-a37325066704")(emptyRequestWithAcceptHeader(renewalReference, Nino(nino)))
+      val result = controller.taxCreditsSummary(Nino(nino), "17d2420c-4fc6-4eee-9311-a37325066704")(
+        emptyRequestWithAcceptHeader(renewalReference, Nino(nino))
+      )
 
       status(result) shouldBe 521
       val jsonBody = contentAsJson(result)
       (jsonBody \ "shuttered").as[Boolean] shouldBe true
-      (jsonBody \ "title").as[String]      shouldBe "Shuttered"
-      (jsonBody \ "message").as[String]    shouldBe "Tax Credits Summary is currently not available"
+      (jsonBody \ "title").as[String] shouldBe "Shuttered"
+      (jsonBody \ "message").as[String] shouldBe "Tax Credits Summary is currently not available"
     }
   }
 
@@ -142,9 +163,11 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
               .replaceAll("date5", currentTime.plusWeeks(5).getMillis.toString)
               .replaceAll("date6", currentTime.plusWeeks(6).getMillis.toString)
               .replaceAll("date7", currentTime.plusWeeks(7).getMillis.toString)
-              .replaceAll("date8", currentTime.plusWeeks(8).getMillis.toString))
+              .replaceAll("date8", currentTime.plusWeeks(8).getMillis.toString)
+          )
           .as[TaxCreditsSummary]
-      val expectedResult: TaxCreditsSummaryResponse = TaxCreditsSummaryResponse(taxCreditsSummary = Some(expectedTaxCreditsSummary))
+      val expectedResult: TaxCreditsSummaryResponse =
+        TaxCreditsSummaryResponse(taxCreditsSummary = Some(expectedTaxCreditsSummary))
       contentAsJson(result) shouldBe toJson(expectedResult)
     }
   }

@@ -32,7 +32,12 @@ class ShutteringConnectorSpec extends TestSetup with FutureAwaits with DefaultAw
   def mockShutteringGet[T](f: Future[T]) =
     (mockCoreGet
       .GET(_: String)(_: HttpReads[T], _: HeaderCarrier, _: ExecutionContext))
-      .expects("/mobile-shuttering/service/mobile-tax-credits-summary/shuttered-status?journeyId=f65442f9-8716-4de8-9e17-3bfe4ba50a93", *, *, *)
+      .expects(
+        "/mobile-shuttering/service/mobile-tax-credits-summary/shuttered-status?journeyId=f65442f9-8716-4de8-9e17-3bfe4ba50a93",
+        *,
+        *,
+        *
+      )
       .returning(f)
 
   "getShutteredStatus" should {

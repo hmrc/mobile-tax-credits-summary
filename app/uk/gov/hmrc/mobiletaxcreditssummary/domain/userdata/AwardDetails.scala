@@ -19,14 +19,14 @@ package uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata
 import play.api.libs.json.Json
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.TaxCreditsNino
 
-case class AwardDetails(applicationId: String,
-                        isJoint: Boolean,
-                        claimantNumber: Int,
-                        mainApplicantNino: TaxCreditsNino,
-                        availableForCOCAutomation: Boolean,
-                        renewalsJourney: Boolean)
+case class AwardDetails(
+                         applicationId: String,
+                         isJoint: Boolean,
+                         claimantNumber: Int,
+                         mainApplicantNino: TaxCreditsNino,
+                         availableForCOCAutomation: Boolean,
+                         renewalsJourney: Boolean)
 
 object AwardDetails {
   implicit val formats = Json.format[AwardDetails]
 }
-

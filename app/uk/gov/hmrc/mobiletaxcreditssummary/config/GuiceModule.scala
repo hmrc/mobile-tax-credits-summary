@@ -29,7 +29,10 @@ import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.collection.JavaConverters._
 
-class GuiceModule(environment: Environment, configuration: Configuration) extends AbstractModule {
+class GuiceModule(
+                   environment: Environment,
+                   configuration: Configuration)
+  extends AbstractModule {
 
   val servicesConfig = new ServicesConfig(configuration, new RunMode(configuration, environment.mode))
 
@@ -42,12 +45,18 @@ class GuiceModule(environment: Environment, configuration: Configuration) extend
     bindConfigInt("controllers.confidenceLevel")
     bindConfigString("appUrl", "appUrl")
 
-    bind(classOf[String]).annotatedWith(named("tax-credits-broker")).toInstance(servicesConfig.baseUrl("tax-credits-broker"))
-    bind(classOf[String]).annotatedWith(named("mobile-shuttering")).toInstance(servicesConfig.baseUrl("mobile-shuttering"))
+    bind(classOf[String])
+      .annotatedWith(named("tax-credits-broker"))
+      .toInstance(servicesConfig.baseUrl("tax-credits-broker"))
+    bind(classOf[String])
+      .annotatedWith(named("mobile-shuttering"))
+      .toInstance(servicesConfig.baseUrl("mobile-shuttering"))
     bindConfigString("reportActualProfitPeriod.startDate", "microservice.reportActualProfitPeriod.startDate")
     bindConfigString("reportActualProfitPeriod.endDate", "microservice.reportActualProfitPeriod.endDate")
 
-    bind(classOf[ApiAccess]).toInstance(ApiAccess("PRIVATE", configuration.underlying.getStringList("api.access.white-list.applicationIds").asScala))
+    bind(classOf[ApiAccess]).toInstance(
+      ApiAccess("PRIVATE", configuration.underlying.getStringList("api.access.white-list.applicationIds").asScala)
+    )
   }
 
   class DefaultConfig(val config: Config)
@@ -61,7 +70,10 @@ class GuiceModule(environment: Environment, configuration: Configuration) extend
       .annotatedWith(named(path))
       .to(configuration.underlying.getInt(path))
 
-  private def bindConfigString(name: String, path: String): Unit =
+  private def bindConfigString(
+                                name: String,
+                                path: String
+                              ): Unit =
     bindConstant()
       .annotatedWith(named(name))
       .to(configuration.underlying.getString(path))

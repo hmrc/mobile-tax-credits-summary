@@ -37,16 +37,17 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
 
   protected def reportActualProfitEndDate: String = now.plusDays(1).toString
 
-  override def configuration: Map[String, Any] = {
+  override def configuration: Map[String, Any] =
     super.configuration ++
       Map(
         "microservice.reportActualProfitPeriod.startDate" -> reportActualProfitStartDate,
-        "microservice.reportActualProfitPeriod.endDate" -> reportActualProfitEndDate)
-  }
+        "microservice.reportActualProfitPeriod.endDate" -> reportActualProfitEndDate
+      )
 
   "GET /income/:nino/tax-credits/tax-credits-summary " should {
     def request(nino: Nino): WSRequest =
-      wsUrl(s"/income/${nino.value}/tax-credits/tax-credits-summary?journeyId=17d2420c-4fc6-4eee-9311-a37325066704").addHttpHeaders(acceptJsonHeader)
+      wsUrl(s"/income/${nino.value}/tax-credits/tax-credits-summary?journeyId=17d2420c-4fc6-4eee-9311-a37325066704")
+        .addHttpHeaders(acceptJsonHeader)
 
     "return a valid response for TAX-CREDITS-USER - check more details on github.com/hmrc/mobile-tax-credits-summary" in {
       grantAccess(nino1.value)
@@ -57,9 +58,10 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       exclusionFlagIsFound(nino1, excluded = false)
 
       val response = await(request(nino1).get())
-      response.status                                                                                               shouldBe 200
+      response.status shouldBe 200
       (response.json \ "excluded").as[Boolean] shouldBe false
-      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "WEEKLY"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
+        .as[String] shouldBe "WEEKLY"
       ((response.json \\ "claimants").head \ "personalDetails" \ "forename").as[String] shouldBe "Nuala"
       ((response.json \\ "claimants").head \ "personalDetails" \ "surname").as[String] shouldBe "O'Shea"
       ((response.json \\ "claimants").head \ "partnerDetails" \ "forename").as[String] shouldBe "Frederick"
@@ -81,7 +83,8 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       val response = await(request(sandboxNino).get())
       response.status shouldBe 200
       (response.json \ "excluded").as[Boolean] shouldBe false
-      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "WEEKLY"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
+        .as[String] shouldBe "WEEKLY"
       ((response.json \\ "claimants").head \ "personalDetails" \ "forename").as[String] shouldBe "Nuala"
       ((response.json \\ "claimants").head \ "personalDetails" \ "surname").as[String] shouldBe "O'Shea"
       ((response.json \\ "claimants").head \ "partnerDetails" \ "forename").as[String] shouldBe "Frederick"
@@ -105,7 +108,8 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       val response = await(request(sandboxNino).get())
       response.status shouldBe 200
       (response.json \ "excluded").as[Boolean] shouldBe false
-      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "WEEKLY"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
+        .as[String] shouldBe "WEEKLY"
       ((response.json \\ "claimants").head \ "personalDetails" \ "forename").as[String] shouldBe "Nuala"
       ((response.json \\ "claimants").head \ "personalDetails" \ "surname").as[String] shouldBe "O'Shea"
       ((response.json \\ "claimants").head \ "partnerDetails" \ "forename").as[String] shouldBe "Frederick"
@@ -188,10 +192,11 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       exclusionFlagIsFound(nino1, excluded = false)
 
       val response = await(request(nino1).get())
-      response.status                                                                                               shouldBe 200
-      (response.json \ "excluded").as[Boolean]                                                                      shouldBe false
-      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "WEEKLY"
-      (response.json \\ "claimants").isEmpty                                                                        shouldBe true
+      response.status shouldBe 200
+      (response.json \ "excluded").as[Boolean] shouldBe false
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
+        .as[String] shouldBe "WEEKLY"
+      (response.json \\ "claimants").isEmpty shouldBe true
     }
 
     "return a valid response for CLAIMANTS_FAILURE - /tcs/:nino/personal-details call returns 500" in {
@@ -203,10 +208,11 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       exclusionFlagIsFound(nino1, excluded = false)
 
       val response = await(request(nino1).get())
-      response.status                                                                                               shouldBe 200
-      (response.json \ "excluded").as[Boolean]                                                                      shouldBe false
-      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "WEEKLY"
-      (response.json \\ "claimants").isEmpty                                                                        shouldBe true
+      response.status shouldBe 200
+      (response.json \ "excluded").as[Boolean] shouldBe false
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
+        .as[String] shouldBe "WEEKLY"
+      (response.json \\ "claimants").isEmpty shouldBe true
     }
 
     "return a valid response for CLAIMANTS_FAILURE - /tcs/:nino/personal-details call returns 503" in {
@@ -218,10 +224,11 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       exclusionFlagIsFound(nino1, excluded = false)
 
       val response = await(request(nino1).get())
-      response.status                                                                                               shouldBe 200
-      (response.json \ "excluded").as[Boolean]                                                                      shouldBe false
-      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency").as[String] shouldBe "WEEKLY"
-      (response.json \\ "claimants").isEmpty                                                                        shouldBe true
+      response.status shouldBe 200
+      (response.json \ "excluded").as[Boolean] shouldBe false
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
+        .as[String] shouldBe "WEEKLY"
+      (response.json \\ "claimants").isEmpty shouldBe true
     }
 
     "return a valid response for CLAIMANTS_FAILURE - /tcs/:nino/partner-details call returns 404" in {
@@ -325,7 +332,8 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
     }
 
     "return 400 if journeyId is invalid" in {
-      val response = await(wsUrl(s"/income/$nino1/tax-credits/tax-credits-summary?journeyId=XXXXXXXXXXXXXXXXXXXX").get())
+      val response =
+        await(wsUrl(s"/income/$nino1/tax-credits/tax-credits-summary?journeyId=XXXXXXXXXXXXXXXXXXXX").get())
       response.status shouldBe 400
     }
 

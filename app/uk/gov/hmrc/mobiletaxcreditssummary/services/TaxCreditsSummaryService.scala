@@ -30,18 +30,27 @@ import uk.gov.hmrc.mobiletaxcreditssummary.utils.LocalDateProvider
 import scala.concurrent.{ExecutionContext, Future}
 
 trait TaxCreditsSummaryService {
-  def getTaxCreditsSummaryResponse(nino: Nino)(implicit hc: HeaderCarrier, ex: ExecutionContext): Future[TaxCreditsSummaryResponse]
+
+  def getTaxCreditsSummaryResponse(
+                                    nino: Nino
+                                  )(implicit hc: HeaderCarrier,
+                                    ex: ExecutionContext
+                                  ): Future[TaxCreditsSummaryResponse]
 }
 
 @Singleton
 class LiveTaxCreditsSummaryService @Inject()(
-  taxCreditsBrokerConnector:                                                TaxCreditsBrokerConnector,
-  localDateProvider:                                                        LocalDateProvider,
-  @Named("reportActualProfitPeriod.startDate") reportActualProfitStartDate: String,
-  @Named("reportActualProfitPeriod.endDate") reportActualProfitEndDate:     String)
-    extends TaxCreditsSummaryService {
+                                              taxCreditsBrokerConnector: TaxCreditsBrokerConnector,
+                                              localDateProvider: LocalDateProvider,
+                                              @Named("reportActualProfitPeriod.startDate") reportActualProfitStartDate: String,
+                                              @Named("reportActualProfitPeriod.endDate") reportActualProfitEndDate: String)
+  extends TaxCreditsSummaryService {
 
-  override def getTaxCreditsSummaryResponse(nino: Nino)(implicit hc: HeaderCarrier, ex: ExecutionContext): Future[TaxCreditsSummaryResponse] = {
+  override def getTaxCreditsSummaryResponse(
+                                             nino: Nino
+                                           )(implicit hc: HeaderCarrier,
+                                             ex: ExecutionContext
+                                           ): Future[TaxCreditsSummaryResponse] = {
     val tcNino = TaxCreditsNino(nino.value)
     val now: LocalDate = localDateProvider.now
 
@@ -49,7 +58,11 @@ class LiveTaxCreditsSummaryService @Inject()(
       def getChildrenAge16AndUnder: Future[Seq[Person]] =
         taxCreditsBrokerConnector.getChildren(tcNino).map(children => Child.getEligibleChildren(children))
 
-      def createLocalDate(year: Int, month: Month, day: Int): LocalDate = LocalDate.of(year, month, day)
+      def createLocalDate(
+                           year: Int,
+                           month: Month,
+                           day: Int
+                         ): LocalDate = LocalDate.of(year, month, day)
 
       def isFtnaeDate(payment: FuturePayment): Boolean =
         payment.paymentDate.isAfter(createLocalDate(now.getYear, Month.AUGUST, 31).atStartOfDay()) && payment.paymentDate.getYear == now.getYear
@@ -59,7 +72,7 @@ class LiveTaxCreditsSummaryService @Inject()(
       def hasAFtnaePayment(paymentSummary: PaymentSummary): Boolean =
         paymentSummary.childTaxCredit match {
           case None if (now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 8))) => true
-          case None                                                                     => false
+          case None => false
           case Some(ctc)                                                                => ctc.paymentSeq.count(payment => isFtnaeDate(payment)) > 0 //TODO check if should be >
         }
 
@@ -72,8 +85,8 @@ class LiveTaxCreditsSummaryService @Inject()(
           case (true, true) if now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 1)) =>
             Some(FtnaeLink(preFtnaeDeadline = true, "/tax-credits-service/home/children-and-childcare"))
           case (true, true)
-              if now.isAfter(createLocalDate(now.getYear, Month.AUGUST, 31)) &&
-                now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 8)) =>
+            if now.isAfter(createLocalDate(now.getYear, Month.AUGUST, 31)) &&
+              now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 8)) =>
             Some(FtnaeLink(preFtnaeDeadline = false, "/tax-credits-service/children/add-child/who-do-you-want-to-add"))
           case _ => None
         }
@@ -85,62 +98,81 @@ class LiveTaxCreditsSummaryService @Inject()(
         else
           taxCreditsBrokerConnector.getDashboardData(tcNino).flatMap {
             case None => Future successful None
-            case Some(dashboardData) => buildReportActualProfit(dashboardData.actualIncomeStatus, dashboardData.awardDetails.mainApplicantNino)
+            case Some(dashboardData) =>
+              buildReportActualProfit(dashboardData.actualIncomeStatus, dashboardData.awardDetails.mainApplicantNino)
           }
 
       def buildReportActualProfit(
-        status:            ClaimActualIncomeEligibilityStatus,
-        mainApplicantNino: TaxCreditsNino): Future[Option[ReportActualProfit]] = {
+                                   status: ClaimActualIncomeEligibilityStatus,
+                                   mainApplicantNino: TaxCreditsNino
+                                 ): Future[Option[ReportActualProfit]] = {
         val userLoggedInIsMainApplicant = tcNino.value == mainApplicantNino.value
         (status.applicant1, status.applicant2, userLoggedInIsMainApplicant) match {
-          case (ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, _) =>
+          case (ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED,
+          ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED,
+          _) =>
             Future successful Some(
               ReportActualProfit(
                 "/tax-credits-service/actual-profit",
                 reportActualProfitEndDate,
                 userMustReportIncome = true,
                 partnerMustReportIncome = true
-              ))
-          case (ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, ClaimActualIncomeEligibilityStatus.APPLICANT_NOT_APPLICABLE, true) =>
+              )
+            )
+          case (ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED,
+          ClaimActualIncomeEligibilityStatus.APPLICANT_NOT_APPLICABLE,
+          true) =>
             Future successful Some(
               ReportActualProfit(
                 "/tax-credits-service/actual-self-employed-profit-or-loss",
                 reportActualProfitEndDate,
                 userMustReportIncome = true,
                 partnerMustReportIncome = false
-              ))
-          case (ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, ClaimActualIncomeEligibilityStatus.APPLICANT_NOT_APPLICABLE, false) =>
+              )
+            )
+          case (ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED,
+          ClaimActualIncomeEligibilityStatus.APPLICANT_NOT_APPLICABLE,
+          false) =>
             Future successful Some(
               ReportActualProfit(
                 "/tax-credits-service/actual-self-employed-profit-or-loss-partner",
                 reportActualProfitEndDate,
                 userMustReportIncome = false,
                 partnerMustReportIncome = true
-              ))
-          case (ClaimActualIncomeEligibilityStatus.APPLICANT_NOT_APPLICABLE, ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, false) =>
+              )
+            )
+          case (ClaimActualIncomeEligibilityStatus.APPLICANT_NOT_APPLICABLE,
+          ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED,
+          false) =>
             Future successful Some(
               ReportActualProfit(
                 "/tax-credits-service/actual-self-employed-profit-or-loss",
                 reportActualProfitEndDate,
                 userMustReportIncome = true,
                 partnerMustReportIncome = false
-              ))
-          case (ClaimActualIncomeEligibilityStatus.APPLICANT_NOT_APPLICABLE, ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED, true) =>
+              )
+            )
+          case (ClaimActualIncomeEligibilityStatus.APPLICANT_NOT_APPLICABLE,
+          ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED,
+          true) =>
             Future successful Some(
               ReportActualProfit(
                 "/tax-credits-service/actual-self-employed-profit-or-loss-partner",
                 reportActualProfitEndDate,
                 userMustReportIncome = false,
                 partnerMustReportIncome = true
-              ))
+              )
+            )
           case (_, _, _) => Future successful None
         }
       }
 
       def reportActualProfitPeriodOpen: Boolean = {
         val startDate = ZonedDateTime.parse(reportActualProfitStartDate)
-        val endDate   = ZonedDateTime.parse(reportActualProfitEndDate)
-        (LocalDateTime.now().isAfter(startDate.toLocalDateTime) && LocalDateTime.now().isBefore(endDate.toLocalDateTime))
+        val endDate = ZonedDateTime.parse(reportActualProfitEndDate)
+        (LocalDateTime.now().isAfter(startDate.toLocalDateTime) && LocalDateTime
+          .now()
+          .isBefore(endDate.toLocalDateTime))
       }
 
       def getInformationMessage: Option[InformationMessage] =
@@ -154,14 +186,16 @@ class LiveTaxCreditsSummaryService @Inject()(
               InformationMessage(
                 f"We are currently working out your payments as your $childChildren changing their education or training. This should be done by 7 September ${now.getYear}.",
                 f"If your $childChildren staying in education or training, you should update their details."
-              ))
+              )
+            )
           } else if (now.isAfter(createLocalDate(now.getYear, Month.AUGUST, 31)) &&
                      now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 8)) && hasSpecialCircumstances) {
             Some(
               InformationMessage(
                 f"We are currently working out your payments as your $childChildren changing their education or training. This should be done by 7 September ${now.getYear}.",
                 f"If you have let us know that your $childChildren staying in education or training, they will be added back automatically. Otherwise, you can add them back to your claim."
-              ))
+              )
+            )
           } else {
             None
           }

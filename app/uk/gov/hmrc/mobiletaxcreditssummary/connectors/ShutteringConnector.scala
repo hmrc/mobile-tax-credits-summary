@@ -27,17 +27,22 @@ import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ShutteringConnector @Inject()(http: CoreGet, @Named("mobile-shuttering") serviceUrl: String) {
+class ShutteringConnector @Inject()(
+                                     http: CoreGet,
+                                     @Named("mobile-shuttering") serviceUrl: String) {
 
   def getShutteringStatus(
-    journeyId: JourneyId
-  )(
-    implicit headerCarrier: HeaderCarrier,
-    ex:                     ExecutionContext
-  ): Future[Shuttering] =
-    http.GET[JsValue](s"$serviceUrl/mobile-shuttering/service/mobile-tax-credits-summary/shuttered-status?journeyId=$journeyId").map { json =>
-      (json).as[Shuttering]
-    } recover {
+                           journeyId: JourneyId
+                         )(implicit headerCarrier: HeaderCarrier,
+                           ex: ExecutionContext
+                         ): Future[Shuttering] =
+    http
+      .GET[JsValue](
+        s"$serviceUrl/mobile-shuttering/service/mobile-tax-credits-summary/shuttered-status?journeyId=$journeyId"
+      )
+      .map { json =>
+        (json).as[Shuttering]
+      } recover {
       case e: Upstream5xxResponse => {
         Logger.warn(s"Internal Server Error received from mobile-shuttering:\n $e \nAssuming unshuttered.")
         Shuttering.shutteringDisabled

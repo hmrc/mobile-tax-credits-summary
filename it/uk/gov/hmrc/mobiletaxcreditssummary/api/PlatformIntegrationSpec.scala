@@ -24,7 +24,7 @@ class PlatformIntegrationSpec extends BaseISpec with Eventually with PlayRunners
   override protected def appBuilder: GuiceApplicationBuilder = new GuiceApplicationBuilder().configure(
     configuration ++
       Map(
-        "api.access.white-list.applicationIds"       -> Seq(appId1, appId2)
+        "api.access.white-list.applicationIds" -> Seq(appId1, appId2)
       )
   )
 

@@ -20,7 +20,7 @@ import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc._
 import uk.gov.hmrc.api.controllers._
-import uk.gov.hmrc.auth.core.retrieve.Retrievals._
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AuthorisedFunctions, Enrolment, EnrolmentIdentifier}
 import uk.gov.hmrc.domain.Nino
@@ -54,7 +54,11 @@ trait Authorisation extends Results with AuthorisedFunctions {
           throw ninoNotFoundOnAccount
       }
 
-  def invokeAuthBlock[A](request: Request[A], block: Request[A] => Future[Result], taxId: Option[Nino]): Future[Result] = {
+  def invokeAuthBlock[A](
+                          request: Request[A],
+                          block: Request[A] => Future[Result],
+                          taxId: Option[Nino]
+                        ): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, None)
 
     grantAccess(taxId.getOrElse(Nino("")))
@@ -84,15 +88,23 @@ trait Authorisation extends Results with AuthorisedFunctions {
 trait AccessControl extends HeaderValidator with Authorisation {
   outer =>
 
-  def validateAcceptWithAuth(rules: Option[String] => Boolean, taxId: Option[Nino]): ActionBuilder[Request, AnyContent] =
+  def validateAcceptWithAuth(
+                              rules: Option[String] => Boolean,
+                              taxId: Option[Nino]
+                            ): ActionBuilder[Request, AnyContent] =
     new ActionBuilder[Request, AnyContent] {
 
-      def invokeBlock[A](request: Request[A], block: Request[A] => Future[Result]): Future[Result] =
+      def invokeBlock[A](
+                          request: Request[A],
+                          block: Request[A] => Future[Result]
+                        ): Future[Result] =
         if (rules(request.headers.get("Accept"))) {
           if (requiresAuth) invokeAuthBlock(request, block, taxId)
           else block(request)
         } else Future.successful(Status(ErrorAcceptHeaderInvalid.httpStatusCode)(Json.toJson(ErrorAcceptHeaderInvalid)))
-      override def parser:                     BodyParser[AnyContent] = outer.parser
-      override protected def executionContext: ExecutionContext       = outer.executionContext
+
+      override def parser: BodyParser[AnyContent] = outer.parser
+
+      override protected def executionContext: ExecutionContext = outer.executionContext
     }
 }

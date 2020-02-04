@@ -19,7 +19,9 @@ package uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata
 import play.api.libs.json._
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.ClaimActualIncomeEligibilityStatus.ApplicantActualIncomeEligibilityStatus
 
-case class ClaimActualIncomeEligibilityStatus(applicant1: ApplicantActualIncomeEligibilityStatus, applicant2: ApplicantActualIncomeEligibilityStatus)
+case class ClaimActualIncomeEligibilityStatus(
+                                               applicant1: ApplicantActualIncomeEligibilityStatus,
+                                               applicant2: ApplicantActualIncomeEligibilityStatus)
 
 object ClaimActualIncomeEligibilityStatus {
 

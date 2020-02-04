@@ -31,25 +31,35 @@ import uk.gov.hmrc.mobiletaxcreditssummary.mocks.{AuditMock, AuthorisationMock, 
 import uk.gov.hmrc.mobiletaxcreditssummary.services.LiveTaxCreditsSummaryService
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
-trait TestSetup extends WordSpecLike with Matchers with MockFactory with TaxCreditsBrokerConnectorMock with AuthorisationMock with AuditMock with ShutteringMock {
+trait TestSetup
+  extends WordSpecLike
+    with Matchers
+    with MockFactory
+    with TaxCreditsBrokerConnectorMock
+    with AuthorisationMock
+    with AuditMock
+    with ShutteringMock {
 
-  implicit val hc:                            HeaderCarrier                = HeaderCarrier()
-  implicit val mockAuthConnector:             AuthConnector                = mock[AuthConnector]
-  implicit val mockTaxCreditsBrokerConnector: TaxCreditsBrokerConnector    = mock[TaxCreditsBrokerConnector]
-  implicit val mockAuditConnector:            AuditConnector               = mock[AuditConnector]
-  implicit val mockService:                   LiveTaxCreditsSummaryService = mock[LiveTaxCreditsSummaryService]
-  implicit val mockConfiguration:             Configuration                = mock[Configuration]
-  implicit val mockShutteringConnector:       ShutteringConnector          = mock[ShutteringConnector]
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val mockAuthConnector: AuthConnector = mock[AuthConnector]
+  implicit val mockTaxCreditsBrokerConnector: TaxCreditsBrokerConnector = mock[TaxCreditsBrokerConnector]
+  implicit val mockAuditConnector: AuditConnector = mock[AuditConnector]
+  implicit val mockService: LiveTaxCreditsSummaryService = mock[LiveTaxCreditsSummaryService]
+  implicit val mockConfiguration: Configuration = mock[Configuration]
+  implicit val mockShutteringConnector: ShutteringConnector = mock[ShutteringConnector]
 
-  val shuttered    = Shuttering(shuttered = true, Some("Shuttered"), Some("Tax Credits Summary is currently not available"))
+  val shuttered =
+    Shuttering(shuttered = true, Some("Shuttered"), Some("Tax Credits Summary is currently not available"))
   val notShuttered = Shuttering.shutteringDisabled
 
-  val noNinoFoundOnAccount: JsValue = Json.parse("""{"code":"UNAUTHORIZED","message":"NINO does not exist on account"}""")
+  val noNinoFoundOnAccount: JsValue =
+    Json.parse("""{"code":"UNAUTHORIZED","message":"NINO does not exist on account"}""")
+
   val lowConfidenceLevelError: JsValue =
     Json.parse("""{"code":"LOW_CONFIDENCE_LEVEL","message":"Confidence Level on account does not allow access"}""")
 
-  val nino             = "CS700100A"
-  val incorrectNino    = Nino("SC100700A")
+  val nino = "CS700100A"
+  val incorrectNino = Nino("SC100700A")
   val renewalReference = RenewalReference("111111111111111")
   val acceptHeader: (String, String) = "Accept" -> "application/vnd.hmrc.1.0+json"
 
@@ -61,6 +71,7 @@ trait TestSetup extends WordSpecLike with Matchers with MockFactory with TaxCred
       acceptHeader,
       "Authorization" -> "Some Header"
     )
+
   lazy val requestInvalidHeaders: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
     .withSession(
       "AuthToken" -> "Some Header"
@@ -69,7 +80,10 @@ trait TestSetup extends WordSpecLike with Matchers with MockFactory with TaxCred
       "Authorization" -> "Some Header"
     )
 
-  def emptyRequestWithAcceptHeader(renewalsRef: RenewalReference, nino: Nino): FakeRequest[AnyContentAsEmpty.type] =
+  def emptyRequestWithAcceptHeader(
+                                    renewalsRef: RenewalReference,
+                                    nino: Nino
+                                  ): FakeRequest[AnyContentAsEmpty.type] =
     FakeRequest().withHeaders(acceptHeader)
 
 }

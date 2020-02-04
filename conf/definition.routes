@@ -1,6 +1,6 @@
 
-GET        /api/definition                              uk.gov.hmrc.mobiletaxcreditssummary.controllers.api.DocumentationController.definition()
+GET        /api/definition                                  uk.gov.hmrc.mobiletaxcreditssummary.controllers.api.DocumentationController.definition()
 
-GET        /api/documentation/:version/:endpointName    uk.gov.hmrc.mobiletaxcreditssummary.controllers.api.DocumentationController.documentation(version:String,endpointName:String)
+GET        /api/documentation/:version/:endpointName        uk.gov.hmrc.mobiletaxcreditssummary.controllers.api.DocumentationController.documentation(version:String,endpointName:String)
 
-GET        /api/conf/:version/*file                     uk.gov.hmrc.mobiletaxcreditssummary.controllers.api.DocumentationController.conf(version, file)
+GET        /api/conf/:version/*file                         uk.gov.hmrc.mobiletaxcreditssummary.controllers.api.DocumentationController.conf(version, file)

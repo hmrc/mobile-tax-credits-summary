@@ -26,34 +26,62 @@ import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TaxCreditsBrokerConnector @Inject()(http: CoreGet,
-                                          @Named("tax-credits-broker") serviceUrl: String) {
+class TaxCreditsBrokerConnector @Inject()(
+                                           http: CoreGet,
+                                           @Named("tax-credits-broker") serviceUrl: String) {
   val externalServiceName = "tax-credits-broker"
 
-  def url(nino: TaxCreditsNino, route: String) = s"$serviceUrl/tcs/${nino.value}/$route"
+  def url(
+           nino: TaxCreditsNino,
+           route: String
+         ) = s"$serviceUrl/tcs/${nino.value}/$route"
 
-  def getPaymentSummary(nino: TaxCreditsNino)(implicit headerCarrier: HeaderCarrier, ex: ExecutionContext): Future[Option[PaymentSummary]] =
+  def getPaymentSummary(
+                         nino: TaxCreditsNino
+                       )(implicit headerCarrier: HeaderCarrier,
+                         ex: ExecutionContext
+                       ): Future[Option[PaymentSummary]] =
     http.GET[Option[PaymentSummary]](url(nino, "payment-summary")).recover {
       case _: NotFoundException => None
     }
 
-  def getPersonalDetails(nino: TaxCreditsNino)(implicit headerCarrier: HeaderCarrier, ex: ExecutionContext): Future[Person] =
+  def getPersonalDetails(
+                          nino: TaxCreditsNino
+                        )(implicit headerCarrier: HeaderCarrier,
+                          ex: ExecutionContext
+                        ): Future[Person] =
     http.GET[Person](url(nino, "personal-details"))
 
-  def getPartnerDetails(nino: TaxCreditsNino)(implicit headerCarrier: HeaderCarrier, ex: ExecutionContext): Future[Option[Person]] =
+  def getPartnerDetails(
+                         nino: TaxCreditsNino
+                       )(implicit headerCarrier: HeaderCarrier,
+                         ex: ExecutionContext
+                       ): Future[Option[Person]] =
     http.GET[Option[Person]](url(nino, "partner-details")).recover {
       case _: NotFoundException => None
     }
 
-  def getChildren(nino: TaxCreditsNino)(implicit headerCarrier: HeaderCarrier, ex: ExecutionContext): Future[Seq[Child]] =
+  def getChildren(
+                   nino: TaxCreditsNino
+                 )(implicit headerCarrier: HeaderCarrier,
+                   ex: ExecutionContext
+                 ): Future[Seq[Child]] =
     http.GET[Children](url(nino, "children")).map(children => children.child)
 
-  def getExclusion(nino: TaxCreditsNino)(implicit headerCarrier: HeaderCarrier, ex: ExecutionContext): Future[Option[Exclusion]] =
+  def getExclusion(
+                    nino: TaxCreditsNino
+                  )(implicit headerCarrier: HeaderCarrier,
+                    ex: ExecutionContext
+                  ): Future[Option[Exclusion]] =
     http.GET[Option[Exclusion]](url(nino, "exclusion")).recover {
       case _: NotFoundException => None
     }
 
-  def getDashboardData(nino: TaxCreditsNino)(implicit headerCarrier: HeaderCarrier, ex: ExecutionContext): Future[Option[DashboardData]] =
+  def getDashboardData(
+                        nino: TaxCreditsNino
+                      )(implicit headerCarrier: HeaderCarrier,
+                        ex: ExecutionContext
+                      ): Future[Option[DashboardData]] =
     http.GET[Option[DashboardData]](url(nino, "dashboard-data")).fallbackTo {
       Logger.error("dashboard-data call failed. No report actual profit link will be returned")
       Future successful None

@@ -34,56 +34,85 @@ import uk.gov.hmrc.mobiletaxcreditssummary.domain.TaxCreditsNino
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class TaxCreditsBrokerSpec extends WordSpecLike with Matchers with ScalaFutures with FutureAwaits with DefaultAwaitTimeout with FileResource {
+class TaxCreditsBrokerSpec
+  extends WordSpecLike
+    with Matchers
+    with ScalaFutures
+    with FutureAwaits
+    with DefaultAwaitTimeout
+    with FileResource {
 
   trait Setup extends MockFactory {
     implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
     val expectedNextDueDate: LocalDateTime = LocalDate.parse("2015-07-16").atStartOfDay()
 
-    val expectedPaymentWTC:      FuturePayment  = FuturePayment(160.34, expectedNextDueDate, oneOffPayment = false)
-    val expectedPaymentCTC:      FuturePayment  = FuturePayment(140.12, expectedNextDueDate, oneOffPayment = false)
-    val paymentSectionCTC:       PaymentSection = PaymentSection(List(expectedPaymentCTC), "WEEKLY")
-    val paymentSectionWTC:       PaymentSection = PaymentSection(List(expectedPaymentWTC), "WEEKLY")
-    val paymentSummary:          PaymentSummary = PaymentSummary(Some(paymentSectionWTC), Some(paymentSectionCTC), paymentEnabled = Some(true))
+    val expectedPaymentWTC: FuturePayment = FuturePayment(160.34, expectedNextDueDate, oneOffPayment = false)
+    val expectedPaymentCTC: FuturePayment = FuturePayment(140.12, expectedNextDueDate, oneOffPayment = false)
+    val paymentSectionCTC: PaymentSection = PaymentSection(List(expectedPaymentCTC), "WEEKLY")
+    val paymentSectionWTC: PaymentSection = PaymentSection(List(expectedPaymentWTC), "WEEKLY")
+
+    val paymentSummary: PaymentSummary =
+      PaymentSummary(Some(paymentSectionWTC), Some(paymentSectionCTC), paymentEnabled = Some(true))
     val exclusionPaymentSummary: PaymentSummary = PaymentSummary(None, None, None, None, excluded = Some(true))
+
     val dashboardData: DashboardData =
-      Json.fromJson[DashboardData](parse(findResource("/resources/taxcreditssummary/CS700100A-dashboard-data.json").get)).get
+      Json
+        .fromJson[DashboardData](parse(findResource("/resources/taxcreditssummary/CS700100A-dashboard-data.json").get))
+        .get
 
-    lazy val http500Response: Future[Nothing]      = Future.failed(Upstream5xxResponse("Error", 500, 500))
-    lazy val response:        Future[HttpResponse] = http200Person
+    lazy val http500Response: Future[Nothing] = Future.failed(Upstream5xxResponse("Error", 500, 500))
+    lazy val response: Future[HttpResponse] = http200Person
 
-    lazy val http200Person:        Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(200, Some(Json.toJson(personalDetails))))
-    lazy val http200Partner:       Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(200, Some(Json.toJson(partnerDetails))))
-    lazy val http400Exception:     Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(400, None))
-    lazy val http404NoPartner:     Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(404, None))
-    lazy val http200Children:      Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(200, Some(Json.toJson(tcbChildren))))
-    lazy val http200Payment:       Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(200, Some(Json.toJson(paymentSummary))))
-    lazy val http404Payment:       Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(404, None))
-    lazy val http200Exclusion:     Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(200, Some(Json.toJson(exclusion))))
-    lazy val http200NotExcluded:   Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(200, Some(Json.toJson(notExcluded))))
-    lazy val http404Exclusion:     Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(404, None))
-    lazy val http200dashboardData: Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(200, Some(Json.toJson(dashboardData))))
+    lazy val http200Person: Future[AnyRef with HttpResponse] =
+      Future.successful(HttpResponse(200, Some(Json.toJson(personalDetails))))
+
+    lazy val http200Partner: Future[AnyRef with HttpResponse] =
+      Future.successful(HttpResponse(200, Some(Json.toJson(partnerDetails))))
+    lazy val http400Exception: Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(400, None))
+    lazy val http404NoPartner: Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(404, None))
+
+    lazy val http200Children: Future[AnyRef with HttpResponse] =
+      Future.successful(HttpResponse(200, Some(Json.toJson(tcbChildren))))
+
+    lazy val http200Payment: Future[AnyRef with HttpResponse] =
+      Future.successful(HttpResponse(200, Some(Json.toJson(paymentSummary))))
+    lazy val http404Payment: Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(404, None))
+
+    lazy val http200Exclusion: Future[AnyRef with HttpResponse] =
+      Future.successful(HttpResponse(200, Some(Json.toJson(exclusion))))
+
+    lazy val http200NotExcluded: Future[AnyRef with HttpResponse] =
+      Future.successful(HttpResponse(200, Some(Json.toJson(notExcluded))))
+    lazy val http404Exclusion: Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(404, None))
+
+    lazy val http200dashboardData: Future[AnyRef with HttpResponse] =
+      Future.successful(HttpResponse(200, Some(Json.toJson(dashboardData))))
     lazy val http404dashboardData: Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(404, None))
 
     val AGE17 = "1999-08-31"
     val AGE18 = "1998-01-09"
     val AGE19 = "1997-01-09"
 
-    val SarahSmith:  Child = Child("Sarah", "Smith", LocalDate.parse(AGE17), hasFTNAE  = false, hasConnexions = false, isActive = false, None)
-    val JosephSmith: Child = Child("Joseph", "Smith", LocalDate.parse(AGE18), hasFTNAE = false, hasConnexions = false, isActive = false, None)
-    val MarySmith:   Child = Child("Mary", "Smith", LocalDate.parse(AGE19), hasFTNAE   = false, hasConnexions = false, isActive = false, None)
+    val SarahSmith: Child =
+      Child("Sarah", "Smith", LocalDate.parse(AGE17), hasFTNAE = false, hasConnexions = false, isActive = false, None)
 
-    val nino:            Nino   = Nino("KM569110B")
+    val JosephSmith: Child =
+      Child("Joseph", "Smith", LocalDate.parse(AGE18), hasFTNAE = false, hasConnexions = false, isActive = false, None)
+
+    val MarySmith: Child =
+      Child("Mary", "Smith", LocalDate.parse(AGE19), hasFTNAE = false, hasConnexions = false, isActive = false, None)
+
+    val nino: Nino = Nino("KM569110B")
     val personalDetails: Person = Person(forename = "Nuala", surname = "O'Shea")
-    val partnerDetails:  Person = Person("Frederick", Some("Tarquin"), "Hunter-Smith")
+    val partnerDetails: Person = Person("Frederick", Some("Tarquin"), "Hunter-Smith")
 
-    val children:    Seq[Child] = Seq(SarahSmith, JosephSmith, MarySmith)
-    val tcbChildren: Children   = Children(children)
+    val children: Seq[Child] = Seq(SarahSmith, JosephSmith, MarySmith)
+    val tcbChildren: Children = Children(children)
 
-    val exclusion:   Exclusion = Exclusion(true)
+    val exclusion: Exclusion = Exclusion(true)
     val notExcluded: Exclusion = Exclusion(false)
     val serviceUrl = "someUrl"
 
@@ -91,13 +120,19 @@ class TaxCreditsBrokerSpec extends WordSpecLike with Matchers with ScalaFutures 
 
     def TaxCreditsBrokerTestConnector(response: Option[Future[HttpResponse]] = None): TestTaxCreditsBrokerConnector = {
 
-      val http: CoreGet = new CoreGet with HttpGet {
+      val http: CoreGet = new CoreGet with HttpGet with GetHttpTransport {
         override val hooks: Seq[HttpHook] = NoneRequired
 
         override def configuration: Option[Config] = None
 
-        override def doGet(url: String)(implicit hc: HeaderCarrier): Future[HttpResponse] =
+        override def doGet(
+                            url: String,
+                            headers: Seq[(String, String)] = Seq.empty
+                          )(implicit hc: HeaderCarrier,
+                            ec: ExecutionContext
+                          ): Future[HttpResponse] =
           response.getOrElse(throw new Exception("No response defined!"))
+
         override protected def actorSystem: ActorSystem = ActorSystem()
       }
 
@@ -179,13 +214,13 @@ class TaxCreditsBrokerSpec extends WordSpecLike with Matchers with ScalaFutures 
 
     "return a valid response for getDashboardData when a 200 response is received with a valid json payload" in new Setup {
       override lazy val response: Future[AnyRef with HttpResponse] = http200dashboardData
-      val result:                 Option[DashboardData]           = await(connector.getDashboardData(TaxCreditsNino(nino.value)))
+      val result: Option[DashboardData] = await(connector.getDashboardData(TaxCreditsNino(nino.value)))
       result shouldBe Some(dashboardData)
     }
 
     "return None when dashboard data response is 404" in new Setup {
       override lazy val response: Future[AnyRef with HttpResponse] = http404dashboardData
-      val result:                 Option[DashboardData]           = await(connector.getDashboardData(TaxCreditsNino(nino.value)))
+      val result: Option[DashboardData] = await(connector.getDashboardData(TaxCreditsNino(nino.value)))
       result shouldBe None
     }
   }

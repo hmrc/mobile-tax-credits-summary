@@ -6,12 +6,18 @@ import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, stubFor,
 import uk.gov.hmrc.domain.Nino
 
 object TaxCreditsBrokerStub {
+
   val childrenJson =
     s"""{ "child": [
         {
           "firstNames": "Sarah",
           "surname": "Smith",
-          "dateOfBirth": ${LocalDate.of(LocalDate.now.minusYears(19).getYear, 8, 31).atStartOfDay(ZoneId.systemDefault()).toEpochSecond() * 1000},
+          "dateOfBirth": ${
+      LocalDate
+        .of(LocalDate.now.minusYears(19).getYear, 8, 31)
+        .atStartOfDay(ZoneId.systemDefault())
+        .toEpochSecond() * 1000
+    },
           "hasFTNAE": false,
           "hasConnexions": false,
           "isActive": true
@@ -36,20 +42,28 @@ object TaxCreditsBrokerStub {
   def childrenAreFound(nino: Nino): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${nino.value}/children"))
-        .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(childrenJson)))
+        .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(childrenJson))
+    )
 
   def childrenAreNotFound(nino: Nino): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${nino.value}/children"))
-        .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody("""{ "child": [] }""")))
+        .willReturn(
+          aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody("""{ "child": [] }""")
+        )
+    )
 
   def children500(nino: Nino): Unit =
     stubFor(
-      get(urlPathEqualTo(s"/tcs/${nino.value}/children")).willReturn(aResponse().withStatus(500).withHeader("Content-Type", "application/json")))
+      get(urlPathEqualTo(s"/tcs/${nino.value}/children"))
+        .willReturn(aResponse().withStatus(500).withHeader("Content-Type", "application/json"))
+    )
 
   def children503(nino: Nino): Unit =
     stubFor(
-      get(urlPathEqualTo(s"/tcs/${nino.value}/children")).willReturn(aResponse().withStatus(503).withHeader("Content-Type", "application/json")))
+      get(urlPathEqualTo(s"/tcs/${nino.value}/children"))
+        .willReturn(aResponse().withStatus(503).withHeader("Content-Type", "application/json"))
+    )
 
   def partnerJson(nino: Nino): String =
     s"""{
@@ -65,25 +79,43 @@ object TaxCreditsBrokerStub {
         }
       }""".stripMargin
 
-  def partnerDetailsAreFound(climantsNino: Nino, partnersNino: Nino): Unit =
+  def partnerDetailsAreFound(
+                              climantsNino: Nino,
+                              partnersNino: Nino
+                            ): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${climantsNino.value}/partner-details"))
-        .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(partnerJson(partnersNino))))
+        .willReturn(
+          aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(partnerJson(partnersNino))
+        )
+    )
 
-  def partnerDetailsAreNotFound(climantsNino: Nino, partnersNino: Nino): Unit =
+  def partnerDetailsAreNotFound(
+                                 climantsNino: Nino,
+                                 partnersNino: Nino
+                               ): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${climantsNino.value}/partner-details"))
-        .willReturn(aResponse().withStatus(404).withHeader("Content-Type", "application/json")))
+        .willReturn(aResponse().withStatus(404).withHeader("Content-Type", "application/json"))
+    )
 
-  def partnerDetails500(climantsNino: Nino, partnersNino: Nino): Unit =
+  def partnerDetails500(
+                         climantsNino: Nino,
+                         partnersNino: Nino
+                       ): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${climantsNino.value}/partner-details"))
-        .willReturn(aResponse().withStatus(500).withHeader("Content-Type", "application/json")))
+        .willReturn(aResponse().withStatus(500).withHeader("Content-Type", "application/json"))
+    )
 
-  def partnerDetails503(climantsNino: Nino, partnersNino: Nino): Unit =
+  def partnerDetails503(
+                         climantsNino: Nino,
+                         partnersNino: Nino
+                       ): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${climantsNino.value}/partner-details"))
-        .willReturn(aResponse().withStatus(503).withHeader("Content-Type", "application/json")))
+        .willReturn(aResponse().withStatus(503).withHeader("Content-Type", "application/json"))
+    )
 
   val paymentSummaryJson: String =
     """
@@ -198,27 +230,39 @@ object TaxCreditsBrokerStub {
   def paymntSummaryIsFound(nino: Nino): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${nino.value}/payment-summary"))
-        .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(paymentSummaryJson)))
+        .willReturn(
+          aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(paymentSummaryJson)
+        )
+    )
 
   def paymntSummaryNonTCUser(nino: Nino): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${nino.value}/payment-summary"))
-        .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody("""{ "excluded": true }""")))
+        .willReturn(
+          aResponse()
+            .withStatus(200)
+            .withHeader("Content-Type", "application/json")
+            .withBody("""{ "excluded": true }""")
+        )
+    )
 
   def paymntSummary500(nino: Nino): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${nino.value}/payment-summary"))
-        .willReturn(aResponse().withStatus(500).withHeader("Content-Type", "application/json")))
+        .willReturn(aResponse().withStatus(500).withHeader("Content-Type", "application/json"))
+    )
 
   def paymntSummary503(nino: Nino): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${nino.value}/payment-summary"))
-        .willReturn(aResponse().withStatus(503).withHeader("Content-Type", "application/json")))
+        .willReturn(aResponse().withStatus(503).withHeader("Content-Type", "application/json"))
+    )
 
   def paymentSummary404(nino: Nino): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${nino.value}/payment-summary"))
-        .willReturn(aResponse().withStatus(404).withHeader("Content-Type", "application/json")))
+        .willReturn(aResponse().withStatus(404).withHeader("Content-Type", "application/json"))
+    )
 
   def personalDetailsJson(nino: Nino) =
     s"""
@@ -238,48 +282,74 @@ object TaxCreditsBrokerStub {
   def personalDetailsAreFound(nino: Nino): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${nino.value}/personal-details"))
-        .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(personalDetailsJson(nino))))
+        .willReturn(
+          aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(personalDetailsJson(nino))
+        )
+    )
 
   def personalDetailsAreNotFound(nino: Nino): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${nino.value}/personal-details"))
-        .willReturn(aResponse().withStatus(404).withHeader("Content-Type", "application/json")))
+        .willReturn(aResponse().withStatus(404).withHeader("Content-Type", "application/json"))
+    )
 
   def personalDetails500(nino: Nino): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${nino.value}/personal-details"))
-        .willReturn(aResponse().withStatus(404).withHeader("Content-Type", "application/json")))
+        .willReturn(aResponse().withStatus(404).withHeader("Content-Type", "application/json"))
+    )
 
   def personalDetails503(nino: Nino): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${nino.value}/personal-details"))
-        .willReturn(aResponse().withStatus(404).withHeader("Content-Type", "application/json")))
+        .willReturn(aResponse().withStatus(404).withHeader("Content-Type", "application/json"))
+    )
 
-  def exclusionFlagIsFound(nino: Nino, excluded: Boolean): Unit =
+  def exclusionFlagIsFound(
+                            nino: Nino,
+                            excluded: Boolean
+                          ): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${nino.value}/exclusion"))
-        .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(s"""{ "excluded" : $excluded }""")))
+        .willReturn(
+          aResponse()
+            .withStatus(200)
+            .withHeader("Content-Type", "application/json")
+            .withBody(s"""{ "excluded" : $excluded }""")
+        )
+    )
 
   def exclusionFlagIsNotFound(nino: Nino): Unit =
     stubFor(
-      get(urlPathEqualTo(s"/tcs/${nino.value}/exclusion")).willReturn(aResponse().withStatus(404).withHeader("Content-Type", "application/json")))
+      get(urlPathEqualTo(s"/tcs/${nino.value}/exclusion"))
+        .willReturn(aResponse().withStatus(404).withHeader("Content-Type", "application/json"))
+    )
 
   def exclusion500(nino: Nino): Unit =
     stubFor(
-      get(urlPathEqualTo(s"/tcs/${nino.value}/exclusion")).willReturn(aResponse().withStatus(500).withHeader("Content-Type", "application/json")))
+      get(urlPathEqualTo(s"/tcs/${nino.value}/exclusion"))
+        .willReturn(aResponse().withStatus(500).withHeader("Content-Type", "application/json"))
+    )
 
   def exclusion503(nino: Nino): Unit =
     stubFor(
-      get(urlPathEqualTo(s"/tcs/${nino.value}/exclusion")).willReturn(aResponse().withStatus(503).withHeader("Content-Type", "application/json")))
+      get(urlPathEqualTo(s"/tcs/${nino.value}/exclusion"))
+        .willReturn(aResponse().withStatus(503).withHeader("Content-Type", "application/json"))
+    )
 
   def dashboardDataIsFound(nino: Nino): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${nino.value}/dashboard-data"))
-        .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(dashboardDataJson)))
+        .willReturn(
+          aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(dashboardDataJson)
+        )
+    )
 
   def dashboardDataIsNotFound(nino: Nino): Unit =
     stubFor(
-      get(urlPathEqualTo(s"/tcs/${nino.value}/dashboard-data")).willReturn(aResponse().withStatus(404).withHeader("Content-Type", "application/json")))
+      get(urlPathEqualTo(s"/tcs/${nino.value}/dashboard-data"))
+        .willReturn(aResponse().withStatus(404).withHeader("Content-Type", "application/json"))
+    )
 
   val dashboardDataJson: String =
     """
