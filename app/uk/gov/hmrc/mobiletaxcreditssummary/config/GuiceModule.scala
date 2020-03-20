@@ -53,6 +53,7 @@ class GuiceModule(
       .toInstance(servicesConfig.baseUrl("mobile-shuttering"))
     bindConfigString("reportActualProfitPeriod.startDate", "microservice.reportActualProfitPeriod.startDate")
     bindConfigString("reportActualProfitPeriod.endDate", "microservice.reportActualProfitPeriod.endDate")
+    bindConfigString("featureFlag.covid", "microservice.featureFlag.covid")
 
     bind(classOf[ApiAccess]).toInstance(
       ApiAccess("PRIVATE", configuration.underlying.getStringList("api.access.white-list.applicationIds").asScala)

@@ -24,18 +24,18 @@ import play.api.libs.json._
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.PaymentReadWriteUtils.{paymentReads, paymentWrites}
 
 case class InformationMessage(
-                               title: String,
-                               message: String)
+  title:   String,
+  message: String)
 
 object InformationMessage {
   implicit val formats: OFormat[InformationMessage] = Json.format[InformationMessage]
 }
 
 case class PaymentSummary(
-                           workingTaxCredit: Option[PaymentSection],
-                           childTaxCredit: Option[PaymentSection],
-                           paymentEnabled: Option[Boolean] = Some(false),
-                           specialCircumstances: Option[String] = None,
+  workingTaxCredit:     Option[PaymentSection],
+  childTaxCredit:       Option[PaymentSection],
+  paymentEnabled:       Option[Boolean] = Some(false),
+  specialCircumstances: Option[String] = None,
   excluded:             Option[Boolean] = None,
   isMultipleFTNAE:      Option[Boolean] = None,
   informationMessage:   Option[InformationMessage] = None) {
@@ -43,13 +43,13 @@ case class PaymentSummary(
   def totalsByDate: Option[List[Total]] =
     total(
       workingTaxCredit.map(_.paymentSeq).getOrElse(Seq.empty)
-        ++ childTaxCredit.map(_.paymentSeq).getOrElse(Seq.empty)
+      ++ childTaxCredit.map(_.paymentSeq).getOrElse(Seq.empty)
     )
 
   def previousTotalsByDate: Option[List[Total]] =
     total(
       workingTaxCredit.flatMap(_.previousPaymentSeq).getOrElse(Seq.empty)
-        ++ childTaxCredit.flatMap(_.previousPaymentSeq).getOrElse(Seq.empty)
+      ++ childTaxCredit.flatMap(_.previousPaymentSeq).getOrElse(Seq.empty)
     )
 
   private def total(payments: Seq[Payment]): Option[List[Total]] =
@@ -60,9 +60,9 @@ case class PaymentSummary(
         distinctDate
           .map(date =>
             Total(payments
-              .filter(_.paymentDate == date)
-              .foldLeft(BigDecimal(0))(_ + _.amount),
-              date)
+                    .filter(_.paymentDate == date)
+                    .foldLeft(BigDecimal(0))(_ + _.amount),
+                  date)
           )
           .toList
       )
@@ -70,9 +70,9 @@ case class PaymentSummary(
 }
 
 case class PaymentSection(
-                           paymentSeq: List[FuturePayment],
-                           paymentFrequency: String,
-                           previousPaymentSeq: Option[List[PastPayment]] = None)
+  paymentSeq:         List[FuturePayment],
+  paymentFrequency:   String,
+  previousPaymentSeq: Option[List[PastPayment]] = None)
 
 sealed trait Payment {
   val amount:        BigDecimal
@@ -92,11 +92,11 @@ sealed trait Payment {
 }
 
 case class FuturePayment(
-                          amount: BigDecimal,
-                          paymentDate: LocalDateTime,
-                          oneOffPayment: Boolean,
-                          holidayType: Option[String] = None)
-  extends Payment {
+  amount:        BigDecimal,
+  paymentDate:   LocalDateTime,
+  oneOffPayment: Boolean,
+  holidayType:   Option[String] = None)
+    extends Payment {
 
   override def oneOffPaymentText: String =
     "One-off payment because of a recent change to help you get the right amount of tax credits."
@@ -105,11 +105,11 @@ case class FuturePayment(
 }
 
 case class PastPayment(
-                        amount: BigDecimal,
-                        paymentDate: LocalDateTime,
-                        oneOffPayment: Boolean,
-                        holidayType: Option[String] = None)
-  extends Payment {
+  amount:        BigDecimal,
+  paymentDate:   LocalDateTime,
+  oneOffPayment: Boolean,
+  holidayType:   Option[String] = None)
+    extends Payment {
 
   override def oneOffPaymentText: String =
     "One-off payment because of a recent change to help you get the right amount of tax credits."
@@ -118,24 +118,24 @@ case class PastPayment(
 }
 
 case class Total(
-                  amount: BigDecimal,
-                  paymentDate: LocalDateTime)
+  amount:      BigDecimal,
+  paymentDate: LocalDateTime)
 
 object PaymentReadWriteUtils {
 
   val paymentReads: FunctionalBuilder[Reads]#CanBuild4[BigDecimal, LocalDateTime, Boolean, Option[String]] =
     (JsPath \ "amount").read[BigDecimal] and
-      (JsPath \ "paymentDate").read[LocalDateTime] and
-      (JsPath \ "oneOffPayment").read[Boolean] and
-      (JsPath \ "holidayType").readNullable[String]
+    (JsPath \ "paymentDate").read[LocalDateTime] and
+    (JsPath \ "oneOffPayment").read[Boolean] and
+    (JsPath \ "holidayType").readNullable[String]
 
   val paymentWrites: OWrites[(BigDecimal, LocalDateTime, Boolean, Option[String], Boolean, Option[String])] = (
     (__ \ "amount").write[BigDecimal] ~
-      (__ \ "paymentDate").write[LocalDateTime] ~
-      (__ \ "oneOffPayment").write[Boolean] ~
-      (__ \ "holidayType").writeNullable[String] ~
-      (__ \ "earlyPayment").write[Boolean] ~
-      (__ \ "explanatoryText").writeNullable[String]
+    (__ \ "paymentDate").write[LocalDateTime] ~
+    (__ \ "oneOffPayment").write[Boolean] ~
+    (__ \ "holidayType").writeNullable[String] ~
+    (__ \ "earlyPayment").write[Boolean] ~
+    (__ \ "explanatoryText").writeNullable[String]
   ).tupled
 }
 
@@ -147,11 +147,11 @@ object FuturePayment {
     def writes(payment: FuturePayment): JsObject =
       paymentWrites.writes(
         (payment.amount,
-          payment.paymentDate,
-          payment.oneOffPayment,
-          payment.holidayType,
-          payment.earlyPayment,
-          payment.explanatoryText)
+         payment.paymentDate,
+         payment.oneOffPayment,
+         payment.holidayType,
+         payment.earlyPayment,
+         payment.explanatoryText)
       )
   }
 }
@@ -164,11 +164,11 @@ object PastPayment {
     def writes(payment: PastPayment): JsObject =
       paymentWrites.writes(
         (payment.amount,
-          payment.paymentDate,
-          payment.oneOffPayment,
-          payment.holidayType,
-          payment.earlyPayment,
-          payment.explanatoryText)
+         payment.paymentDate,
+         payment.oneOffPayment,
+         payment.holidayType,
+         payment.earlyPayment,
+         payment.explanatoryText)
       )
   }
 }
@@ -187,26 +187,26 @@ object PaymentSummary {
 
   implicit val reads: Reads[PaymentSummary] = (
     (JsPath \ "workingTaxCredit").readNullable[PaymentSection] and
-      (JsPath \ "childTaxCredit").readNullable[PaymentSection] and
-      (JsPath \ "paymentEnabled").readNullable[Boolean] and
-      (JsPath \ "specialCircumstances").readNullable[String] and
-      (JsPath \ "excluded").readNullable[Boolean] and
-      (JsPath \ "isMultipleFTNAE").readNullable[Boolean] and
-      (JsPath \ "informationMessage").readNullable[InformationMessage]
-    ) (PaymentSummary.apply _)
+    (JsPath \ "childTaxCredit").readNullable[PaymentSection] and
+    (JsPath \ "paymentEnabled").readNullable[Boolean] and
+    (JsPath \ "specialCircumstances").readNullable[String] and
+    (JsPath \ "excluded").readNullable[Boolean] and
+    (JsPath \ "isMultipleFTNAE").readNullable[Boolean] and
+    (JsPath \ "informationMessage").readNullable[InformationMessage]
+  )(PaymentSummary.apply _)
 
   implicit val writes: Writes[PaymentSummary] = new Writes[PaymentSummary] {
 
     def writes(paymentSummary: PaymentSummary): JsObject = {
       val paymentSummaryWrites = (
         (__ \ "workingTaxCredit").writeNullable[PaymentSection] ~
-          (__ \ "childTaxCredit").writeNullable[PaymentSection] ~
-          (__ \ "paymentEnabled").writeNullable[Boolean] ~
-          (__ \ "specialCircumstances").writeNullable[String] ~
-          (__ \ "excluded").writeNullable[Boolean] ~
-          (__ \ "informationMessage").writeNullable[InformationMessage] ~
-          (__ \ "totalsByDate").writeNullable[List[Total]] ~
-          (__ \ "previousTotalsByDate").writeNullable[List[Total]]
+        (__ \ "childTaxCredit").writeNullable[PaymentSection] ~
+        (__ \ "paymentEnabled").writeNullable[Boolean] ~
+        (__ \ "specialCircumstances").writeNullable[String] ~
+        (__ \ "excluded").writeNullable[Boolean] ~
+        (__ \ "informationMessage").writeNullable[InformationMessage] ~
+        (__ \ "totalsByDate").writeNullable[List[Total]] ~
+        (__ \ "previousTotalsByDate").writeNullable[List[Total]]
       ).tupled
 
       paymentSummaryWrites.writes(

@@ -49,6 +49,9 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
   val paymentSummary: PaymentSummary =
     PaymentSummary(Some(paymentSectionWTC), Some(paymentSectionCTC), paymentEnabled = Some(true))
 
+  val paymentSummaryCovid: PaymentSummary =
+    PaymentSummary(Some(paymentSectionWTC), Some(paymentSectionCTC), paymentEnabled = Some(true), specialCircumstances = Some("COVID"), informationMessage = Some(InformationMessage("COVID", "COVID Body")))
+
   val actualIncomeApp1Eligible: ClaimActualIncomeEligibilityStatus = ClaimActualIncomeEligibilityStatus(
     ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED,
     ClaimActualIncomeEligibilityStatus.APPLICANT_NOT_APPLICABLE

@@ -67,6 +67,24 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
         .as[String] shouldBe "/tax-credits-service/home/children-and-childcare"
     }
 
+    "return excluded = false and a tax credit summary where SANDBOX-CONTROL header is set to COVID" in {
+      val response = await(request(sandboxNino).addHttpHeaders(mobileHeader, "SANDBOX-CONTROL" -> "COVID").get())
+      response.status shouldBe 200
+      (response.json \ "excluded").as[Boolean] shouldBe false
+
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "title")
+        .as[String] shouldBe "COVID"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "message")
+        .as[String] shouldBe "COVID Body"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "specialCircumstances")
+        .as[String] shouldBe "COVID"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
+        .as[String] shouldBe "WEEKLY"
+      (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String] shouldBe "Betty"
+      (response.json \ "taxCreditsSummary" \ "claimants" \ "children").as[List[Person]].head.forename shouldBe "Maya"
+      (response.json \ "taxCreditsSummary" \ "claimants" \ "ftnaeLink").isEmpty shouldBe true
+    }
+
     "return excluded = false and a tax credit summary where SANDBOX-CONTROL header is set to POST-FTNAE" in {
       val response = await(request(sandboxNino).addHttpHeaders(mobileHeader, "SANDBOX-CONTROL" -> "POST-FTNAE").get())
       response.status shouldBe 200

@@ -87,6 +87,12 @@ class SandboxTaxCreditsSummaryController @Inject()(
           val response =
             TaxCreditsSummaryResponse(excluded = false, Some(Json.parse(updateDates(resource)).as[TaxCreditsSummary]))
           Ok(toJson(response))
+        case Some("COVID") =>
+          val resource: String = findResource(s"/resources/taxcreditssummary/covid.json")
+            .getOrElse(throw new IllegalArgumentException("Resource not found!"))
+          val response =
+            TaxCreditsSummaryResponse(excluded = false, Some(Json.parse(updateDates(resource)).as[TaxCreditsSummary]))
+          Ok(toJson(response))
         case Some("CLAIMANTS_FAILURE") =>
           val resource: String = findResource(s"/resources/taxcreditssummary/${nino.value}.json")
             .getOrElse(throw new IllegalArgumentException("Resource not found!"))
