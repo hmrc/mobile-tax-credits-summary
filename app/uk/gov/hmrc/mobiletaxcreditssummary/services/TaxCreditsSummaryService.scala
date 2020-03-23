@@ -186,8 +186,8 @@ class LiveTaxCreditsSummaryService @Inject() (
         if (showCovidNotFtnae) {
           Some(
             InformationMessage(
-              f"COVID",
-              f"COVID Body"
+              "Do not update working hours if you or your partner are working less because of coronavirus (COVID-19)",
+              "We are treating this as a temporary exceptional change. Your working tax credits will not go down because you are working less.\n\nYou can still report changes in income, childcare and increased hours as normal.\n\nSearch COVID-19 on gov.uk for the latest advice."
             )
           )
         } else {
@@ -262,6 +262,5 @@ class LiveTaxCreditsSummaryService @Inject() (
         else buildResponseFromPaymentSummary
       case None => Future successful TaxCreditsSummaryResponse(excluded = false, None)
     }
-
   }
 }

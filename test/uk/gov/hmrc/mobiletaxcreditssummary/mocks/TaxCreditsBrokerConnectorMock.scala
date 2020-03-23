@@ -50,7 +50,7 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
     PaymentSummary(Some(paymentSectionWTC), Some(paymentSectionCTC), paymentEnabled = Some(true))
 
   val paymentSummaryCovid: PaymentSummary =
-    PaymentSummary(Some(paymentSectionWTC), Some(paymentSectionCTC), paymentEnabled = Some(true), specialCircumstances = Some("COVID"), informationMessage = Some(InformationMessage("COVID", "COVID Body")))
+    PaymentSummary(Some(paymentSectionWTC), Some(paymentSectionCTC), paymentEnabled = Some(true), specialCircumstances = Some("COVID"), informationMessage = Some(InformationMessage("Do not update working hours if you or your partner are working less because of coronavirus (COVID-19)", "We are treating this as a temporary exceptional change. Your working tax credits will not go down because you are working less.\n\nYou can still report changes in income, childcare and increased hours as normal.\n\nSearch COVID-19 on gov.uk for the latest advice.")))
 
   val actualIncomeApp1Eligible: ClaimActualIncomeEligibilityStatus = ClaimActualIncomeEligibilityStatus(
     ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED,

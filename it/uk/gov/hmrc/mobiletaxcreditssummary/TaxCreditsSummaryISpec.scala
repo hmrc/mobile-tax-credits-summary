@@ -388,7 +388,7 @@ class TaxCreditsSummaryCovidISpec extends BaseISpec with FileResource {
       val paymentSummary            = taxCreditsSummaryResponse.taxCreditsSummary.get.paymentSummary
 
       paymentSummary.specialCircumstances shouldBe Some("COVID")
-      paymentSummary.informationMessage   shouldBe Some(InformationMessage("COVID", "COVID Body"))
+      paymentSummary.informationMessage   shouldBe Some(InformationMessage("Do not update working hours if you or your partner are working less because of coronavirus (COVID-19)", "We are treating this as a temporary exceptional change. Your working tax credits will not go down because you are working less.\n\nYou can still report changes in income, childcare and increased hours as normal.\n\nSearch COVID-19 on gov.uk for the latest advice."))
 
       taxCreditsSummaryResponse.excluded                   shouldBe false
       paymentSummary.workingTaxCredit.get.paymentFrequency shouldBe "WEEKLY"
