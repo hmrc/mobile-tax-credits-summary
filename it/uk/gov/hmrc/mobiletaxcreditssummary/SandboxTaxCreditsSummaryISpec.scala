@@ -75,7 +75,7 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "title")
         .as[String] shouldBe "Do not update working hours if you or your partner are working less because of coronavirus (COVID-19)"
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "message")
-        .as[String] shouldBe "We are treating this as a temporary exceptional change. Your working tax credits will not go down because you are working less.\n\nYou can still report changes in income, childcare and increased hours as normal.\n\nSearch COVID-19 on gov.uk for the latest advice."
+        .as[String] shouldBe "We are treating this as a temporary exceptional change. Your working tax credits will not go down because you are working less.\n\nYou can still report other changes in income, childcare and increased hours as normal.\n\nSearch COVID-19 on gov.uk for the latest advice."
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "specialCircumstances")
         .as[String] shouldBe "COVID"
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
