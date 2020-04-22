@@ -227,11 +227,130 @@ object TaxCreditsBrokerStub {
       |  }
     """.stripMargin
 
+  def paymentSummaryWithSpecialCircumstancesJson(specialCircumstance: String): String =
+    s"""
+       |{
+       |    "workingTaxCredit": {
+       |      "paymentSeq": [
+       |        {
+       |          "amount": 55,
+       |          "paymentDate": 1509008158781,
+       |          "oneOffPayment": false,
+       |          "earlyPayment": false
+       |        },
+       |        {
+       |          "amount": 55,
+       |          "paymentDate": 1511690158781,
+       |          "oneOffPayment": false,
+       |          "holidayType": "bankHoliday",
+       |          "earlyPayment": true,
+       |          "explanatoryText" : "Your payment is early because of UK bank holidays."
+       |        },
+       |        {
+       |          "amount": 55,
+       |          "paymentDate": 1514282158781,
+       |          "oneOffPayment": true,
+       |          "earlyPayment": false,
+       |          "explanatoryText" : "One-off payment because of a recent change to help you get the right amount of tax credits."
+       |        }
+       |      ],
+       |      "paymentFrequency": "WEEKLY",
+       |      "previousPaymentSeq": [
+       |        {
+       |          "amount": 33,
+       |          "paymentDate": 1503737758781,
+       |          "oneOffPayment": false,
+       |          "earlyPayment": false
+       |        },
+       |        {
+       |          "amount": 43,
+       |          "paymentDate": 1501059358781,
+       |          "oneOffPayment": false,
+       |          "holidayType": "bankHoliday",
+       |          "earlyPayment": true,
+       |          "explanatoryText" : "Your payment was early because of UK bank holidays."
+       |        },
+       |        {
+       |          "amount": 53,
+       |          "paymentDate": 1498467358781,
+       |          "oneOffPayment": true,
+       |          "earlyPayment": false,
+       |          "explanatoryText" : "This was because of a recent change and was to help you get the right amount of tax credits."
+       |        }
+       |      ]
+       |    },
+       |    "childTaxCredit": {
+       |      "paymentSeq": [
+       |        {
+       |          "amount": 55,
+       |          "paymentDate": 1509008158781,
+       |          "oneOffPayment": false,
+       |          "earlyPayment": false
+       |        },
+       |        {
+       |          "amount": 55,
+       |          "paymentDate": 1511690158781,
+       |          "oneOffPayment": false,
+       |          "holidayType": "bankHoliday",
+       |          "earlyPayment": true,
+       |          "explanatoryText" : "Your payment is early because of UK bank holidays."
+       |        },
+       |        {
+       |          "amount": 55,
+       |          "paymentDate": 1514282158781,
+       |          "oneOffPayment": true,
+       |          "earlyPayment": false,
+       |          "explanatoryText" : "One-off payment because of a recent change to help you get the right amount of tax credits."
+       |        }
+       |      ],
+       |      "paymentFrequency": "WEEKLY"
+       |    },
+       |    "paymentEnabled": true,
+       |    "specialCircumstances": "$specialCircumstance",
+       |    "totalsByDate": [
+       |      {
+       |        "amount": 110,
+       |        "paymentDate": 1509008158781
+       |      },
+       |      {
+       |        "amount": 110,
+       |        "paymentDate": 1511690158781
+       |      },
+       |      {
+       |        "amount": 110,
+       |        "paymentDate": 1514282158781
+       |      }
+       |    ],
+       |    "previousTotalsByDate": [
+       |      {
+       |        "amount": 53,
+       |        "paymentDate": 1498467358781
+       |      },
+       |      {
+       |        "amount": 43,
+       |        "paymentDate": 1501059358781
+       |      },
+       |      {
+       |        "amount": 33,
+       |        "paymentDate": 1503737758781
+       |      }
+       |    ]
+       |  }
+    """.stripMargin
+
   def paymntSummaryIsFound(nino: Nino): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${nino.value}/payment-summary"))
         .willReturn(
           aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(paymentSummaryJson)
+        )
+    )
+
+  def paymntSummaryWithSpecialCircumstanceIsFound(nino: Nino, specialCircumstance: String): Unit =
+    stubFor(
+      get(urlPathEqualTo(s"/tcs/${nino.value}/payment-summary"))
+        .willReturn(
+          aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(paymentSummaryWithSpecialCircumstancesJson(specialCircumstance))
         )
     )
 
