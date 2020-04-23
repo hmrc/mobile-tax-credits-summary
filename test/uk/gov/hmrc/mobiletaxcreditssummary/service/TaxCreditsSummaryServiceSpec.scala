@@ -702,10 +702,11 @@ class TaxCreditsSummaryServiceSpec
       await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithInfoMessage(
         Some(OldRate),
         informationMessage,
-        Some(
-          MessageLink(false,
-                      "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries")
-        )
+        None
+//        Some(
+//          MessageLink(false,
+//                      "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries")
+//        )
       )
     }
 
@@ -736,10 +737,11 @@ class TaxCreditsSummaryServiceSpec
       await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithInfoMessage(
         Some(NewRate),
         informationMessage,
-        Some(
-          MessageLink(false,
-            "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries")
-        )
+        None
+//        Some(
+//          MessageLink(false,
+//            "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries")
+//        )
       )
     }
 

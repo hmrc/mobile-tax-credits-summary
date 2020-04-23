@@ -93,11 +93,12 @@ class LiveTaxCreditsSummaryService @Inject() (
               } else None
             } else None
 
-          case Some(NewRate) | Some(OldRate) =>
-            Some(
-              MessageLink(preFtnaeDeadline = false,
-                        "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries")
-            )
+          case Some(NewRate) | Some(OldRate) => None
+            // Do not return link for now until apps are ready
+//            Some(
+//              MessageLink(preFtnaeDeadline = false,
+//                        "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries")
+//            )
 
           case _ => None
         }

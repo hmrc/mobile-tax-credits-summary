@@ -139,8 +139,9 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
         .as[String] shouldBe "Tax credit payment amounts increased on 6 April"
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "message")
         .as[String] shouldBe "You should only contact HMRC if you have not received your revised payment by 18 May."
-      ((response.json \\ "claimants").head \ "ftnaeLink" \ "link")
-        .as[String]                                                                          shouldBe "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries"
+      ((response.json \\ "claimants").head \ "ftnaeLink").isEmpty                            shouldBe true
+      //      ((response.json \\ "claimants").head \ "ftnaeLink" \ "link")
+      //        .as[String]                                                                          shouldBe "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries"
       ((response.json \\ "claimants").head \ "personalDetails" \ "forename").as[String]      shouldBe "Nuala"
       ((response.json \\ "claimants").head \ "personalDetails" \ "surname").as[String]       shouldBe "O'Shea"
       ((response.json \\ "claimants").head \ "partnerDetails" \ "forename").as[String]       shouldBe "Frederick"
@@ -169,8 +170,9 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
         .as[String] shouldBe "Tax credit payment amounts increased on 6 April"
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "message")
         .as[String] shouldBe "Your payments have been revised. You should only contact HMRC if there is a problem with your revised payments."
-      ((response.json \\ "claimants").head \ "ftnaeLink" \ "link")
-        .as[String]                                                                          shouldBe "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries"
+      ((response.json \\ "claimants").head \ "ftnaeLink").isEmpty                            shouldBe true
+//      ((response.json \\ "claimants").head \ "ftnaeLink" \ "link")
+//        .as[String]                                                                          shouldBe "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries"
       ((response.json \\ "claimants").head \ "personalDetails" \ "forename").as[String]      shouldBe "Nuala"
       ((response.json \\ "claimants").head \ "personalDetails" \ "surname").as[String]       shouldBe "O'Shea"
       ((response.json \\ "claimants").head \ "partnerDetails" \ "forename").as[String]       shouldBe "Frederick"
