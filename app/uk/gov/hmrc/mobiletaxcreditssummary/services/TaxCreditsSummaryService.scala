@@ -24,7 +24,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobiletaxcreditssummary.connectors._
 import uk.gov.hmrc.mobiletaxcreditssummary.domain._
-import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.{Child, ClaimActualIncomeEligibilityStatus, Claimants, FTNAE, MessageLink, FuturePayment, InformationMessage, NewRate, OldRate, PaymentSummary, Person, ReportActualProfit, TaxCreditsSummary, TaxCreditsSummaryResponse}
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.{Child, ClaimActualIncomeEligibilityStatus, Claimants, FTNAE, FuturePayment, InformationMessage, MessageLink, NewRate, OldRate, PaymentSummary, Person, ReportActualProfit, TaxCreditsSummary, TaxCreditsSummaryResponse, UnknownCircumstance}
 import uk.gov.hmrc.mobiletaxcreditssummary.utils.LocalDateProvider
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -233,6 +233,10 @@ class LiveTaxCreditsSummaryService @Inject() (
       val childrenFuture: Future[Seq[Person]] = getChildrenAge16AndUnder
       val partnerDetailsFuture  = taxCreditsBrokerConnector.getPartnerDetails(tcNino)
       val personalDetailsFuture = taxCreditsBrokerConnector.getPersonalDetails(tcNino)
+      val specialCircumstance = paymentSummary.specialCircumstances match {
+        case Some(UnknownCircumstance) => None
+        case e => e
+      }
 
       val claimants: Future[Option[Claimants]] = (for {
         children           <- childrenFuture
@@ -245,7 +249,7 @@ class LiveTaxCreditsSummaryService @Inject() (
       }).recover {
         case _ => None
       }
-      val newPayment: PaymentSummary = paymentSummary.copy(informationMessage = getInformationMessage)
+      val newPayment: PaymentSummary = paymentSummary.copy(informationMessage = getInformationMessage, specialCircumstances = specialCircumstance)
       claimants.map(c => TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(newPayment, c))))
     }
 

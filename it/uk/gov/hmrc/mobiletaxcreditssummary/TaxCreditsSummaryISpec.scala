@@ -133,6 +133,8 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (response.json \ "excluded").as[Boolean] shouldBe false
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
         .as[String] shouldBe "WEEKLY"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "specialCircumstances")
+        .as[String] shouldBe "OLD RATE"
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "title")
         .as[String] shouldBe "Tax credit payment amounts increased on 6 April"
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "message")
@@ -161,6 +163,8 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (response.json \ "excluded").as[Boolean] shouldBe false
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
         .as[String] shouldBe "WEEKLY"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "specialCircumstances")
+        .as[String] shouldBe "NEW RATE"
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "title")
         .as[String] shouldBe "Tax credit payment amounts increased on 6 April"
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "message")
@@ -188,16 +192,17 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       response.status                          shouldBe 200
       (response.json \ "excluded").as[Boolean] shouldBe false
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
-        .as[String]                                                                           shouldBe "WEEKLY"
-      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage").isEmpty shouldBe true
-      ((response.json \\ "claimants").head \ "ftnaeLink").isEmpty                             shouldBe true
-      ((response.json \\ "claimants").head \ "personalDetails" \ "forename").as[String]       shouldBe "Nuala"
-      ((response.json \\ "claimants").head \ "personalDetails" \ "surname").as[String]        shouldBe "O'Shea"
-      ((response.json \\ "claimants").head \ "partnerDetails" \ "forename").as[String]        shouldBe "Frederick"
-      ((response.json \\ "claimants").head \ "partnerDetails" \ "otherForenames").as[String]  shouldBe "Tarquin"
-      ((response.json \\ "claimants").head \ "partnerDetails" \ "surname").as[String]         shouldBe "Hunter-Smith"
-      (((response.json \\ "claimants").head \ "children")(0) \ "forename").as[String]         shouldBe "Sarah"
-      (((response.json \\ "claimants").head \ "children")(0) \ "surname").as[String]          shouldBe "Smith"
+        .as[String]                                                                             shouldBe "WEEKLY"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "specialCircumstances").isEmpty shouldBe true
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage").isEmpty   shouldBe true
+      ((response.json \\ "claimants").head \ "ftnaeLink").isEmpty                               shouldBe true
+      ((response.json \\ "claimants").head \ "personalDetails" \ "forename").as[String]         shouldBe "Nuala"
+      ((response.json \\ "claimants").head \ "personalDetails" \ "surname").as[String]          shouldBe "O'Shea"
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "forename").as[String]          shouldBe "Frederick"
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "otherForenames").as[String]    shouldBe "Tarquin"
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "surname").as[String]           shouldBe "Hunter-Smith"
+      (((response.json \\ "claimants").head \ "children")(0) \ "forename").as[String]           shouldBe "Sarah"
+      (((response.json \\ "claimants").head \ "children")(0) \ "surname").as[String]            shouldBe "Smith"
     }
 
     "return a valid response for EXCLUDED-TAX-CREDITS-USER" in {
