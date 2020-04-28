@@ -22,7 +22,7 @@ case class Claimants(
                       personalDetails: Person,
                       partnerDetails: Option[Person],
                       children: Seq[Person],
-                      ftnaeLink: Option[FtnaeLink] = None,
+                      ftnaeLink: Option[MessageLink] = None,
                       reportActualProfit: Option[ReportActualProfit] = None)
 
 object Claimants {
@@ -39,10 +39,10 @@ object ReportActualProfit {
   implicit val formats: OFormat[ReportActualProfit] = Json.format[ReportActualProfit]
 }
 
-case class FtnaeLink(
+case class MessageLink(
                       preFtnaeDeadline: Boolean,
                       link: String)
 
-object FtnaeLink {
-  implicit val formats: OFormat[FtnaeLink] = Json.format[FtnaeLink]
+object MessageLink {
+  implicit val formats: OFormat[MessageLink] = Json.format[MessageLink]
 }

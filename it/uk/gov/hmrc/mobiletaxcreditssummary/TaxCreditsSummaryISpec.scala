@@ -39,10 +39,10 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
 
   override def configuration: Map[String, Any] =
     super.configuration ++
-      Map(
-        "microservice.reportActualProfitPeriod.startDate" -> reportActualProfitStartDate,
-        "microservice.reportActualProfitPeriod.endDate" -> reportActualProfitEndDate
-      )
+    Map(
+      "microservice.reportActualProfitPeriod.startDate" -> reportActualProfitStartDate,
+      "microservice.reportActualProfitPeriod.endDate"   -> reportActualProfitEndDate
+    )
 
   "GET /income/:nino/tax-credits/tax-credits-summary " should {
     def request(nino: Nino): WSRequest =
@@ -58,17 +58,17 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       exclusionFlagIsFound(nino1, excluded = false)
 
       val response = await(request(nino1).get())
-      response.status shouldBe 200
+      response.status                          shouldBe 200
       (response.json \ "excluded").as[Boolean] shouldBe false
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
-        .as[String] shouldBe "WEEKLY"
-      ((response.json \\ "claimants").head \ "personalDetails" \ "forename").as[String] shouldBe "Nuala"
-      ((response.json \\ "claimants").head \ "personalDetails" \ "surname").as[String] shouldBe "O'Shea"
-      ((response.json \\ "claimants").head \ "partnerDetails" \ "forename").as[String] shouldBe "Frederick"
+        .as[String]                                                                          shouldBe "WEEKLY"
+      ((response.json \\ "claimants").head \ "personalDetails" \ "forename").as[String]      shouldBe "Nuala"
+      ((response.json \\ "claimants").head \ "personalDetails" \ "surname").as[String]       shouldBe "O'Shea"
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "forename").as[String]       shouldBe "Frederick"
       ((response.json \\ "claimants").head \ "partnerDetails" \ "otherForenames").as[String] shouldBe "Tarquin"
-      ((response.json \\ "claimants").head \ "partnerDetails" \ "surname").as[String] shouldBe "Hunter-Smith"
-      (((response.json \\ "claimants").head \ "children") (0) \ "forename").as[String] shouldBe "Sarah"
-      (((response.json \\ "claimants").head \ "children") (0) \ "surname").as[String] shouldBe "Smith"
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "surname").as[String]        shouldBe "Hunter-Smith"
+      (((response.json \\ "claimants").head \ "children")(0) \ "forename").as[String]        shouldBe "Sarah"
+      (((response.json \\ "claimants").head \ "children")(0) \ "surname").as[String]         shouldBe "Smith"
     }
 
     "return a valid response for TAX-CREDITS-USER with report actual profit if applicable" in {
@@ -81,17 +81,17 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       dashboardDataIsFound(sandboxNino)
 
       val response = await(request(sandboxNino).get())
-      response.status shouldBe 200
+      response.status                          shouldBe 200
       (response.json \ "excluded").as[Boolean] shouldBe false
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
-        .as[String] shouldBe "WEEKLY"
-      ((response.json \\ "claimants").head \ "personalDetails" \ "forename").as[String] shouldBe "Nuala"
-      ((response.json \\ "claimants").head \ "personalDetails" \ "surname").as[String] shouldBe "O'Shea"
-      ((response.json \\ "claimants").head \ "partnerDetails" \ "forename").as[String] shouldBe "Frederick"
+        .as[String]                                                                          shouldBe "WEEKLY"
+      ((response.json \\ "claimants").head \ "personalDetails" \ "forename").as[String]      shouldBe "Nuala"
+      ((response.json \\ "claimants").head \ "personalDetails" \ "surname").as[String]       shouldBe "O'Shea"
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "forename").as[String]       shouldBe "Frederick"
       ((response.json \\ "claimants").head \ "partnerDetails" \ "otherForenames").as[String] shouldBe "Tarquin"
-      ((response.json \\ "claimants").head \ "partnerDetails" \ "surname").as[String] shouldBe "Hunter-Smith"
-      (((response.json \\ "claimants").head \ "children") (0) \ "forename").as[String] shouldBe "Sarah"
-      (((response.json \\ "claimants").head \ "children") (0) \ "surname").as[String] shouldBe "Smith"
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "surname").as[String]        shouldBe "Hunter-Smith"
+      (((response.json \\ "claimants").head \ "children")(0) \ "forename").as[String]        shouldBe "Sarah"
+      (((response.json \\ "claimants").head \ "children")(0) \ "surname").as[String]         shouldBe "Smith"
       (((response.json \\ "claimants").head \ "reportActualProfit") \ "link")
         .as[String] shouldBe "/tax-credits-service/actual-self-employed-profit-or-loss"
     }
@@ -106,18 +106,105 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       dashboardDataIsNotFound(sandboxNino)
 
       val response = await(request(sandboxNino).get())
-      response.status shouldBe 200
+      response.status                          shouldBe 200
+      (response.json \ "excluded").as[Boolean] shouldBe false
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
+        .as[String]                                                                          shouldBe "WEEKLY"
+      ((response.json \\ "claimants").head \ "personalDetails" \ "forename").as[String]      shouldBe "Nuala"
+      ((response.json \\ "claimants").head \ "personalDetails" \ "surname").as[String]       shouldBe "O'Shea"
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "forename").as[String]       shouldBe "Frederick"
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "otherForenames").as[String] shouldBe "Tarquin"
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "surname").as[String]        shouldBe "Hunter-Smith"
+      (((response.json \\ "claimants").head \ "children")(0) \ "forename").as[String]        shouldBe "Sarah"
+      (((response.json \\ "claimants").head \ "children")(0) \ "surname").as[String]         shouldBe "Smith"
+      ((response.json \\ "claimants").head \ "reportActualProfit").isEmpty
+    }
+
+    "return a valid response for TAX-CREDITS-USER with Old Rate special circumstance" in {
+      grantAccess(nino1.value)
+      childrenAreFound(nino1)
+      partnerDetailsAreFound(nino1, nino2)
+      paymntSummaryWithSpecialCircumstanceIsFound(nino1, "OLD RATE")
+      personalDetailsAreFound(nino1)
+      exclusionFlagIsFound(nino1, excluded = false)
+
+      val response = await(request(nino1).get())
+      response.status                          shouldBe 200
       (response.json \ "excluded").as[Boolean] shouldBe false
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
         .as[String] shouldBe "WEEKLY"
-      ((response.json \\ "claimants").head \ "personalDetails" \ "forename").as[String] shouldBe "Nuala"
-      ((response.json \\ "claimants").head \ "personalDetails" \ "surname").as[String] shouldBe "O'Shea"
-      ((response.json \\ "claimants").head \ "partnerDetails" \ "forename").as[String] shouldBe "Frederick"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "specialCircumstances")
+        .as[String] shouldBe "OLD RATE"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "title")
+        .as[String] shouldBe "Tax credit payment amounts increased on 6 April"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "message")
+        .as[String] shouldBe "You should only contact HMRC if you have not received your revised payment by 18 May."
+      ((response.json \\ "claimants").head \ "ftnaeLink").isEmpty                            shouldBe true
+      //      ((response.json \\ "claimants").head \ "ftnaeLink" \ "link")
+      //        .as[String]                                                                          shouldBe "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries"
+      ((response.json \\ "claimants").head \ "personalDetails" \ "forename").as[String]      shouldBe "Nuala"
+      ((response.json \\ "claimants").head \ "personalDetails" \ "surname").as[String]       shouldBe "O'Shea"
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "forename").as[String]       shouldBe "Frederick"
       ((response.json \\ "claimants").head \ "partnerDetails" \ "otherForenames").as[String] shouldBe "Tarquin"
-      ((response.json \\ "claimants").head \ "partnerDetails" \ "surname").as[String] shouldBe "Hunter-Smith"
-      (((response.json \\ "claimants").head \ "children") (0) \ "forename").as[String] shouldBe "Sarah"
-      (((response.json \\ "claimants").head \ "children") (0) \ "surname").as[String] shouldBe "Smith"
-      ((response.json \\ "claimants").head \ "reportActualProfit").isEmpty
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "surname").as[String]        shouldBe "Hunter-Smith"
+      (((response.json \\ "claimants").head \ "children")(0) \ "forename").as[String]        shouldBe "Sarah"
+      (((response.json \\ "claimants").head \ "children")(0) \ "surname").as[String]         shouldBe "Smith"
+    }
+
+    "return a valid response for TAX-CREDITS-USER with New Rate special circumstance" in {
+      grantAccess(nino1.value)
+      childrenAreFound(nino1)
+      partnerDetailsAreFound(nino1, nino2)
+      paymntSummaryWithSpecialCircumstanceIsFound(nino1, "NEW RATE")
+      personalDetailsAreFound(nino1)
+      exclusionFlagIsFound(nino1, excluded = false)
+
+      val response = await(request(nino1).get())
+      response.status                          shouldBe 200
+      (response.json \ "excluded").as[Boolean] shouldBe false
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
+        .as[String] shouldBe "WEEKLY"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "specialCircumstances")
+        .as[String] shouldBe "NEW RATE"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "title")
+        .as[String] shouldBe "Tax credit payment amounts increased on 6 April"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "message")
+        .as[String] shouldBe "Your payments have been revised. You should only contact HMRC if there is a problem with your revised payments."
+      ((response.json \\ "claimants").head \ "ftnaeLink").isEmpty                            shouldBe true
+//      ((response.json \\ "claimants").head \ "ftnaeLink" \ "link")
+//        .as[String]                                                                          shouldBe "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries"
+      ((response.json \\ "claimants").head \ "personalDetails" \ "forename").as[String]      shouldBe "Nuala"
+      ((response.json \\ "claimants").head \ "personalDetails" \ "surname").as[String]       shouldBe "O'Shea"
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "forename").as[String]       shouldBe "Frederick"
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "otherForenames").as[String] shouldBe "Tarquin"
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "surname").as[String]        shouldBe "Hunter-Smith"
+      (((response.json \\ "claimants").head \ "children")(0) \ "forename").as[String]        shouldBe "Sarah"
+      (((response.json \\ "claimants").head \ "children")(0) \ "surname").as[String]         shouldBe "Smith"
+    }
+
+    "return a valid response for TAX-CREDITS-USER with unknown special circumstance" in {
+      grantAccess(nino1.value)
+      childrenAreFound(nino1)
+      partnerDetailsAreFound(nino1, nino2)
+      paymntSummaryWithSpecialCircumstanceIsFound(nino1, "UNKNOWN CIRCUMSTANCE")
+      personalDetailsAreFound(nino1)
+      exclusionFlagIsFound(nino1, excluded = false)
+
+      val response = await(request(nino1).get())
+      response.status                          shouldBe 200
+      (response.json \ "excluded").as[Boolean] shouldBe false
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
+        .as[String]                                                                             shouldBe "WEEKLY"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "specialCircumstances").isEmpty shouldBe true
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage").isEmpty   shouldBe true
+      ((response.json \\ "claimants").head \ "ftnaeLink").isEmpty                               shouldBe true
+      ((response.json \\ "claimants").head \ "personalDetails" \ "forename").as[String]         shouldBe "Nuala"
+      ((response.json \\ "claimants").head \ "personalDetails" \ "surname").as[String]          shouldBe "O'Shea"
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "forename").as[String]          shouldBe "Frederick"
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "otherForenames").as[String]    shouldBe "Tarquin"
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "surname").as[String]           shouldBe "Hunter-Smith"
+      (((response.json \\ "claimants").head \ "children")(0) \ "forename").as[String]           shouldBe "Sarah"
+      (((response.json \\ "claimants").head \ "children")(0) \ "surname").as[String]            shouldBe "Smith"
     }
 
     "return a valid response for EXCLUDED-TAX-CREDITS-USER" in {
@@ -125,7 +212,7 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       exclusionFlagIsFound(nino1, excluded = true)
 
       val response = await(request(nino1).get())
-      response.status shouldBe 200
+      response.status                          shouldBe 200
       (response.json \ "excluded").as[Boolean] shouldBe true
     }
 
@@ -171,7 +258,7 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       exclusionFlagIsFound(nino1, excluded = false)
 
       val response = await(request(nino1).get())
-      response.status shouldBe 200
+      response.status                          shouldBe 200
       (response.json \ "excluded").as[Boolean] shouldBe false
     }
 
@@ -192,10 +279,10 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       exclusionFlagIsFound(nino1, excluded = false)
 
       val response = await(request(nino1).get())
-      response.status shouldBe 200
+      response.status                          shouldBe 200
       (response.json \ "excluded").as[Boolean] shouldBe false
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
-        .as[String] shouldBe "WEEKLY"
+        .as[String]                          shouldBe "WEEKLY"
       (response.json \\ "claimants").isEmpty shouldBe true
     }
 
@@ -208,10 +295,10 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       exclusionFlagIsFound(nino1, excluded = false)
 
       val response = await(request(nino1).get())
-      response.status shouldBe 200
+      response.status                          shouldBe 200
       (response.json \ "excluded").as[Boolean] shouldBe false
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
-        .as[String] shouldBe "WEEKLY"
+        .as[String]                          shouldBe "WEEKLY"
       (response.json \\ "claimants").isEmpty shouldBe true
     }
 
@@ -224,10 +311,10 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       exclusionFlagIsFound(nino1, excluded = false)
 
       val response = await(request(nino1).get())
-      response.status shouldBe 200
+      response.status                          shouldBe 200
       (response.json \ "excluded").as[Boolean] shouldBe false
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
-        .as[String] shouldBe "WEEKLY"
+        .as[String]                          shouldBe "WEEKLY"
       (response.json \\ "claimants").isEmpty shouldBe true
     }
 

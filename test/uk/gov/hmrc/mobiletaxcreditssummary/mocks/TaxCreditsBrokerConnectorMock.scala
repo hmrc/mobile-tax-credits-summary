@@ -49,6 +49,9 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
   val paymentSummary: PaymentSummary =
     PaymentSummary(Some(paymentSectionWTC), Some(paymentSectionCTC), paymentEnabled = Some(true))
 
+  def paymentSummaryWithInfoMessage(specialCircumstance: Option[SpecialCircumstance], informationMessage: Option[InformationMessage]): PaymentSummary =
+    PaymentSummary(Some(paymentSectionWTC), Some(paymentSectionCTC), paymentEnabled = Some(true), specialCircumstance, informationMessage = informationMessage)
+
   val actualIncomeApp1Eligible: ClaimActualIncomeEligibilityStatus = ClaimActualIncomeEligibilityStatus(
     ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED,
     ClaimActualIncomeEligibilityStatus.APPLICANT_NOT_APPLICABLE
@@ -101,7 +104,7 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
       childTaxCredit = if (ctc) Some(paymentSectionCTCWithFtnae) else None,
       paymentEnabled = Some(true),
       isMultipleFTNAE = Some(false),
-      specialCircumstances = if (ftnae) Some("FTNAE") else None,
+      specialCircumstances = if (ftnae) Some(FTNAE) else None,
       informationMessage =
         if (currentYear && ftnae) if (preSeptember) pre31stAugust("child is") else sept1stTo7th("child is") else None
     )
@@ -117,7 +120,7 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
       childTaxCredit = if (ctc) Some(paymentSectionCTCWithFtnae) else None,
       paymentEnabled = Some(true),
       isMultipleFTNAE = Some(true),
-      specialCircumstances = if (ftnae) Some("FTNAE") else None,
+      specialCircumstances = if (ftnae) Some(FTNAE) else None,
       informationMessage =
         if (currentYear && ftnae) if (preSeptember) pre31stAugust("children are") else sept1stTo7th("children are")
         else None
@@ -157,7 +160,7 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
       Person(forename = "Mary", surname = "Smith"))
   )
 
-  def claimantsFtnae(link: Option[FtnaeLink] = None): Claimants = Claimants(
+  def claimantsFtnae(link: Option[MessageLink] = None): Claimants = Claimants(
     personalDetails,
     Some(partnerDetails),
     Seq(Person(forename = "Sarah", surname = "Smith"),
@@ -166,7 +169,7 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
     link
   )
 
-  def claimantsMultipleFtnae(link: Option[FtnaeLink] = None): Claimants = Claimants(
+  def claimantsMultipleFtnae(link: Option[MessageLink] = None): Claimants = Claimants(
     personalDetails,
     Some(partnerDetails),
     Seq(Person(forename = "Sarah", surname = "Smith"),

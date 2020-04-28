@@ -215,14 +215,14 @@
   },
   "claimants": {
     "reportActualProfit": {
-      "link": "/tax-credits-service/actual-self-employed-profit-or-loss",
+      "link": "/",
       "endDate": "2020-01-31T10:00:00.000Z",
       "userMustReportIncome": true,
       "partnerMustReportIncome": false
     },
     "ftnaeLink": {
       "preFtnaeDeadline": true,
-      "link": "/tax-credits-service/home/children-and-childcare"
+      "link": "/"
     },
     "personalDetails": {
       "forename": "Nuala",
