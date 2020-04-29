@@ -73,7 +73,7 @@ class LiveTaxCreditsSummaryService @Inject() (
         paymentSummary.childTaxCredit match {
           case None if (now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 8))) => true
           case None                                                                     => false
-          case Some(ctc)                                                                => ctc.paymentSeq.count(payment => isFtnaeDate(payment)) > 0 //TODO check if should be >
+          case Some(ctc)                                                                => ctc.paymentSeq.count(payment => isFtnaeDate(payment)) == 0
         }
 
       def getMessageLink(paymentSummary: PaymentSummary): Option[MessageLink] =
