@@ -22,7 +22,7 @@ case class Claimants(
   personalDetails:    Person,
   partnerDetails:     Option[Person],
   children:           Seq[Person],
-  ftnaeLink:          Option[MessageLink] = None,
+  messageLink:        Option[MessageLink] = None,
   reportActualProfit: Option[ReportActualProfit] = None)
 
 object Claimants {
@@ -41,6 +41,7 @@ object ReportActualProfit {
 
 case class MessageLink(
   preFtnaeDeadline: Boolean,
+  linkName:         String,
   link:             String)
 
 object MessageLink {

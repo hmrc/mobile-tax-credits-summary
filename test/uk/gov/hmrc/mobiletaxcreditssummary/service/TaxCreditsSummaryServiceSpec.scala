@@ -95,7 +95,7 @@ class TaxCreditsSummaryServiceSpec
   ): TaxCreditsSummaryResponse =
     TaxCreditsSummaryResponse(taxCreditsSummary = Some(
       TaxCreditsSummary(paymentSummaryWithInfoMessage(specialCircumstance, informationMessage),
-                        Some(claimants.copy(ftnaeLink = ftnaeLink)))
+                        Some(claimants.copy(messageLink = ftnaeLink)))
     )
     )
 
