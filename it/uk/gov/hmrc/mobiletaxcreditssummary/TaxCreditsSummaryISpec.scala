@@ -138,8 +138,8 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "title")
         .as[String] shouldBe "Tax credit payment amounts increased on 6 April"
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "message")
-        .as[String] shouldBe "You should only contact HMRC if you have not received your revised payment by 18 May."
-      ((response.json \\ "claimants").head \ "ftnaeLink").isEmpty                            shouldBe true
+        .as[String]                                               shouldBe "You should only contact HMRC if you have not received your revised payment by 18 May."
+      ((response.json \\ "claimants").head \ "ftnaeLink").isEmpty shouldBe true
       //      ((response.json \\ "claimants").head \ "ftnaeLink" \ "link")
       //        .as[String]                                                                          shouldBe "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries"
       ((response.json \\ "claimants").head \ "personalDetails" \ "forename").as[String]      shouldBe "Nuala"
@@ -169,10 +169,41 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "title")
         .as[String] shouldBe "Tax credit payment amounts increased on 6 April"
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "message")
-        .as[String] shouldBe "Your payments have been revised. You should only contact HMRC if there is a problem with your revised payments."
-      ((response.json \\ "claimants").head \ "ftnaeLink").isEmpty                            shouldBe true
+        .as[String]                                               shouldBe "Your payments have been revised. You should only contact HMRC if there is a problem with your revised payments."
+      ((response.json \\ "claimants").head \ "ftnaeLink").isEmpty shouldBe true
 //      ((response.json \\ "claimants").head \ "ftnaeLink" \ "link")
 //        .as[String]                                                                          shouldBe "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries"
+      ((response.json \\ "claimants").head \ "personalDetails" \ "forename").as[String]      shouldBe "Nuala"
+      ((response.json \\ "claimants").head \ "personalDetails" \ "surname").as[String]       shouldBe "O'Shea"
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "forename").as[String]       shouldBe "Frederick"
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "otherForenames").as[String] shouldBe "Tarquin"
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "surname").as[String]        shouldBe "Hunter-Smith"
+      (((response.json \\ "claimants").head \ "children")(0) \ "forename").as[String]        shouldBe "Sarah"
+      (((response.json \\ "claimants").head \ "children")(0) \ "surname").as[String]         shouldBe "Smith"
+    }
+
+    "return a valid response for TAX-CREDITS-USER with PXP5 special circumstance" in {
+      grantAccess(nino1.value)
+      childrenAreFound(nino1)
+      partnerDetailsAreFound(nino1, nino2)
+      paymntSummaryWithSpecialCircumstanceIsFound(nino1, "PXP5")
+      personalDetailsAreFound(nino1)
+      exclusionFlagIsFound(nino1, excluded = false)
+
+      val response = await(request(nino1).get())
+      response.status                          shouldBe 200
+      (response.json \ "excluded").as[Boolean] shouldBe false
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
+        .as[String] shouldBe "WEEKLY"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "specialCircumstances")
+        .as[String] shouldBe "PXP5"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "title")
+        .as[String] shouldBe "Your payments are being processed"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "message")
+        .as[String]                                               shouldBe "It can take up to 2 days for your payments to show."
+      ((response.json \\ "claimants").head \ "ftnaeLink").isEmpty shouldBe true
+      //      ((response.json \\ "claimants").head \ "ftnaeLink" \ "link")
+      //        .as[String]                                                                          shouldBe "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries"
       ((response.json \\ "claimants").head \ "personalDetails" \ "forename").as[String]      shouldBe "Nuala"
       ((response.json \\ "claimants").head \ "personalDetails" \ "surname").as[String]       shouldBe "O'Shea"
       ((response.json \\ "claimants").head \ "partnerDetails" \ "forename").as[String]       shouldBe "Frederick"

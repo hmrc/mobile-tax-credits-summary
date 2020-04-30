@@ -23,18 +23,18 @@ package object domain {
     * Handy function to calculate the diffs between two json objects and return a list of messages.
     */
   def jsonDiff(
-                name: Option[String],
-                j1: JsValue,
-                j2: JsValue
-              ): List[String] = {
+    name: Option[String],
+    j1:   JsValue,
+    j2:   JsValue
+  ): List[String] = {
     def nam(
-             n: String,
-             io: Option[Int]
-           ): Some[String] =
+      n:  String,
+      io: Option[Int]
+    ): Some[String] =
       (name, io) match {
-        case (None, None) => Some(n)
-        case (None, Some(i)) => Some(s"$n[$i]")
-        case (Some(n1), None) => Some(s"$n1.$n")
+        case (None, None)        => Some(n)
+        case (None, Some(i))     => Some(s"$n[$i]")
+        case (Some(n1), None)    => Some(s"$n1.$n")
         case (Some(n1), Some(i)) => Some(s"$n1.$n[$i]")
       }
 
@@ -52,13 +52,13 @@ package object domain {
             List(s"${name.getOrElse("")}: Array 1 has length ${vs.length} but array 2 has length ${vs2.length}")
           else List()
         lengthCheck ++
-          vs.zipWithIndex.flatMap {
-            case (v, i) =>
-              vs2.drop(i).headOption match {
-                case Some(v2) => jsonDiff(nam(name.getOrElse(""), Some(i)), v, v2)
-                case None => List()
-              }
-          }
+        vs.zipWithIndex.flatMap {
+          case (v, i) =>
+            vs2.drop(i).headOption match {
+              case Some(v2) => jsonDiff(nam(name.getOrElse(""), Some(i)), v, v2)
+              case None     => List()
+            }
+        }
 
       case _ if j1 == j2 => List()
       case _             => List(s"Values of ${name.getOrElse("")} differ - '$j1' vs. '$j2'")

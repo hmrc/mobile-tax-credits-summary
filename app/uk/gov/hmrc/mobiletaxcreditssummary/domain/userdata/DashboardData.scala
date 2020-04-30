@@ -19,12 +19,12 @@ package uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata
 import play.api.libs.json.Json
 
 case class DashboardData(
-                          personalDetails: Person,
-                          partnerDetails: Option[Person],
-                          childrenDetails: Children,
-                          paymentSummary: PaymentSummary,
-                          actualIncomeStatus: ClaimActualIncomeEligibilityStatus,
-                          awardDetails: AwardDetails)
+  personalDetails:    Person,
+  partnerDetails:     Option[Person],
+  childrenDetails:    Children,
+  paymentSummary:     PaymentSummary,
+  actualIncomeStatus: ClaimActualIncomeEligibilityStatus,
+  awardDetails:       AwardDetails)
 
 object DashboardData {
   implicit val formats = Json.format[DashboardData]

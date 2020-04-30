@@ -18,9 +18,9 @@ package uk.gov.hmrc.mobiletaxcreditssummary.domain
 import play.api.libs.json.{Json, OFormat}
 
 case class Shuttering(
-                       shuttered: Boolean,
-                       title: Option[String] = None,
-                       message: Option[String] = None)
+  shuttered: Boolean,
+  title:     Option[String] = None,
+  message:   Option[String] = None)
 
 case object Shuttering {
   implicit val format: OFormat[Shuttering] = Json.format[Shuttering]

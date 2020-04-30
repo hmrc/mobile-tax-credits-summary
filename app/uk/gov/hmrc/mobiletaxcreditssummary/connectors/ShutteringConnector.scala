@@ -27,15 +27,15 @@ import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ShutteringConnector @Inject()(
-                                     http: CoreGet,
-                                     @Named("mobile-shuttering") serviceUrl: String) {
+class ShutteringConnector @Inject() (
+  http:                                   CoreGet,
+  @Named("mobile-shuttering") serviceUrl: String) {
 
   def getShutteringStatus(
-                           journeyId: JourneyId
-                         )(implicit headerCarrier: HeaderCarrier,
-                           ex: ExecutionContext
-                         ): Future[Shuttering] =
+    journeyId:              JourneyId
+  )(implicit headerCarrier: HeaderCarrier,
+    ex:                     ExecutionContext
+  ): Future[Shuttering] =
     http
       .GET[JsValue](
         s"$serviceUrl/mobile-shuttering/service/mobile-tax-credits-summary/shuttered-status?journeyId=$journeyId"

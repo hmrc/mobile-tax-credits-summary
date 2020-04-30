@@ -43,7 +43,11 @@ trait ErrorHandling {
 
   def notFound: Result = Status(ErrorNotFound.httpStatusCode)(toJson(ErrorNotFound))
 
-  def errorWrapper(func: => Future[mvc.Result])(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[Result] =
+  def errorWrapper(
+    func:             => Future[mvc.Result]
+  )(implicit hc:      HeaderCarrier,
+    executionContext: ExecutionContext
+  ): Future[Result] =
     func.recover {
       case _: NotFoundException => notFound
 
@@ -62,23 +66,23 @@ trait ErrorHandling {
 trait TaxCreditsSummaryController {
 
   def taxCreditsSummary(
-                         nino: Nino,
-                         journeyId: JourneyId
-                       ): Action[AnyContent]
+    nino:      Nino,
+    journeyId: JourneyId
+  ): Action[AnyContent]
 }
 
 @Singleton
-class LiveTaxCreditsSummaryController @Inject()(
-                                                 override val authConnector: AuthConnector,
-                                                 @Named("controllers.confidenceLevel") override val confLevel: Int,
-                                                 @Named("appName") override val appName: String,
-                                                 val service: LiveTaxCreditsSummaryService,
-                                                 val auditConnector: AuditConnector,
-                                                 val appNameConfiguration: Configuration,
-                                                 cc: ControllerComponents,
-                                                 shutteringConnector: ShutteringConnector
-                                               )(implicit override val executionContext: ExecutionContext)
-  extends BackendController(cc)
+class LiveTaxCreditsSummaryController @Inject() (
+  override val authConnector:                                   AuthConnector,
+  @Named("controllers.confidenceLevel") override val confLevel: Int,
+  @Named("appName") override val appName:                       String,
+  val service:                                                  LiveTaxCreditsSummaryService,
+  val auditConnector:                                           AuditConnector,
+  val appNameConfiguration:                                     Configuration,
+  cc:                                                           ControllerComponents,
+  shutteringConnector:                                          ShutteringConnector
+)(implicit override val executionContext:                       ExecutionContext)
+    extends BackendController(cc)
     with TaxCreditsSummaryController
     with AccessControl
     with ErrorHandling
@@ -88,9 +92,9 @@ class LiveTaxCreditsSummaryController @Inject()(
   override def parser: BodyParser[AnyContent] = cc.parsers.anyContent
 
   override final def taxCreditsSummary(
-                                        nino: Nino,
-                                        journeyId: JourneyId
-                                      ): Action[AnyContent] =
+    nino:      Nino,
+    journeyId: JourneyId
+  ): Action[AnyContent] =
     validateAcceptWithAuth(acceptHeaderValidationRules, Option(nino)).async { implicit request =>
       implicit val hc: HeaderCarrier = fromHeadersAndSession(request.headers, None)
       shutteringConnector.getShutteringStatus(journeyId).flatMap { shuttered =>
@@ -107,15 +111,15 @@ class LiveTaxCreditsSummaryController @Inject()(
     }
 
   private def sendAuditEvent(
-                              nino: Nino,
-                              response: TaxCreditsSummaryResponse,
-                              path: String
-                            )(implicit hc: HeaderCarrier
-                            ): Unit =
+    nino:        Nino,
+    response:    TaxCreditsSummaryResponse,
+    path:        String
+  )(implicit hc: HeaderCarrier
+  ): Unit =
     auditConnector.sendExtendedEvent(
       ExtendedDataEvent(appName,
-        "TaxCreditsSummaryResponse",
-        tags = hc.toAuditTags("view-tax-credit-summary", path),
-        detail = obj("nino" -> nino.value, "summaryData" -> response))
+                        "TaxCreditsSummaryResponse",
+                        tags   = hc.toAuditTags("view-tax-credit-summary", path),
+                        detail = obj("nino" -> nino.value, "summaryData" -> response))
     )
 }

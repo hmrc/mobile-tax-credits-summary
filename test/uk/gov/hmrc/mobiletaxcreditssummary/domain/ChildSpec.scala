@@ -34,12 +34,12 @@ class ChildSpec extends WordSpecLike with Matchers {
 
     "using today's date - 16 years for child DOB will result in age 16" in {
       val childB = Child("first",
-        "second",
-        LocalDate.now.minusYears(16),
-        hasFTNAE = false,
-        hasConnexions = false,
-        isActive = false,
-        None)
+                         "second",
+                         LocalDate.now.minusYears(16),
+                         hasFTNAE      = false,
+                         hasConnexions = false,
+                         isActive      = false,
+                         None)
 
       Child.getAge(childB) shouldBe 16
     }
@@ -47,12 +47,12 @@ class ChildSpec extends WordSpecLike with Matchers {
     "using today's date - 16 years and +1 month for child DOB will result in age 15" in {
       val childC =
         Child("first",
-          "second",
-          LocalDate.now.minusYears(16).plusMonths(1),
-          hasFTNAE = false,
-          hasConnexions = false,
-          isActive = false,
-          None)
+              "second",
+              LocalDate.now.minusYears(16).plusMonths(1),
+              hasFTNAE      = false,
+              hasConnexions = false,
+              isActive      = false,
+              None)
 
       Child.getAge(childC) shouldBe 15
     }
