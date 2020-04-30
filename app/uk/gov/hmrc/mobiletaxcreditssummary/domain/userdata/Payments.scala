@@ -78,6 +78,8 @@ case object OldRate extends SpecialCircumstance
 
 case object NewRate extends SpecialCircumstance
 
+case object PXP5 extends SpecialCircumstance
+
 case object UnknownCircumstance extends SpecialCircumstance
 
 object SpecialCircumstance {
@@ -86,17 +88,19 @@ object SpecialCircumstance {
     case JsString("FTNAE")    => JsSuccess(FTNAE)
     case JsString("OLD RATE") => JsSuccess(OldRate)
     case JsString("NEW RATE") => JsSuccess(NewRate)
+    case JsString("PXP5")     => JsSuccess(PXP5)
     case e =>
       Logger.warn(s"Unknown special circumstance received: $e")
       JsSuccess(UnknownCircumstance)
   }
 
   implicit val writes: Writes[SpecialCircumstance] = Writes {
-    case FTNAE   => JsString("FTNAE")
-    case OldRate => JsString("OLD RATE")
-    case NewRate => JsString("NEW RATE")
+    case FTNAE               => JsString("FTNAE")
+    case OldRate             => JsString("OLD RATE")
+    case NewRate             => JsString("NEW RATE")
+    case PXP5                => JsString("PXP5")
     case UnknownCircumstance => JsNull
-    case e       => throw new IllegalStateException(s"$e is an Invalid SpecialCircumstance")
+    case e                   => throw new IllegalStateException(s"$e is an Invalid SpecialCircumstance")
   }
 }
 

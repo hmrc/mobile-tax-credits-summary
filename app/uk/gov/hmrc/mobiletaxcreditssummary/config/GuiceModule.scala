@@ -30,9 +30,9 @@ import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import scala.collection.JavaConverters._
 
 class GuiceModule(
-                   environment: Environment,
-                   configuration: Configuration)
-  extends AbstractModule {
+  environment:   Environment,
+  configuration: Configuration)
+    extends AbstractModule {
 
   val servicesConfig = new ServicesConfig(configuration, new RunMode(configuration, environment.mode))
 
@@ -71,9 +71,9 @@ class GuiceModule(
       .to(configuration.underlying.getInt(path))
 
   private def bindConfigString(
-                                name: String,
-                                path: String
-                              ): Unit =
+    name: String,
+    path: String
+  ): Unit =
     bindConstant()
       .annotatedWith(named(name))
       .to(configuration.underlying.getString(path))

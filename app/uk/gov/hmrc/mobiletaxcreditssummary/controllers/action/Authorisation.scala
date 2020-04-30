@@ -55,10 +55,10 @@ trait Authorisation extends Results with AuthorisedFunctions {
       }
 
   def invokeAuthBlock[A](
-                          request: Request[A],
-                          block: Request[A] => Future[Result],
-                          taxId: Option[Nino]
-                        ): Future[Result] = {
+    request: Request[A],
+    block:   Request[A] => Future[Result],
+    taxId:   Option[Nino]
+  ): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, None)
 
     grantAccess(taxId.getOrElse(Nino("")))
@@ -89,15 +89,15 @@ trait AccessControl extends HeaderValidator with Authorisation {
   outer =>
 
   def validateAcceptWithAuth(
-                              rules: Option[String] => Boolean,
-                              taxId: Option[Nino]
-                            ): ActionBuilder[Request, AnyContent] =
+    rules: Option[String] => Boolean,
+    taxId: Option[Nino]
+  ): ActionBuilder[Request, AnyContent] =
     new ActionBuilder[Request, AnyContent] {
 
       def invokeBlock[A](
-                          request: Request[A],
-                          block: Request[A] => Future[Result]
-                        ): Future[Result] =
+        request: Request[A],
+        block:   Request[A] => Future[Result]
+      ): Future[Result] =
         if (rules(request.headers.get("Accept"))) {
           if (requiresAuth) invokeAuthBlock(request, block, taxId)
           else block(request)

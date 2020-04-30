@@ -21,10 +21,10 @@ import java.time.LocalDate
 import javax.inject.Inject
 import play.api.Configuration
 
-class LocalDateProvider @Inject()(configuration: Configuration) {
+class LocalDateProvider @Inject() (configuration: Configuration) {
 
   def now: LocalDate = configuration.getOptional[String]("dateOverride") match {
     case Some(s) => LocalDate.parse(s)
-    case None => LocalDate.now()
+    case None    => LocalDate.now()
   }
 }

@@ -32,7 +32,7 @@ import uk.gov.hmrc.mobiletaxcreditssummary.services.LiveTaxCreditsSummaryService
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 trait TestSetup
-  extends WordSpecLike
+    extends WordSpecLike
     with Matchers
     with MockFactory
     with TaxCreditsBrokerConnectorMock
@@ -40,13 +40,13 @@ trait TestSetup
     with AuditMock
     with ShutteringMock {
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
-  implicit val mockAuthConnector: AuthConnector = mock[AuthConnector]
-  implicit val mockTaxCreditsBrokerConnector: TaxCreditsBrokerConnector = mock[TaxCreditsBrokerConnector]
-  implicit val mockAuditConnector: AuditConnector = mock[AuditConnector]
-  implicit val mockService: LiveTaxCreditsSummaryService = mock[LiveTaxCreditsSummaryService]
-  implicit val mockConfiguration: Configuration = mock[Configuration]
-  implicit val mockShutteringConnector: ShutteringConnector = mock[ShutteringConnector]
+  implicit val hc:                            HeaderCarrier                = HeaderCarrier()
+  implicit val mockAuthConnector:             AuthConnector                = mock[AuthConnector]
+  implicit val mockTaxCreditsBrokerConnector: TaxCreditsBrokerConnector    = mock[TaxCreditsBrokerConnector]
+  implicit val mockAuditConnector:            AuditConnector               = mock[AuditConnector]
+  implicit val mockService:                   LiveTaxCreditsSummaryService = mock[LiveTaxCreditsSummaryService]
+  implicit val mockConfiguration:             Configuration                = mock[Configuration]
+  implicit val mockShutteringConnector:       ShutteringConnector          = mock[ShutteringConnector]
 
   val shuttered =
     Shuttering(shuttered = true, Some("Shuttered"), Some("Tax Credits Summary is currently not available"))
@@ -58,8 +58,8 @@ trait TestSetup
   val lowConfidenceLevelError: JsValue =
     Json.parse("""{"code":"LOW_CONFIDENCE_LEVEL","message":"Confidence Level on account does not allow access"}""")
 
-  val nino = "CS700100A"
-  val incorrectNino = Nino("SC100700A")
+  val nino             = "CS700100A"
+  val incorrectNino    = Nino("SC100700A")
   val renewalReference = RenewalReference("111111111111111")
   val acceptHeader: (String, String) = "Accept" -> "application/vnd.hmrc.1.0+json"
 
@@ -81,9 +81,9 @@ trait TestSetup
     )
 
   def emptyRequestWithAcceptHeader(
-                                    renewalsRef: RenewalReference,
-                                    nino: Nino
-                                  ): FakeRequest[AnyContentAsEmpty.type] =
+    renewalsRef: RenewalReference,
+    nino:        Nino
+  ): FakeRequest[AnyContentAsEmpty.type] =
     FakeRequest().withHeaders(acceptHeader)
 
 }

@@ -12,12 +12,10 @@ object TaxCreditsBrokerStub {
         {
           "firstNames": "Sarah",
           "surname": "Smith",
-          "dateOfBirth": ${
-      LocalDate
-        .of(LocalDate.now.minusYears(19).getYear, 8, 31)
-        .atStartOfDay(ZoneId.systemDefault())
-        .toEpochSecond() * 1000
-    },
+          "dateOfBirth": ${LocalDate
+      .of(LocalDate.now.minusYears(19).getYear, 8, 31)
+      .atStartOfDay(ZoneId.systemDefault())
+      .toEpochSecond() * 1000},
           "hasFTNAE": false,
           "hasConnexions": false,
           "isActive": true
@@ -80,9 +78,9 @@ object TaxCreditsBrokerStub {
       }""".stripMargin
 
   def partnerDetailsAreFound(
-                              climantsNino: Nino,
-                              partnersNino: Nino
-                            ): Unit =
+    climantsNino: Nino,
+    partnersNino: Nino
+  ): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${climantsNino.value}/partner-details"))
         .willReturn(
@@ -91,27 +89,27 @@ object TaxCreditsBrokerStub {
     )
 
   def partnerDetailsAreNotFound(
-                                 climantsNino: Nino,
-                                 partnersNino: Nino
-                               ): Unit =
+    climantsNino: Nino,
+    partnersNino: Nino
+  ): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${climantsNino.value}/partner-details"))
         .willReturn(aResponse().withStatus(404).withHeader("Content-Type", "application/json"))
     )
 
   def partnerDetails500(
-                         climantsNino: Nino,
-                         partnersNino: Nino
-                       ): Unit =
+    climantsNino: Nino,
+    partnersNino: Nino
+  ): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${climantsNino.value}/partner-details"))
         .willReturn(aResponse().withStatus(500).withHeader("Content-Type", "application/json"))
     )
 
   def partnerDetails503(
-                         climantsNino: Nino,
-                         partnersNino: Nino
-                       ): Unit =
+    climantsNino: Nino,
+    partnersNino: Nino
+  ): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${climantsNino.value}/partner-details"))
         .willReturn(aResponse().withStatus(503).withHeader("Content-Type", "application/json"))
@@ -346,11 +344,17 @@ object TaxCreditsBrokerStub {
         )
     )
 
-  def paymntSummaryWithSpecialCircumstanceIsFound(nino: Nino, specialCircumstance: String): Unit =
+  def paymntSummaryWithSpecialCircumstanceIsFound(
+    nino:                Nino,
+    specialCircumstance: String
+  ): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${nino.value}/payment-summary"))
         .willReturn(
-          aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(paymentSummaryWithSpecialCircumstancesJson(specialCircumstance))
+          aResponse()
+            .withStatus(200)
+            .withHeader("Content-Type", "application/json")
+            .withBody(paymentSummaryWithSpecialCircumstancesJson(specialCircumstance))
         )
     )
 
@@ -425,9 +429,9 @@ object TaxCreditsBrokerStub {
     )
 
   def exclusionFlagIsFound(
-                            nino: Nino,
-                            excluded: Boolean
-                          ): Unit =
+    nino:     Nino,
+    excluded: Boolean
+  ): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${nino.value}/exclusion"))
         .willReturn(

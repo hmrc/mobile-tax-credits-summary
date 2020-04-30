@@ -24,7 +24,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobiletaxcreditssummary.connectors._
 import uk.gov.hmrc.mobiletaxcreditssummary.domain._
-import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.{Child, ClaimActualIncomeEligibilityStatus, Claimants, FTNAE, FuturePayment, InformationMessage, MessageLink, NewRate, OldRate, PaymentSummary, Person, ReportActualProfit, TaxCreditsSummary, TaxCreditsSummaryResponse, UnknownCircumstance}
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.{Child, ClaimActualIncomeEligibilityStatus, Claimants, FTNAE, FuturePayment, InformationMessage, MessageLink, NewRate, OldRate, PXP5, PaymentSummary, Person, ReportActualProfit, TaxCreditsSummary, TaxCreditsSummaryResponse, UnknownCircumstance}
 import uk.gov.hmrc.mobiletaxcreditssummary.utils.LocalDateProvider
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -88,13 +88,14 @@ class LiveTaxCreditsSummaryService @Inject() (
               } else if (now.isAfter(createLocalDate(now.getYear, Month.AUGUST, 31)) &&
                          now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 8))) {
                 Some(
-                  MessageLink(preFtnaeDeadline = false, "/tax-credits-service/children/add-child/who-do-you-want-to-add")
+                  MessageLink(preFtnaeDeadline = false,
+                              "/tax-credits-service/children/add-child/who-do-you-want-to-add")
                 )
               } else None
             } else None
 
           case Some(NewRate) | Some(OldRate) => None
-            // Do not return link for now until apps are ready
+          // Do not return link for now until apps are ready
 //            Some(
 //              MessageLink(preFtnaeDeadline = false,
 //                        "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries")
@@ -228,6 +229,14 @@ class LiveTaxCreditsSummaryService @Inject() (
               )
             )
 
+          case Some(PXP5) =>
+            Some(
+              InformationMessage(
+                "Your payments are being processed",
+                "It can take up to 2 days for your payments to show."
+              )
+            )
+
           case _ => None
         }
 
@@ -236,7 +245,7 @@ class LiveTaxCreditsSummaryService @Inject() (
       val personalDetailsFuture = taxCreditsBrokerConnector.getPersonalDetails(tcNino)
       val specialCircumstance = paymentSummary.specialCircumstances match {
         case Some(UnknownCircumstance) => None
-        case e => e
+        case e                         => e
       }
 
       val claimants: Future[Option[Claimants]] = (for {
@@ -250,7 +259,8 @@ class LiveTaxCreditsSummaryService @Inject() (
       }).recover {
         case _ => None
       }
-      val newPayment: PaymentSummary = paymentSummary.copy(informationMessage = getInformationMessage, specialCircumstances = specialCircumstance)
+      val newPayment: PaymentSummary =
+        paymentSummary.copy(informationMessage = getInformationMessage, specialCircumstances = specialCircumstance)
       claimants.map(c => TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(newPayment, c))))
     }
 

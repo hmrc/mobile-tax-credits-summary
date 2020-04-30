@@ -32,10 +32,10 @@ import uk.gov.hmrc.play.bootstrap.controller.BackendController
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SandboxTaxCreditsSummaryController @Inject()(
-                                                    cc: ControllerComponents
-                                                  )(implicit val executionContext: ExecutionContext)
-  extends BackendController(cc)
+class SandboxTaxCreditsSummaryController @Inject() (
+  cc:                            ControllerComponents
+)(implicit val executionContext: ExecutionContext)
+    extends BackendController(cc)
     with TaxCreditsSummaryController
     with FileResource
     with HeaderValidator {
@@ -45,16 +45,16 @@ class SandboxTaxCreditsSummaryController @Inject()(
   private val shuttered =
     Json.toJson(
       Shuttering(shuttered = true,
-        title = Some("Shuttered"),
-        message = Some("Tax Credits Summary is currently shuttered"))
+                 title     = Some("Shuttered"),
+                 message   = Some("Tax Credits Summary is currently shuttered"))
     )
 
   override def parser: BodyParser[AnyContent] = cc.parsers.anyContent
 
   override final def taxCreditsSummary(
-                                        nino: Nino,
-                                        journeyId: JourneyId
-                                      ): Action[AnyContent] =
+    nino:      Nino,
+    journeyId: JourneyId
+  ): Action[AnyContent] =
     validateAccept(acceptHeaderValidationRules).async { implicit request =>
       Future successful (request.headers.get("SANDBOX-CONTROL") match {
         case Some("NON-TAX-CREDITS-USER") => Ok(toJson(TaxCreditsSummaryResponse(taxCreditsSummary = None)))
