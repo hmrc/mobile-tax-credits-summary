@@ -34,13 +34,13 @@ import scala.concurrent.{ExecutionContext, Future}
 class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
   "tax credits summary live" should {
     val controller = new LiveTaxCreditsSummaryController(mockAuthConnector,
-      200,
-      "mobile-tax-credits-summary",
-      mockService,
-      mockAuditConnector,
-      mockConfiguration,
-      stubControllerComponents(),
-      mockShutteringConnector)
+                                                         200,
+                                                         "mobile-tax-credits-summary",
+                                                         mockService,
+                                                         mockAuditConnector,
+                                                         mockConfiguration,
+                                                         stubControllerComponents(),
+                                                         mockShutteringConnector)
     "process the request successfully and filter children older than 20 and where deceased flags are active and user is not excluded" in {
       val expectedResult =
         TaxCreditsSummaryResponse(excluded = false, Some(TaxCreditsSummary(paymentSummary, Some(claimants))))
@@ -55,7 +55,7 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
       val result = controller.taxCreditsSummary(Nino(nino), "17d2420c-4fc6-4eee-9311-a37325066704")(
         emptyRequestWithAcceptHeader(renewalReference, Nino(nino))
       )
-      status(result) shouldBe 200
+      status(result)        shouldBe 200
       contentAsJson(result) shouldBe toJson(expectedResult)
     }
 
@@ -99,7 +99,7 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
         controller.taxCreditsSummary(Nino(nino), "17d2420c-4fc6-4eee-9311-a37325066704")(
           emptyRequestWithAcceptHeader(renewalReference, Nino(nino))
         )
-      status(result) shouldBe 200
+      status(result)        shouldBe 200
       contentAsJson(result) shouldBe toJson(expectedResult)
     }
 
@@ -109,7 +109,7 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
       val result = controller.taxCreditsSummary(Nino(nino), "17d2420c-4fc6-4eee-9311-a37325066704")(
         emptyRequestWithAcceptHeader(renewalReference, Nino(nino))
       )
-      status(result) shouldBe 401
+      status(result)        shouldBe 401
       contentAsJson(result) shouldBe noNinoFoundOnAccount
     }
 
@@ -119,7 +119,7 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
       val result = controller.taxCreditsSummary(Nino(nino), "17d2420c-4fc6-4eee-9311-a37325066704")(
         emptyRequestWithAcceptHeader(renewalReference, Nino(nino))
       )
-      status(result) shouldBe 401
+      status(result)        shouldBe 401
       contentAsJson(result) shouldBe lowConfidenceLevelError
     }
 
@@ -139,8 +139,8 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
       status(result) shouldBe 521
       val jsonBody = contentAsJson(result)
       (jsonBody \ "shuttered").as[Boolean] shouldBe true
-      (jsonBody \ "title").as[String] shouldBe "Shuttered"
-      (jsonBody \ "message").as[String] shouldBe "Tax Credits Summary is currently not available"
+      (jsonBody \ "title").as[String]      shouldBe "Shuttered"
+      (jsonBody \ "message").as[String]    shouldBe "Tax Credits Summary is currently not available"
     }
   }
 

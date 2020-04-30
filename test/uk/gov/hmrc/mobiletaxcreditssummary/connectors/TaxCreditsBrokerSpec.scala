@@ -37,7 +37,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
 class TaxCreditsBrokerSpec
-  extends WordSpecLike
+    extends WordSpecLike
     with Matchers
     with ScalaFutures
     with FutureAwaits
@@ -49,10 +49,10 @@ class TaxCreditsBrokerSpec
 
     val expectedNextDueDate: LocalDateTime = LocalDate.parse("2015-07-16").atStartOfDay()
 
-    val expectedPaymentWTC: FuturePayment = FuturePayment(160.34, expectedNextDueDate, oneOffPayment = false)
-    val expectedPaymentCTC: FuturePayment = FuturePayment(140.12, expectedNextDueDate, oneOffPayment = false)
-    val paymentSectionCTC: PaymentSection = PaymentSection(List(expectedPaymentCTC), "WEEKLY")
-    val paymentSectionWTC: PaymentSection = PaymentSection(List(expectedPaymentWTC), "WEEKLY")
+    val expectedPaymentWTC: FuturePayment  = FuturePayment(160.34, expectedNextDueDate, oneOffPayment = false)
+    val expectedPaymentCTC: FuturePayment  = FuturePayment(140.12, expectedNextDueDate, oneOffPayment = false)
+    val paymentSectionCTC:  PaymentSection = PaymentSection(List(expectedPaymentCTC), "WEEKLY")
+    val paymentSectionWTC:  PaymentSection = PaymentSection(List(expectedPaymentWTC), "WEEKLY")
 
     val paymentSummary: PaymentSummary =
       PaymentSummary(Some(paymentSectionWTC), Some(paymentSectionCTC), paymentEnabled = Some(true))
@@ -63,8 +63,8 @@ class TaxCreditsBrokerSpec
         .fromJson[DashboardData](parse(findResource("/resources/taxcreditssummary/CS700100A-dashboard-data.json").get))
         .get
 
-    lazy val http500Response: Future[Nothing] = Future.failed(Upstream5xxResponse("Error", 500, 500))
-    lazy val response: Future[HttpResponse] = http200Person
+    lazy val http500Response: Future[Nothing]      = Future.failed(Upstream5xxResponse("Error", 500, 500))
+    lazy val response:        Future[HttpResponse] = http200Person
 
     lazy val http200Person: Future[AnyRef with HttpResponse] =
       Future.successful(HttpResponse(200, Some(Json.toJson(personalDetails))))
@@ -105,14 +105,14 @@ class TaxCreditsBrokerSpec
     val MarySmith: Child =
       Child("Mary", "Smith", LocalDate.parse(AGE19), hasFTNAE = false, hasConnexions = false, isActive = false, None)
 
-    val nino: Nino = Nino("KM569110B")
+    val nino:            Nino   = Nino("KM569110B")
     val personalDetails: Person = Person(forename = "Nuala", surname = "O'Shea")
-    val partnerDetails: Person = Person("Frederick", Some("Tarquin"), "Hunter-Smith")
+    val partnerDetails:  Person = Person("Frederick", Some("Tarquin"), "Hunter-Smith")
 
-    val children: Seq[Child] = Seq(SarahSmith, JosephSmith, MarySmith)
-    val tcbChildren: Children = Children(children)
+    val children:    Seq[Child] = Seq(SarahSmith, JosephSmith, MarySmith)
+    val tcbChildren: Children   = Children(children)
 
-    val exclusion: Exclusion = Exclusion(true)
+    val exclusion:   Exclusion = Exclusion(true)
     val notExcluded: Exclusion = Exclusion(false)
     val serviceUrl = "someUrl"
 
@@ -126,11 +126,11 @@ class TaxCreditsBrokerSpec
         override def configuration: Option[Config] = None
 
         override def doGet(
-                            url: String,
-                            headers: Seq[(String, String)] = Seq.empty
-                          )(implicit hc: HeaderCarrier,
-                            ec: ExecutionContext
-                          ): Future[HttpResponse] =
+          url:         String,
+          headers:     Seq[(String, String)] = Seq.empty
+        )(implicit hc: HeaderCarrier,
+          ec:          ExecutionContext
+        ): Future[HttpResponse] =
           response.getOrElse(throw new Exception("No response defined!"))
 
         override protected def actorSystem: ActorSystem = ActorSystem()
@@ -214,13 +214,13 @@ class TaxCreditsBrokerSpec
 
     "return a valid response for getDashboardData when a 200 response is received with a valid json payload" in new Setup {
       override lazy val response: Future[AnyRef with HttpResponse] = http200dashboardData
-      val result: Option[DashboardData] = await(connector.getDashboardData(TaxCreditsNino(nino.value)))
+      val result:                 Option[DashboardData]            = await(connector.getDashboardData(TaxCreditsNino(nino.value)))
       result shouldBe Some(dashboardData)
     }
 
     "return None when dashboard data response is 404" in new Setup {
       override lazy val response: Future[AnyRef with HttpResponse] = http404dashboardData
-      val result: Option[DashboardData] = await(connector.getDashboardData(TaxCreditsNino(nino.value)))
+      val result:                 Option[DashboardData]            = await(connector.getDashboardData(TaxCreditsNino(nino.value)))
       result shouldBe None
     }
   }

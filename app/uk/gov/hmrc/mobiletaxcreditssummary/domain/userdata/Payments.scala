@@ -92,11 +92,11 @@ object SpecialCircumstance {
   }
 
   implicit val writes: Writes[SpecialCircumstance] = Writes {
-    case FTNAE   => JsString("FTNAE")
-    case OldRate => JsString("OLD RATE")
-    case NewRate => JsString("NEW RATE")
+    case FTNAE               => JsString("FTNAE")
+    case OldRate             => JsString("OLD RATE")
+    case NewRate             => JsString("NEW RATE")
     case UnknownCircumstance => JsNull
-    case e       => throw new IllegalStateException(s"$e is an Invalid SpecialCircumstance")
+    case e                   => throw new IllegalStateException(s"$e is an Invalid SpecialCircumstance")
   }
 }
 

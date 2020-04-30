@@ -29,12 +29,12 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
   def millis(ldt: LocalDateTime): Long = ldt.toInstant(ZoneOffset.UTC).toEpochMilli
 
   def payment(
-               amount: Double,
-               paymentDate: LocalDateTime,
-               oneOffPayment: Boolean,
-               holidayType: Option[String] = None,
-               explanatoryText: Option[String] = None
-             ): String = {
+    amount:          Double,
+    paymentDate:     LocalDateTime,
+    oneOffPayment:   Boolean,
+    holidayType:     Option[String] = None,
+    explanatoryText: Option[String] = None
+  ): String = {
     val bankHolidayJson = if (holidayType.isDefined) s"""| "holidayType": "${holidayType.get}", """ else ""
     val explanatoryTextJson =
       if (explanatoryText.isDefined) s"""|, "explanatoryText": "${explanatoryText.get}" """ else ""
@@ -50,16 +50,16 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
   }
 
   def total(
-             amount: Double,
-             paymentDate: LocalDateTime
-           ): String =
+    amount:      Double,
+    paymentDate: LocalDateTime
+  ): String =
     s"""{
        |"amount": $amount,
        |"paymentDate": ${millis(paymentDate)}
        |}""".stripMargin
 
   private val futureEarlyPaymentText = Some("Your payment is early because of UK bank holidays.")
-  private val pastEarlyPaymentText = Some("Your payment was early because of UK bank holidays.")
+  private val pastEarlyPaymentText   = Some("Your payment was early because of UK bank holidays.")
 
   private val futureOneOffPaymentText = Some(
     "One-off payment because of a recent change to help you get the right amount of tax credits."
@@ -76,7 +76,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
       val request =
         """{"paymentEnabled":true}""".stripMargin
 
-      val response = Json.parse(request).validate[PaymentSummary]
+      val response       = Json.parse(request).validate[PaymentSummary]
       val paymentSummary = response.asOpt.value
       paymentSummary.paymentEnabled.get     shouldBe true
       paymentSummary.childTaxCredit         shouldBe None
@@ -252,13 +252,13 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
       val request = s"""{ $wtc, $ctc, "paymentEnabled": true}""".stripMargin
       val expectedResponse =
         Json.parse(s"""{ $wtc, $ctc, "paymentEnabled": true, $totalsByDate, $previousTotalsByDate }""")
-      val response = Json.parse(request).validate[PaymentSummary]
+      val response       = Json.parse(request).validate[PaymentSummary]
       val paymentSummary = response.asOpt.value
-      paymentSummary.paymentEnabled.get shouldBe true
-      paymentSummary.childTaxCredit.isDefined shouldBe true
-      paymentSummary.workingTaxCredit.isDefined shouldBe true
-      paymentSummary.totalsByDate.isDefined shouldBe true
-      paymentSummary.previousTotalsByDate.isDefined shouldBe true
+      paymentSummary.paymentEnabled.get                             shouldBe true
+      paymentSummary.childTaxCredit.isDefined                       shouldBe true
+      paymentSummary.workingTaxCredit.isDefined                     shouldBe true
+      paymentSummary.totalsByDate.isDefined                         shouldBe true
+      paymentSummary.previousTotalsByDate.isDefined                 shouldBe true
       jsonDiff(None, Json.toJson(paymentSummary), expectedResponse) shouldBe 'empty
     }
     "correctly parse the previous payments and associated totals for ctc" in {
@@ -313,13 +313,13 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
       val request = s"""{ $wtc, $ctc, "paymentEnabled": true}""".stripMargin
       val expectedResponse =
         Json.parse(s"""{ $wtc, $ctc, "paymentEnabled": true, $totalsByDate, $previousTotalsByDate }""")
-      val response = Json.parse(request).validate[PaymentSummary]
+      val response       = Json.parse(request).validate[PaymentSummary]
       val paymentSummary = response.asOpt.value
-      paymentSummary.paymentEnabled.get shouldBe true
-      paymentSummary.childTaxCredit.isDefined shouldBe true
-      paymentSummary.workingTaxCredit.isDefined shouldBe true
-      paymentSummary.totalsByDate.isDefined shouldBe true
-      paymentSummary.previousTotalsByDate.isDefined shouldBe true
+      paymentSummary.paymentEnabled.get                             shouldBe true
+      paymentSummary.childTaxCredit.isDefined                       shouldBe true
+      paymentSummary.workingTaxCredit.isDefined                     shouldBe true
+      paymentSummary.totalsByDate.isDefined                         shouldBe true
+      paymentSummary.previousTotalsByDate.isDefined                 shouldBe true
       jsonDiff(None, Json.toJson(paymentSummary), expectedResponse) shouldBe 'empty
     }
     "totals are calculated correctly for wtc and ctc with future and previous payments" in {
@@ -392,13 +392,13 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
       val request = s"""{ $wtc, $ctc, "paymentEnabled": true}""".stripMargin
       val expectedResponse =
         Json.parse(s"""{ $wtc, $ctc, "paymentEnabled": true, $totalsByDate, $previousTotalsByDate }""")
-      val response = Json.parse(request).validate[PaymentSummary]
+      val response       = Json.parse(request).validate[PaymentSummary]
       val paymentSummary = response.asOpt.value
-      paymentSummary.paymentEnabled.get shouldBe true
-      paymentSummary.childTaxCredit.isDefined shouldBe true
-      paymentSummary.workingTaxCredit.isDefined shouldBe true
-      paymentSummary.totalsByDate.isDefined shouldBe true
-      paymentSummary.previousTotalsByDate.isDefined shouldBe true
+      paymentSummary.paymentEnabled.get                             shouldBe true
+      paymentSummary.childTaxCredit.isDefined                       shouldBe true
+      paymentSummary.workingTaxCredit.isDefined                     shouldBe true
+      paymentSummary.totalsByDate.isDefined                         shouldBe true
+      paymentSummary.previousTotalsByDate.isDefined                 shouldBe true
       jsonDiff(None, Json.toJson(paymentSummary), expectedResponse) shouldBe 'empty
     }
   }
@@ -434,30 +434,29 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
          |]
          """.stripMargin
 
-    val request          =
+    val request =
       s"""{$wtc, $ctc, "specialCircumstances": "FTNAE","informationMessage": {
          |"title": "We are currently working out your payments as your child is changing their education or training. This should be done by 7 September ${now.getYear}.",
          |"message" : "If your child is staying in education or training, you should update their details."
          |}, "paymentEnabled": true}""".stripMargin
-    val expectedResponse = Json.parse(
-      s"""{
-         |$wtc, $ctc,
-         |"paymentEnabled": true,
-         |"specialCircumstances":"FTNAE",
-         |"informationMessage": {
-         |"title": "We are currently working out your payments as your child is changing their education or training. This should be done by 7 September ${now.getYear}.",
-         |"message" : "If your child is staying in education or training, you should update their details."
-         |},
-         |$totalsByDate
-         |}""".stripMargin)
-    val response = Json.parse(request).validate[PaymentSummary]
-    val paymentSummary = response.asOpt.value
+    val expectedResponse = Json.parse(s"""{
+                                         |$wtc, $ctc,
+                                         |"paymentEnabled": true,
+                                         |"specialCircumstances":"FTNAE",
+                                         |"informationMessage": {
+                                         |"title": "We are currently working out your payments as your child is changing their education or training. This should be done by 7 September ${now.getYear}.",
+                                         |"message" : "If your child is staying in education or training, you should update their details."
+                                         |},
+                                         |$totalsByDate
+                                         |}""".stripMargin)
+    val response         = Json.parse(request).validate[PaymentSummary]
+    val paymentSummary   = response.asOpt.value
 
-    paymentSummary.paymentEnabled.get shouldBe true
-    paymentSummary.childTaxCredit.isDefined shouldBe true
-    paymentSummary.workingTaxCredit.isDefined shouldBe true
+    paymentSummary.paymentEnabled.get             shouldBe true
+    paymentSummary.childTaxCredit.isDefined       shouldBe true
+    paymentSummary.workingTaxCredit.isDefined     shouldBe true
     paymentSummary.informationMessage.get.message shouldBe "If your child is staying in education or training, you should update their details."
-    paymentSummary.informationMessage.get.title shouldBe f"We are currently working out your payments as your child is changing their education or training. This should be done by 7 September ${now.getYear}."
+    paymentSummary.informationMessage.get.title   shouldBe f"We are currently working out your payments as your child is changing their education or training. This should be done by 7 September ${now.getYear}."
 
     paymentSummary.totalsByDate.isDefined shouldBe true
 
@@ -468,17 +467,17 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
     "return the correct explanatory text for a one-off payment" in {
       FuturePayment(1, now, oneOffPayment = false).explanatoryText shouldBe None
       FuturePayment(1, now, oneOffPayment = true).explanatoryText shouldBe
-        Some("One-off payment because of a recent change to help you get the right amount of tax credits.")
+      Some("One-off payment because of a recent change to help you get the right amount of tax credits.")
     }
 
     "return the correct explanatory text for a bank holiday payment" in {
       FuturePayment(1, now, oneOffPayment = false, holidayType = Some("bankHoliday")).explanatoryText shouldBe
-        futureEarlyPaymentText
+      futureEarlyPaymentText
     }
 
     "return the one-off payment explanatory text for a one-off payment made early due to a bank holiday" in {
       FuturePayment(1, now, oneOffPayment = true, holidayType = Some("bankHoliday")).explanatoryText shouldBe
-        Some("One-off payment because of a recent change to help you get the right amount of tax credits.")
+      Some("One-off payment because of a recent change to help you get the right amount of tax credits.")
     }
   }
 
@@ -486,17 +485,17 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
     "return the correct explanatory text for a one-off payment" in {
       PastPayment(1, now, oneOffPayment = false).explanatoryText shouldBe None
       PastPayment(1, now, oneOffPayment = true).explanatoryText shouldBe
-        Some("One-off payment because of a recent change to help you get the right amount of tax credits.")
+      Some("One-off payment because of a recent change to help you get the right amount of tax credits.")
     }
 
     "return the correct explanatory text for a bank holiday payment" in {
       PastPayment(1, now, oneOffPayment = false, holidayType = Some("bankHoliday")).explanatoryText shouldBe
-        Some("Your payment was early because of UK bank holidays.")
+      Some("Your payment was early because of UK bank holidays.")
     }
 
     "return the one-off payment explanatory text for a one-off payment made early due to a bank holiday" in {
       PastPayment(1, now, oneOffPayment = true, holidayType = Some("bankHoliday")).explanatoryText shouldBe
-        Some("One-off payment because of a recent change to help you get the right amount of tax credits.")
+      Some("One-off payment because of a recent change to help you get the right amount of tax credits.")
     }
   }
 }

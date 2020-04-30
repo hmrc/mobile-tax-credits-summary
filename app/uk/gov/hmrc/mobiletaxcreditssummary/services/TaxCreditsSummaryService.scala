@@ -88,13 +88,14 @@ class LiveTaxCreditsSummaryService @Inject() (
               } else if (now.isAfter(createLocalDate(now.getYear, Month.AUGUST, 31)) &&
                          now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 8))) {
                 Some(
-                  MessageLink(preFtnaeDeadline = false, "/tax-credits-service/children/add-child/who-do-you-want-to-add")
+                  MessageLink(preFtnaeDeadline = false,
+                              "/tax-credits-service/children/add-child/who-do-you-want-to-add")
                 )
               } else None
             } else None
 
           case Some(NewRate) | Some(OldRate) => None
-            // Do not return link for now until apps are ready
+          // Do not return link for now until apps are ready
 //            Some(
 //              MessageLink(preFtnaeDeadline = false,
 //                        "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries")
@@ -236,7 +237,7 @@ class LiveTaxCreditsSummaryService @Inject() (
       val personalDetailsFuture = taxCreditsBrokerConnector.getPersonalDetails(tcNino)
       val specialCircumstance = paymentSummary.specialCircumstances match {
         case Some(UnknownCircumstance) => None
-        case e => e
+        case e                         => e
       }
 
       val claimants: Future[Option[Claimants]] = (for {
@@ -250,7 +251,8 @@ class LiveTaxCreditsSummaryService @Inject() (
       }).recover {
         case _ => None
       }
-      val newPayment: PaymentSummary = paymentSummary.copy(informationMessage = getInformationMessage, specialCircumstances = specialCircumstance)
+      val newPayment: PaymentSummary =
+        paymentSummary.copy(informationMessage = getInformationMessage, specialCircumstances = specialCircumstance)
       claimants.map(c => TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(newPayment, c))))
     }
 

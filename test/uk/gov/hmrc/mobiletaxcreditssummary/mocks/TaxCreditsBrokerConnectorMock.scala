@@ -28,9 +28,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait TaxCreditsBrokerConnectorMock extends MockFactory {
 
-  val thisYear: Int = LocalDate.now().getYear
+  val thisYear:            Int       = LocalDate.now().getYear
   val expectedNextDueDate: LocalDate = LocalDate.parse(f"$thisYear-07-16")
-  val paymentWithFtnae: LocalDate = LocalDate.parse(f"$thisYear-09-10")
+  val paymentWithFtnae:    LocalDate = LocalDate.parse(f"$thisYear-09-10")
 
   val expectedPaymentWTC: FuturePayment =
     FuturePayment(160.34, expectedNextDueDate.atStartOfDay(), oneOffPayment = false)
@@ -49,8 +49,15 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
   val paymentSummary: PaymentSummary =
     PaymentSummary(Some(paymentSectionWTC), Some(paymentSectionCTC), paymentEnabled = Some(true))
 
-  def paymentSummaryWithInfoMessage(specialCircumstance: Option[SpecialCircumstance], informationMessage: Option[InformationMessage]): PaymentSummary =
-    PaymentSummary(Some(paymentSectionWTC), Some(paymentSectionCTC), paymentEnabled = Some(true), specialCircumstance, informationMessage = informationMessage)
+  def paymentSummaryWithInfoMessage(
+    specialCircumstance: Option[SpecialCircumstance],
+    informationMessage:  Option[InformationMessage]
+  ): PaymentSummary =
+    PaymentSummary(Some(paymentSectionWTC),
+                   Some(paymentSectionCTC),
+                   paymentEnabled = Some(true),
+                   specialCircumstance,
+                   informationMessage = informationMessage)
 
   val actualIncomeApp1Eligible: ClaimActualIncomeEligibilityStatus = ClaimActualIncomeEligibilityStatus(
     ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED,
@@ -64,7 +71,7 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
 
   val actualIncomeBothEligible: ClaimActualIncomeEligibilityStatus =
     ClaimActualIncomeEligibilityStatus(ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED,
-      ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED)
+                                       ClaimActualIncomeEligibilityStatus.APPLICANT_ALLOWED)
 
   val actualIncomeNeitherEligible: ClaimActualIncomeEligibilityStatus = ClaimActualIncomeEligibilityStatus(
     ClaimActualIncomeEligibilityStatus.APPLICANT_NOT_APPLICABLE,
@@ -88,48 +95,48 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
     Some(
       InformationMessage(
         f"We are currently working out your payments as your $child changing " +
-          f"their education or training. This should be done by 7 September $thisYear.",
+        f"their education or training. This should be done by 7 September $thisYear.",
         f"If you have let us know that your $child staying in education or training, they will be added back automatically. Otherwise, you can add them back to your claim."
       )
     )
 
   def paymentSummaryFtnae(
-                           preSeptember: Boolean,
-                           currentYear: Boolean = true,
-                           ftnae: Boolean = true,
-                           ctc: Boolean = true
-                         ): PaymentSummary =
+    preSeptember: Boolean,
+    currentYear:  Boolean = true,
+    ftnae:        Boolean = true,
+    ctc:          Boolean = true
+  ): PaymentSummary =
     PaymentSummary(
-      workingTaxCredit = Some(paymentSectionWTC),
-      childTaxCredit = if (ctc) Some(paymentSectionCTCWithFtnae) else None,
-      paymentEnabled = Some(true),
-      isMultipleFTNAE = Some(false),
+      workingTaxCredit     = Some(paymentSectionWTC),
+      childTaxCredit       = if (ctc) Some(paymentSectionCTCWithFtnae) else None,
+      paymentEnabled       = Some(true),
+      isMultipleFTNAE      = Some(false),
       specialCircumstances = if (ftnae) Some(FTNAE) else None,
       informationMessage =
         if (currentYear && ftnae) if (preSeptember) pre31stAugust("child is") else sept1stTo7th("child is") else None
     )
 
   def paymentSummaryMultipleFtnae(
-                                   preSeptember: Boolean,
-                                   currentYear: Boolean,
-                                   ftnae: Boolean = true,
-                                   ctc: Boolean = true
-                                 ): PaymentSummary =
+    preSeptember: Boolean,
+    currentYear:  Boolean,
+    ftnae:        Boolean = true,
+    ctc:          Boolean = true
+  ): PaymentSummary =
     PaymentSummary(
-      workingTaxCredit = Some(paymentSectionWTC),
-      childTaxCredit = if (ctc) Some(paymentSectionCTCWithFtnae) else None,
-      paymentEnabled = Some(true),
-      isMultipleFTNAE = Some(true),
+      workingTaxCredit     = Some(paymentSectionWTC),
+      childTaxCredit       = if (ctc) Some(paymentSectionCTCWithFtnae) else None,
+      paymentEnabled       = Some(true),
+      isMultipleFTNAE      = Some(true),
       specialCircumstances = if (ftnae) Some(FTNAE) else None,
       informationMessage =
         if (currentYear && ftnae) if (preSeptember) pre31stAugust("children are") else sept1stTo7th("children are")
         else None
     )
 
-  val AGE16: LocalDate = LocalDate.now.minusYears(16)
-  val AGE15: LocalDate = LocalDate.now.minusYears(15)
-  val AGE13: LocalDate = LocalDate.now.minusYears(13)
-  val AGE21: LocalDate = LocalDate.now.minusYears(21)
+  val AGE16:         LocalDate = LocalDate.now.minusYears(16)
+  val AGE15:         LocalDate = LocalDate.now.minusYears(15)
+  val AGE13:         LocalDate = LocalDate.now.minusYears(13)
+  val AGE21:         LocalDate = LocalDate.now.minusYears(21)
   val DECEASED_DATE: LocalDate = LocalDate.now.minusYears(1)
 
   val SarahSmith: Child = Child("Sarah", "Smith", AGE16, hasFTNAE = false, hasConnexions = false, isActive = true, None)
@@ -139,7 +146,7 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
 
   val JosephSmith: Child =
     Child("Joseph", "Smith", AGE15, hasFTNAE = false, hasConnexions = false, isActive = true, None)
-  val MarySmith: Child = Child("Mary", "Smith", AGE13, hasFTNAE = false, hasConnexions = false, isActive = true, None)
+  val MarySmith:  Child = Child("Mary", "Smith", AGE13, hasFTNAE  = false, hasConnexions = false, isActive = true, None)
   val JennySmith: Child = Child("Jenny", "Smith", AGE21, hasFTNAE = false, hasConnexions = false, isActive = true, None)
 
   val PeterSmith: Child =
@@ -155,17 +162,17 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
   val claimants: Claimants = Claimants(
     personalDetails,
     Some(partnerDetails),
-    Seq(Person(forename = "Sarah", surname = "Smith"),
-      Person(forename = "Joseph", surname = "Smith"),
-      Person(forename = "Mary", surname = "Smith"))
+    Seq(Person(forename = "Sarah", surname  = "Smith"),
+        Person(forename = "Joseph", surname = "Smith"),
+        Person(forename = "Mary", surname   = "Smith"))
   )
 
   def claimantsFtnae(link: Option[MessageLink] = None): Claimants = Claimants(
     personalDetails,
     Some(partnerDetails),
-    Seq(Person(forename = "Sarah", surname = "Smith"),
-      Person(forename = "Joseph", surname = "Smith"),
-      Person(forename = "Mary", surname = "Smith")),
+    Seq(Person(forename = "Sarah", surname  = "Smith"),
+        Person(forename = "Joseph", surname = "Smith"),
+        Person(forename = "Mary", surname   = "Smith")),
     link
   )
 
@@ -173,16 +180,16 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
     personalDetails,
     Some(partnerDetails),
     Seq(Person(forename = "Sarah", surname = "Smith"),
-      Person(forename = "Sarah", surname = "Smith"),
-      Person(forename = "Sarah", surname = "Smith")),
+        Person(forename = "Sarah", surname = "Smith"),
+        Person(forename = "Sarah", surname = "Smith")),
     link
   )
 
   val claimantsNoPartnerDetails: Claimants = Claimants(personalDetails,
-    None,
-    Seq(Person(forename = "Sarah", surname = "Smith"),
-      Person(forename = "Joseph", surname = "Smith"),
-      Person(forename = "Mary", surname = "Smith")))
+                                                       None,
+                                                       Seq(Person(forename = "Sarah", surname  = "Smith"),
+                                                           Person(forename = "Joseph", surname = "Smith"),
+                                                           Person(forename = "Mary", surname   = "Smith")))
 
   val claimantsNoChildren: Claimants = Claimants(personalDetails, Some(partnerDetails), Seq.empty)
 
@@ -190,120 +197,120 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
     claimants.copy(reportActualProfit = Some(reportActualProfit))
 
   def mockTaxCreditsBrokerConnectorGetExclusion(
-                                                 response: Option[Exclusion],
-                                                 nino: TaxCreditsNino
-                                               )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
-                                               ): Unit =
+    response:                           Option[Exclusion],
+    nino:                               TaxCreditsNino
+  )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
+  ): Unit =
     (taxCreditsBrokerConnector
       .getExclusion(_: TaxCreditsNino)(_: HeaderCarrier, _: ExecutionContext))
       .expects(nino, *, *)
       .returning(Future successful response)
 
   def mockTaxCreditsBrokerConnectorGetExclusionFailure(
-                                                        response: Exception,
-                                                        nino: TaxCreditsNino
-                                                      )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
-                                                      ): Unit =
+    response:                           Exception,
+    nino:                               TaxCreditsNino
+  )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
+  ): Unit =
     (taxCreditsBrokerConnector
       .getExclusion(_: TaxCreditsNino)(_: HeaderCarrier, _: ExecutionContext))
       .expects(nino, *, *)
       .returning(Future failed response)
 
   def mockTaxCreditsBrokerConnectorGetPaymentSummary(
-                                                      response: Option[PaymentSummary],
-                                                      nino: TaxCreditsNino
-                                                    )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
-                                                    ): Unit =
+    response:                           Option[PaymentSummary],
+    nino:                               TaxCreditsNino
+  )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
+  ): Unit =
     (taxCreditsBrokerConnector
       .getPaymentSummary(_: TaxCreditsNino)(_: HeaderCarrier, _: ExecutionContext))
       .expects(nino, *, *)
       .returning(Future successful response)
 
   def mockTaxCreditsBrokerConnectorGetPaymentFailure(
-                                                      response: Exception,
-                                                      nino: TaxCreditsNino
-                                                    )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
-                                                    ): Unit =
+    response:                           Exception,
+    nino:                               TaxCreditsNino
+  )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
+  ): Unit =
     (taxCreditsBrokerConnector
       .getPaymentSummary(_: TaxCreditsNino)(_: HeaderCarrier, _: ExecutionContext))
       .expects(nino, *, *)
       .returning(Future failed response)
 
   def mockTaxCreditsBrokerConnectorGetChildren(
-                                                response: Seq[Child],
-                                                nino: TaxCreditsNino
-                                              )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
-                                              ): Unit =
+    response:                           Seq[Child],
+    nino:                               TaxCreditsNino
+  )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
+  ): Unit =
     (taxCreditsBrokerConnector
       .getChildren(_: TaxCreditsNino)(_: HeaderCarrier, _: ExecutionContext))
       .expects(nino, *, *)
       .returning(Future successful response)
 
   def mockTaxCreditsBrokerConnectorGetChildrenFailure(
-                                                       response: Exception,
-                                                       nino: TaxCreditsNino
-                                                     )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
-                                                     ): Unit =
+    response:                           Exception,
+    nino:                               TaxCreditsNino
+  )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
+  ): Unit =
     (taxCreditsBrokerConnector
       .getChildren(_: TaxCreditsNino)(_: HeaderCarrier, _: ExecutionContext))
       .expects(nino, *, *)
       .returning(Future failed response)
 
   def mockTaxCreditsBrokerConnectorGetPartnerDetails(
-                                                      response: Option[Person],
-                                                      nino: TaxCreditsNino
-                                                    )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
-                                                    ): Unit =
+    response:                           Option[Person],
+    nino:                               TaxCreditsNino
+  )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
+  ): Unit =
     (taxCreditsBrokerConnector
       .getPartnerDetails(_: TaxCreditsNino)(_: HeaderCarrier, _: ExecutionContext))
       .expects(nino, *, *)
       .returning(Future successful response)
 
   def mockTaxCreditsBrokerConnectorGetPartnerDetailsFailure(
-                                                             response: Exception,
-                                                             nino: TaxCreditsNino
-                                                           )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
-                                                           ): Unit =
+    response:                           Exception,
+    nino:                               TaxCreditsNino
+  )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
+  ): Unit =
     (taxCreditsBrokerConnector
       .getPartnerDetails(_: TaxCreditsNino)(_: HeaderCarrier, _: ExecutionContext))
       .expects(nino, *, *)
       .returning(Future failed response)
 
   def mockTaxCreditsBrokerConnectorGetPersonalDetails(
-                                                       response: Person,
-                                                       nino: TaxCreditsNino
-                                                     )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
-                                                     ): Unit =
+    response:                           Person,
+    nino:                               TaxCreditsNino
+  )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
+  ): Unit =
     (taxCreditsBrokerConnector
       .getPersonalDetails(_: TaxCreditsNino)(_: HeaderCarrier, _: ExecutionContext))
       .expects(nino, *, *)
       .returning(Future successful response)
 
   def mockTaxCreditsBrokerConnectorGetPersonalDetailsFailure(
-                                                              response: Exception,
-                                                              nino: TaxCreditsNino
-                                                            )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
-                                                            ): Unit =
+    response:                           Exception,
+    nino:                               TaxCreditsNino
+  )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
+  ): Unit =
     (taxCreditsBrokerConnector
       .getPersonalDetails(_: TaxCreditsNino)(_: HeaderCarrier, _: ExecutionContext))
       .expects(nino, *, *)
       .returning(Future failed response)
 
   def mockTaxCreditsBrokerConnectorGetActualSelfEmployedIncome(
-                                                                response: DashboardData,
-                                                                nino: TaxCreditsNino
-                                                              )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
-                                                              ): Unit =
+    response:                           DashboardData,
+    nino:                               TaxCreditsNino
+  )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
+  ): Unit =
     (taxCreditsBrokerConnector
       .getDashboardData(_: TaxCreditsNino)(_: HeaderCarrier, _: ExecutionContext))
       .expects(nino, *, *)
       .returning(Future successful Some(response))
 
   def mockTaxCreditsBrokerConnectorGetActualSelfEmployedIncomeFailure(
-                                                                       response: Exception,
-                                                                       nino: TaxCreditsNino
-                                                                     )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
-                                                                     ): Unit =
+    response:                           Exception,
+    nino:                               TaxCreditsNino
+  )(implicit taxCreditsBrokerConnector: TaxCreditsBrokerConnector
+  ): Unit =
     (taxCreditsBrokerConnector
       .getDashboardData(_: TaxCreditsNino)(_: HeaderCarrier, _: ExecutionContext))
       .expects(nino, *, *)

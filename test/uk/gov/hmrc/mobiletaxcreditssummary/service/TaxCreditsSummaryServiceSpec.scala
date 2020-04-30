@@ -95,7 +95,7 @@ class TaxCreditsSummaryServiceSpec
   ): TaxCreditsSummaryResponse =
     TaxCreditsSummaryResponse(taxCreditsSummary = Some(
       TaxCreditsSummary(paymentSummaryWithInfoMessage(specialCircumstance, informationMessage),
-                        Some(claimants.copy(ftnaeLink = ftnaeLink)))
+                        Some(claimants.copy(messageLink = ftnaeLink)))
     )
     )
 
@@ -719,9 +719,9 @@ class TaxCreditsSummaryServiceSpec
         )
       )
       val service = new LiveTaxCreditsSummaryService(taxCreditsBrokerConnector,
-        localDateProvider,
-        reportActualProfitPeriodStartDate,
-        reportActualProfitPeriodEndDate)
+                                                     localDateProvider,
+                                                     reportActualProfitPeriodStartDate,
+                                                     reportActualProfitPeriodEndDate)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetPaymentSummary(
         Some(paymentSummaryWithInfoMessage(Some(NewRate), informationMessage)),
