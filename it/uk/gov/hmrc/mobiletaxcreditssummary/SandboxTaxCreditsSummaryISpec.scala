@@ -63,7 +63,9 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
         .as[String]                                                                                   shouldBe "WEEKLY"
       (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String] shouldBe "Betty"
       (response.json \ "taxCreditsSummary" \ "claimants" \ "children").as[List[Person]].head.forename shouldBe "Maya"
-      (response.json \ "taxCreditsSummary" \ "claimants" \ "ftnaeLink" \ "link")
+      (response.json \ "taxCreditsSummary" \ "claimants" \ "messageLink" \ "linkName")
+        .as[String] shouldBe "Update details"
+      (response.json \ "taxCreditsSummary" \ "claimants" \ "messageLink" \ "link")
         .as[String] shouldBe "/tax-credits-service/home/children-and-childcare"
     }
 
@@ -80,7 +82,9 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
         .as[String]                                                                                   shouldBe "WEEKLY"
       (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String] shouldBe "Betty"
       (response.json \ "taxCreditsSummary" \ "claimants" \ "children").as[List[Person]].head.forename shouldBe "Maya"
-      (response.json \ "taxCreditsSummary" \ "claimants" \ "ftnaeLink" \ "link")
+      (response.json \ "taxCreditsSummary" \ "claimants" \ "messageLink" \ "linkName")
+        .as[String] shouldBe "Update details"
+      (response.json \ "taxCreditsSummary" \ "claimants" \ "messageLink" \ "link")
         .as[String] shouldBe "/tax-credits-service/children/add-child/who-do-you-want-to-add"
     }
 
@@ -93,7 +97,7 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
         .as[String]                                                                                   shouldBe "WEEKLY"
       (response.json \\ "childTaxCredit")                                                             shouldBe empty
       (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String] shouldBe "Nuala"
-      (response.json \ "taxCreditsSummary" \ "claimants" \\ "ftnaeLink")                              shouldBe empty
+      (response.json \ "taxCreditsSummary" \ "claimants" \\ "messageLink")                            shouldBe empty
       (response.json \ "taxCreditsSummary" \ "claimants" \ "children").as[List[Person]].head.forename shouldBe "Sarah"
     }
 
@@ -106,7 +110,7 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
         .as[String]                                                                                   shouldBe "WEEKLY"
       (response.json \\ "workingTaxCredit")                                                           shouldBe empty
       (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String] shouldBe "Nuala"
-      (response.json \ "taxCreditsSummary" \ "claimants" \\ "ftnaeLink")                              shouldBe empty
+      (response.json \ "taxCreditsSummary" \ "claimants" \\ "messageLink")                            shouldBe empty
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \\ "informationMessage")                shouldBe empty
 
     }

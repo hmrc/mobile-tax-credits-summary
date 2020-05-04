@@ -91,11 +91,11 @@ class TaxCreditsSummaryServiceSpec
   def taxCreditsSummaryWithInfoMessage(
     specialCircumstance: Option[SpecialCircumstance] = None,
     informationMessage:  Option[InformationMessage] = None,
-    ftnaeLink:           Option[MessageLink]
+    messageLink:         Option[MessageLink]
   ): TaxCreditsSummaryResponse =
     TaxCreditsSummaryResponse(taxCreditsSummary = Some(
       TaxCreditsSummary(paymentSummaryWithInfoMessage(specialCircumstance, informationMessage),
-                        Some(claimants.copy(ftnaeLink = ftnaeLink)))
+                        Some(claimants.copy(messageLink = messageLink)))
     )
     )
 
@@ -319,7 +319,11 @@ class TaxCreditsSummaryServiceSpec
 
         await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe getExpected(
           testName,
-          Some(MessageLink(preFtnaeDeadline = false, "/tax-credits-service/children/add-child/who-do-you-want-to-add")),
+          Some(
+            MessageLink(preFtnaeDeadline = false,
+                        "Update details",
+                        "/tax-credits-service/children/add-child/who-do-you-want-to-add")
+          ),
           ftnae,
           preSeptember = false
         )
@@ -342,7 +346,11 @@ class TaxCreditsSummaryServiceSpec
 
         await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe getExpected(
           testName,
-          Some(MessageLink(preFtnaeDeadline = false, "/tax-credits-service/children/add-child/who-do-you-want-to-add")),
+          Some(
+            MessageLink(preFtnaeDeadline = false,
+                        "Update details",
+                        "/tax-credits-service/children/add-child/who-do-you-want-to-add")
+          ),
           ftnae,
           preSeptember = false
         )
@@ -368,7 +376,11 @@ class TaxCreditsSummaryServiceSpec
 
         await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe getExpected(
           testName,
-          Some(MessageLink(preFtnaeDeadline = false, "/tax-credits-service/children/add-child/who-do-you-want-to-add")),
+          Some(
+            MessageLink(preFtnaeDeadline = false,
+                        "Update details",
+                        "/tax-credits-service/children/add-child/who-do-you-want-to-add")
+          ),
           ftnae,
           preSeptember = false,
           ctc          = false
@@ -418,7 +430,9 @@ class TaxCreditsSummaryServiceSpec
 
         await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe getExpected(
           testName,
-          Some(MessageLink(preFtnaeDeadline = true, "/tax-credits-service/home/children-and-childcare")),
+          Some(
+            MessageLink(preFtnaeDeadline = true, "Update details", "/tax-credits-service/home/children-and-childcare")
+          ),
           ftnae        = ftnae,
           preSeptember = true
         )
@@ -702,11 +716,11 @@ class TaxCreditsSummaryServiceSpec
       await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithInfoMessage(
         Some(OldRate),
         informationMessage,
-        None
-//        Some(
-//          MessageLink(false,
-//                      "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries")
-//        )
+        Some (
+          MessageLink(false,
+                      "Contact tax credits",
+                      "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries")
+        )
       )
     }
 
@@ -737,11 +751,11 @@ class TaxCreditsSummaryServiceSpec
       await(service.getTaxCreditsSummaryResponse(Nino(nino))) shouldBe taxCreditsSummaryWithInfoMessage(
         Some(NewRate),
         informationMessage,
-        None
-//        Some(
-//          MessageLink(false,
-//            "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries")
-//        )
+        Some (
+          MessageLink(false,
+                      "Contact tax credits",
+                      "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries")
+        )
       )
     }
 
