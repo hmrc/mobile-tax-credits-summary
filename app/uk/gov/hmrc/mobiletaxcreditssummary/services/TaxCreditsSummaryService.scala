@@ -100,7 +100,6 @@ class LiveTaxCreditsSummaryService @Inject() (
             } else None
 
           case Some(NewRate) | Some(OldRate) =>
-            None
             Some(
               MessageLink(
                 preFtnaeDeadline = false,
