@@ -84,22 +84,30 @@ class LiveTaxCreditsSummaryService @Inject() (
 
             if (hasFtnaePayment) {
               if (now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 1))) {
-                Some(MessageLink(preFtnaeDeadline = true, "/tax-credits-service/home/children-and-childcare"))
+                Some(
+                  MessageLink(preFtnaeDeadline = true,
+                              "Update details",
+                              "/tax-credits-service/home/children-and-childcare")
+                )
               } else if (now.isAfter(createLocalDate(now.getYear, Month.AUGUST, 31)) &&
                          now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 8))) {
                 Some(
                   MessageLink(preFtnaeDeadline = false,
+                              "Update details",
                               "/tax-credits-service/children/add-child/who-do-you-want-to-add")
                 )
               } else None
             } else None
 
-          case Some(NewRate) | Some(OldRate) => None
-          // Do not return link for now until apps are ready
-//            Some(
-//              MessageLink(preFtnaeDeadline = false,
-//                        "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries")
-//            )
+          case Some(NewRate) | Some(OldRate) =>
+            None
+            Some(
+              MessageLink(
+                preFtnaeDeadline = false,
+                "Contact tax credits",
+                "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries"
+              )
+            )
 
           case _ => None
         }

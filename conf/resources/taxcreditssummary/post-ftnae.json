@@ -70,8 +70,9 @@
         "surname": "Coops"
       }
     ],
-    "ftnaeLink": {
+    "messageLink": {
       "preFtnaeDeadline": false,
+      "linkName": "Update details",
       "link": "/tax-credits-service/children/add-child/who-do-you-want-to-add"
     }
   }
