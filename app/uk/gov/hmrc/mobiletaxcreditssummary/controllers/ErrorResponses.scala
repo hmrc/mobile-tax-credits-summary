@@ -22,6 +22,8 @@ case object ErrorUnauthorizedNoNino extends ErrorResponse(401, "UNAUTHORIZED", "
 
 case object ClientRetryRequest extends ErrorResponse(429, "NTC_RETRY", "Client must retry the request.")
 
+case object ErrorBadRequest extends ErrorResponse(400, "BAD_REQUEST", "Invalid request sent")
+
 case object ErrorUnauthorizedMicroService extends ErrorResponse(401, "UNAUTHORIZED", "Unauthorized to access resource")
 
 case object ErrorForbidden extends ErrorResponse(403, "FORBIDDEN", "Access Denied")

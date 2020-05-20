@@ -23,7 +23,7 @@ import play.api.mvc._
 import uk.gov.hmrc.api.controllers._
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, ServiceUnavailableException}
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, ServiceUnavailableException, BadRequestException}
 import uk.gov.hmrc.mobiletaxcreditssummary.connectors.ShutteringConnector
 import uk.gov.hmrc.mobiletaxcreditssummary.controllers.action.{AccessControl, ShutteredCheck}
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
@@ -56,6 +56,10 @@ trait ErrorHandling {
         // The 503 HTTP status code must only be returned from the API gateway and not from downstream API's.
         Logger.error(s"ServiceUnavailableException reported: ${ex.getMessage}", ex)
         Status(ClientRetryRequest.httpStatusCode)(toJson(ClientRetryRequest))
+
+      case ex: BadRequestException =>
+        Logger.error(s"BadRequestException reported: ${ex.getMessage}", ex)
+        Status(ErrorBadRequest.httpStatusCode)(toJson(ErrorBadRequest))
 
       case e: Throwable =>
         Logger.error(s"Internal server error: ${e.getMessage}", e)
