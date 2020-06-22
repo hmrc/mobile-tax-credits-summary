@@ -83,7 +83,7 @@ class TaxCreditsBrokerConnector @Inject() (
     ex:                     ExecutionContext
   ): Future[Option[DashboardData]] =
     http.GET[Option[DashboardData]](url(nino, "dashboard-data")).fallbackTo {
-      Logger.error("dashboard-data call failed. No report actual profit link will be returned")
+      Logger.error("dashboard-data call failed.")
       Future successful None
     }
 }

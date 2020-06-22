@@ -28,7 +28,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobiletaxcreditssummary.connectors.{ShutteringConnector, TaxCreditsBrokerConnector}
 import uk.gov.hmrc.mobiletaxcreditssummary.domain._
 import uk.gov.hmrc.mobiletaxcreditssummary.mocks.{AuditMock, AuthorisationMock, ShutteringMock, TaxCreditsBrokerConnectorMock}
-import uk.gov.hmrc.mobiletaxcreditssummary.services.LiveTaxCreditsSummaryService
+import uk.gov.hmrc.mobiletaxcreditssummary.services.{InformationMessageService, LiveTaxCreditsSummaryService, ReportActualProfitService}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 trait TestSetup
@@ -47,6 +47,7 @@ trait TestSetup
   implicit val mockService:                   LiveTaxCreditsSummaryService = mock[LiveTaxCreditsSummaryService]
   implicit val mockConfiguration:             Configuration                = mock[Configuration]
   implicit val mockShutteringConnector:       ShutteringConnector          = mock[ShutteringConnector]
+  implicit val mockReportActualProfitService: ReportActualProfitService    = mock[ReportActualProfitService]
 
   val shuttered =
     Shuttering(shuttered = true, Some("Shuttered"), Some("Tax Credits Summary is currently not available"))
