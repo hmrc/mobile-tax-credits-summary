@@ -82,8 +82,7 @@ class TaxCreditsBrokerConnector @Inject() (
   )(implicit headerCarrier: HeaderCarrier,
     ex:                     ExecutionContext
   ): Future[Option[DashboardData]] =
-    http.GET[Option[DashboardData]](url(nino, "dashboard-data")).fallbackTo {
-      Logger.error("dashboard-data call failed.")
-      Future successful None
+    http.GET[Option[DashboardData]](url(nino, "dashboard-data")).recover {
+      case _: NotFoundException => None
     }
 }
