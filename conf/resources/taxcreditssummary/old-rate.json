@@ -1,0 +1,158 @@
+{
+  "taxCreditsSummary": {
+    "paymentSummary": {
+      "workingTaxCredit": {
+        "paymentSeq": [
+          {
+            "amount": 160.45,
+            "paymentDate": date1,
+            "oneOffPayment": false,
+            "earlyPayment": false
+          },
+          {
+            "amount": 160.45,
+            "paymentDate": date2,
+            "oneOffPayment": false,
+            "earlyPayment": false
+          },
+          {
+            "amount": 160.45,
+            "paymentDate": date3,
+            "oneOffPayment": false,
+            "earlyPayment": false
+          },
+          {
+            "amount": 160.45,
+            "paymentDate": date4,
+            "oneOffPayment": false,
+            "earlyPayment": false
+          },
+          {
+            "amount": 160.45,
+            "paymentDate": date5,
+            "oneOffPayment": false,
+            "earlyPayment": false
+          },
+          {
+            "amount": 160.45,
+            "paymentDate": date6,
+            "oneOffPayment": false,
+            "earlyPayment": false
+          },
+          {
+            "amount": 160.45,
+            "paymentDate": date7,
+            "oneOffPayment": false,
+            "earlyPayment": false
+          },
+          {
+            "amount": 160.45,
+            "paymentDate": date8,
+            "oneOffPayment": false,
+            "earlyPayment": false
+          }
+        ],
+        "paymentFrequency": "WEEKLY"
+      },
+      "childTaxCredit": {
+        "paymentSeq": [
+          {
+            "amount": 140.12,
+            "paymentDate": date1,
+            "oneOffPayment": false,
+            "earlyPayment": false
+          },
+          {
+            "amount": 140.12,
+            "paymentDate": date2,
+            "oneOffPayment": false,
+            "earlyPayment": false
+          },
+          {
+            "amount": 140.12,
+            "paymentDate": date3,
+            "oneOffPayment": false,
+            "earlyPayment": false
+          },
+          {
+            "amount": 140.12,
+            "paymentDate": date4,
+            "oneOffPayment": false,
+            "earlyPayment": false
+          },
+          {
+            "amount": 140.12,
+            "paymentDate": date5,
+            "oneOffPayment": false,
+            "earlyPayment": false
+          },
+          {
+            "amount": 140.12,
+            "paymentDate": date6,
+            "oneOffPayment": false,
+            "earlyPayment": false
+          },
+          {
+            "amount": 140.12,
+            "paymentDate": date7,
+            "oneOffPayment": false,
+            "earlyPayment": false
+          },
+          {
+            "amount": 140.12,
+            "paymentDate": date8,
+            "oneOffPayment": false,
+            "earlyPayment": false
+          }
+        ],
+        "paymentFrequency": "WEEKLY"
+      },
+      "paymentEnabled": true,
+      "specialCircumstances": "OLD RATE",
+      "informationMessage": {
+        "title": "Tax credit payment amounts increased on 6 April",
+        "message": "You should only contact HMRC if you have not received your revised payment by 18 May."
+      },
+      "totalsByDate": [
+        {
+          "amount": 300.57,
+          "paymentDate": previousDate1
+        },
+        {
+          "amount": 300.57,
+          "paymentDate": previousDate2
+        },
+        {
+          "amount": 300.57,
+          "paymentDate": previousDate3
+        }
+      ]
+    },
+    "claimants": {
+      "personalDetails": {
+        "forename": "Tywin",
+        "otherForenames": "",
+        "surname": "Lannister"
+      },
+      "children": [
+        {
+          "forename": "Tyrion",
+          "surname": "Lannister"
+        },
+        {
+          "forename": "Cersei",
+          "surname": "Lannister"
+        },
+        {
+          "forename": "Jamie",
+          "surname": "Lannister"
+        }
+      ],
+      "messageLink": {
+        "preFtnaeDeadline": false,
+        "linkName": "Contact tax credits",
+        "link": "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries"
+      }
+    }
+  }
+}

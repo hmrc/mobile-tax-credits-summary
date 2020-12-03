@@ -1,0 +1,19 @@
+{
+  "taxCreditsSummary": {
+    "paymentSummary": {
+      "paymentEnabled": false
+    },
+    "claimants": {
+      "personalDetails": {
+        "forename": "Rickon",
+        "otherForenames": "",
+        "surname": "Stark"
+      },
+      "partnerDetails": {
+        "forename": "Meera",
+        "surname": "Reed"
+      },
+      "children": []
+    }
+  }
+}

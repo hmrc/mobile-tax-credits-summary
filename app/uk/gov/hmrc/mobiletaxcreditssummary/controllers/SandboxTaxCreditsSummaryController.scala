@@ -18,7 +18,7 @@ package uk.gov.hmrc.mobiletaxcreditssummary.controllers
 
 import javax.inject.{Inject, Singleton}
 import org.joda.time.LocalDate
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import play.api.libs.json.Json.toJson
 import play.api.mvc._
 import uk.gov.hmrc.api.controllers._
@@ -64,29 +64,21 @@ class SandboxTaxCreditsSummaryController @Inject() (
         case Some("ERROR-403") => Forbidden
         case Some("ERROR-500") => InternalServerError
         case Some("WORKING-TAX-CREDIT-ONLY") =>
-          val resource: String = findResource(s"/resources/taxcreditssummary/working-tax-credit-only.json")
-            .getOrElse(throw new IllegalArgumentException("Resource not found!"))
-          val response =
-            TaxCreditsSummaryResponse(excluded = false, Some(Json.parse(updateDates(resource)).as[TaxCreditsSummary]))
-          Ok(toJson(response))
+          Ok(toJson(TaxCreditsSummaryResponse(excluded = false, readData("working-tax-credit-only.json"))))
         case Some("CHILD-TAX-CREDIT-ONLY") =>
-          val resource: String = findResource(s"/resources/taxcreditssummary/child-tax-credit-only.json")
-            .getOrElse(throw new IllegalArgumentException("Resource not found!"))
-          val response =
-            TaxCreditsSummaryResponse(excluded = false, Some(Json.parse(updateDates(resource)).as[TaxCreditsSummary]))
-          Ok(toJson(response))
+          Ok(toJson(TaxCreditsSummaryResponse(excluded = false, readData("child-tax-credit-only.json"))))
         case Some("PRE-FTNAE") =>
-          val resource: String = findResource(s"/resources/taxcreditssummary/pre-ftnae.json")
-            .getOrElse(throw new IllegalArgumentException("Resource not found!"))
-          val response =
-            TaxCreditsSummaryResponse(excluded = false, Some(Json.parse(updateDates(resource)).as[TaxCreditsSummary]))
-          Ok(toJson(response))
+          Ok(toJson(TaxCreditsSummaryResponse(excluded = false, readData("pre-ftnae.json"))))
         case Some("POST-FTNAE") =>
-          val resource: String = findResource(s"/resources/taxcreditssummary/post-ftnae.json")
-            .getOrElse(throw new IllegalArgumentException("Resource not found!"))
-          val response =
-            TaxCreditsSummaryResponse(excluded = false, Some(Json.parse(updateDates(resource)).as[TaxCreditsSummary]))
-          Ok(toJson(response))
+          Ok(toJson(TaxCreditsSummaryResponse(excluded = false, readData("post-ftnae.json"))))
+        case Some("PXP5") =>
+          Ok(toJson(TaxCreditsSummaryResponse(excluded = false, readData("pxp5.json"))))
+        case Some("OLD-RATE") =>
+          Ok(toJson(TaxCreditsSummaryResponse(excluded = false, readData("old-rate.json"))))
+        case Some("NEW-RATE") =>
+          Ok(toJson(TaxCreditsSummaryResponse(excluded = false, readData("new-rate.json"))))
+        case Some("PAYMENTS-NOT-ENABLED") =>
+          Ok(toJson(TaxCreditsSummaryResponse(excluded = false, readData("payments-not-enabled.json"))))
         case Some("CLAIMANTS_FAILURE") =>
           val resource: String = findResource(s"/resources/taxcreditssummary/${nino.value}.json")
             .getOrElse(throw new IllegalArgumentException("Resource not found!"))
@@ -103,6 +95,13 @@ class SandboxTaxCreditsSummaryController @Inject() (
           Ok(toJson(response))
       })
     }
+
+  private def readData(resource: String) = {
+      Some(Json.parse(updateDates(
+    findResource(s"/resources/taxcreditssummary/$resource")
+      .getOrElse(throw new IllegalArgumentException("Resource not found!"))
+    )).as[TaxCreditsSummary])
+  }
 
   private def updateDates(resource: String): String = {
     val currentTime = new LocalDate().toDateTimeAtStartOfDay
