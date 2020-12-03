@@ -79,7 +79,7 @@ class SandboxTaxCreditsSummaryController @Inject() (
           Ok(toJson(TaxCreditsSummaryResponse(excluded = false, readData("new-rate.json"))))
         case Some("PAYMENTS-NOT-ENABLED") =>
           Ok(toJson(TaxCreditsSummaryResponse(excluded = false, readData("payments-not-enabled.json"))))
-        case Some("CLAIMANTS_FAILURE") =>
+        case Some("CLAIMANTS-FAILURE") =>
           val resource: String = findResource(s"/resources/taxcreditssummary/${nino.value}.json")
             .getOrElse(throw new IllegalArgumentException("Resource not found!"))
           val taxCreditsSummary: TaxCreditsSummary =
