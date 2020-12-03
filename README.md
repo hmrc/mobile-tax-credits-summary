@@ -35,11 +35,15 @@ To test different scenarios, add a header "SANDBOX-CONTROL" with one of the foll
 | "TAX-CREDITS-USER" | Happy path, non-excluded Tax Credits User with full summary |
 | "WORKING-TAX-CREDIT-ONLY" | Happy path, non-excluded Tax Credits User with working tax credit data but no child tax credit data |
 | "CHILD-TAX-CREDIT-ONLY" | Happy path, non-excluded Tax Credits User with child tax credit data but no working tax credit data |
-| "PRE_FTNAE" | Happy path, where they have FTNAE children but it is BEFORE the 31st August deadline |
-| "POST_FTNAE" | Happy path, where they have FTNAE children but it is AFTER the 31st August deadline |
+| "PRE-FTNAE" | Happy path, where they have FTNAE children but it is BEFORE the 31st August deadline |
+| "POST-FTNAE" | Happy path, where they have FTNAE children but it is AFTER the 31st August deadline |
 | "NON-TAX-CREDITS-USER" | Happy path, non-excluded, Non Tax Credits User with no summary |
 | "EXCLUDED-TAX-CREDITS-USER" | Happy path, excluded Tax Credits User with no summary |
-| "CLAIMANTS_FAILURE" | Unhappy path, non-excluded Tax Credits User with partial summary missing claimants section | 
+| "PXP5" | Happy path, where PXP5 period is open to calculate new tax credits rates |
+| "OLD-RATE" | Happy path, before the PXP5 period |
+| "NEW-RATE" | Happy path, after the PXP5 period |
+| "PAYMENTS-NOT-ENABLED" | Happy path, when user has no payments |
+| "CLAIMANTS-FAILURE" | Unhappy path, non-excluded Tax Credits User with partial summary missing claimants section | 
 | "ERROR-401" | Unhappy path, trigger a 401 Unauthorized response |
 | "ERROR-403" | Unhappy path, trigger a 403 Forbidden response |
 | "ERROR-500" | Unhappy path, trigger a 500 Internal Server Error response |

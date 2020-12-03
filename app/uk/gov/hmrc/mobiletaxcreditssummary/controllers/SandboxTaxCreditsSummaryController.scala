@@ -18,7 +18,7 @@ package uk.gov.hmrc.mobiletaxcreditssummary.controllers
 
 import javax.inject.{Inject, Singleton}
 import org.joda.time.LocalDate
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json
 import play.api.libs.json.Json.toJson
 import play.api.mvc._
 import uk.gov.hmrc.api.controllers._
@@ -52,9 +52,9 @@ class SandboxTaxCreditsSummaryController @Inject() (
   override def parser: BodyParser[AnyContent] = cc.parsers.anyContent
 
   override final def taxCreditsSummary(
-    nino:      Nino,
-    journeyId: JourneyId
-  ): Action[AnyContent] =
+                                        nino: Nino,
+                                        journeyId: JourneyId
+                                      ): Action[AnyContent] =
     validateAccept(acceptHeaderValidationRules).async { implicit request =>
       Future successful (request.headers.get("SANDBOX-CONTROL") match {
         case Some("NON-TAX-CREDITS-USER") => Ok(toJson(TaxCreditsSummaryResponse(taxCreditsSummary = None)))
@@ -97,9 +97,9 @@ class SandboxTaxCreditsSummaryController @Inject() (
     }
 
   private def readData(resource: String) = {
-      Some(Json.parse(updateDates(
-    findResource(s"/resources/taxcreditssummary/$resource")
-      .getOrElse(throw new IllegalArgumentException("Resource not found!"))
+    Some(Json.parse(updateDates(
+      findResource(s"/resources/taxcreditssummary/$resource")
+        .getOrElse(throw new IllegalArgumentException("Resource not found!"))
     )).as[TaxCreditsSummary])
   }
 
