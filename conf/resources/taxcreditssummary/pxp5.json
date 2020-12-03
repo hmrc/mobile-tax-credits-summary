@@ -1,0 +1,22 @@
+{
+  "paymentSummary": {
+    "paymentEnabled": false,
+    "specialCircumstances": "PXP5",
+    "informationMessage": {
+      "title": "Your payments are being processed",
+      "message": "It can take up to 2 days for your payments to show."
+    }
+  },
+  "claimants": {
+    "personalDetails": {
+      "forename": "Rickon",
+      "otherForenames": "",
+      "surname": "Stark"
+    },
+    "partnerDetails": {
+      "forename": "Meera",
+      "surname": "Reed"
+    },
+    "children": []
+  }
+}

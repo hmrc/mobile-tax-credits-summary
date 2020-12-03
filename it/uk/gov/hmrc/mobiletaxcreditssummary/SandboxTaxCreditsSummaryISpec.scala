@@ -124,9 +124,9 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String] shouldBe "Nuala"
     }
 
-    "return excluded = false and a tax credit summary with no claimants section where SANDBOX-CONTROL is CLAIMANTS_FAILURE" in {
+    "return excluded = false and a tax credit summary with no claimants section where SANDBOX-CONTROL is CLAIMANTS-FAILURE" in {
       val response =
-        await(request(sandboxNino).addHttpHeaders(mobileHeader, "SANDBOX-CONTROL" -> "CLAIMANTS_FAILURE").get())
+        await(request(sandboxNino).addHttpHeaders(mobileHeader, "SANDBOX-CONTROL" -> "CLAIMANTS-FAILURE").get())
       response.status                          shouldBe 200
       (response.json \ "excluded").as[Boolean] shouldBe false
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
@@ -140,6 +140,48 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
       response.status                          shouldBe 200
       (response.json \ "excluded").as[Boolean] shouldBe true
       assertEmptyTaxCreditsSummary(response)
+    }
+
+    "return excluded = false and the payments being processed info message where SANDBOX-CONTROL is PXP5" in {
+      val response =
+        await(request(sandboxNino).addHttpHeaders(mobileHeader, "SANDBOX-CONTROL" -> "PXP5").get())
+      response.status                          shouldBe 200
+      (response.json \ "excluded").as[Boolean] shouldBe false
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "specialCircumstances")
+        .as[String] shouldBe "PXP5"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "title")
+        .as[String] shouldBe "Your payments are being processed"
+    }
+
+    "return excluded = false and the NEW_RATE info message where SANDBOX-CONTROL is NEW-RATE" in {
+      val response =
+        await(request(sandboxNino).addHttpHeaders(mobileHeader, "SANDBOX-CONTROL" -> "NEW-RATE").get())
+      response.status                          shouldBe 200
+      (response.json \ "excluded").as[Boolean] shouldBe false
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "specialCircumstances")
+        .as[String] shouldBe "NEW RATE"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "message")
+        .as[String] shouldBe "Your payments have been revised. You should only contact HMRC if there is a problem with your revised payments."
+    }
+
+    "return excluded = false and the OLD_RATE info message where SANDBOX-CONTROL is OLD-RATE" in {
+      val response =
+        await(request(sandboxNino).addHttpHeaders(mobileHeader, "SANDBOX-CONTROL" -> "OLD-RATE").get())
+      response.status                          shouldBe 200
+      (response.json \ "excluded").as[Boolean] shouldBe false
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "specialCircumstances")
+        .as[String] shouldBe "OLD RATE"
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "message")
+        .as[String] shouldBe "You should only contact HMRC if you have not received your revised payment by 18 May."
+    }
+
+    "return excluded = false and paymentEnabled = false where SANDBOX-CONTROL is PAYMENTS-NOT-ENABLED" in {
+      val response =
+        await(request(sandboxNino).addHttpHeaders(mobileHeader, "SANDBOX-CONTROL" -> "PAYMENTS-NOT-ENABLED").get())
+      response.status                          shouldBe 200
+      (response.json \ "excluded").as[Boolean] shouldBe false
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "paymentEnabled")
+        .as[Boolean] shouldBe false
     }
 
     "return excluded = false and no tax credit summary data if non tax credit user where SANDBOX-CONTROL is NON-TAX-CREDITS-USER" in {

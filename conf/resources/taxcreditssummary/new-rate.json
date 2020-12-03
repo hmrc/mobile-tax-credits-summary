@@ -1,0 +1,156 @@
+{
+  "paymentSummary": {
+    "workingTaxCredit": {
+      "paymentSeq": [
+        {
+          "amount": 160.45,
+          "paymentDate": date1,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 160.45,
+          "paymentDate": date2,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 160.45,
+          "paymentDate": date3,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 160.45,
+          "paymentDate": date4,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 160.45,
+          "paymentDate": date5,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 160.45,
+          "paymentDate": date6,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 160.45,
+          "paymentDate": date7,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 160.45,
+          "paymentDate": date8,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        }
+      ],
+      "paymentFrequency": "WEEKLY"
+    },
+    "childTaxCredit": {
+      "paymentSeq": [
+        {
+          "amount": 140.12,
+          "paymentDate": date1,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 140.12,
+          "paymentDate": date2,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 140.12,
+          "paymentDate": date3,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 140.12,
+          "paymentDate": date4,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 140.12,
+          "paymentDate": date5,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 140.12,
+          "paymentDate": date6,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 140.12,
+          "paymentDate": date7,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 140.12,
+          "paymentDate": date8,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        }
+      ],
+      "paymentFrequency": "WEEKLY"
+    },
+    "paymentEnabled": true,
+    "specialCircumstances": "NEW RATE",
+    "informationMessage": {
+      "title": "Tax credit payment amounts increased on 6 April",
+      "message": "Your payments have been revised. You should only contact HMRC if there is a problem with your revised payments."
+    },
+    "totalsByDate": [
+      {
+        "amount": 300.57,
+        "paymentDate": previousDate1
+      },
+      {
+        "amount": 300.57,
+        "paymentDate": previousDate2
+      },
+      {
+        "amount": 300.57,
+        "paymentDate": previousDate3
+      }
+    ]
+  },
+  "claimants": {
+    "personalDetails": {
+      "forename": "CARL",
+      "otherForenames": "",
+      "surname": "NEWRATE"
+    },
+    "children": [
+      {
+        "forename": "FLORENCE",
+        "surname": "NEWRATE"
+      },
+      {
+        "forename": "DIANA",
+        "surname": "NEWRATE"
+      },
+      {
+        "forename": "MARY",
+        "surname": "NEWRATE"
+      }
+    ],
+    "messageLink": {
+      "preFtnaeDeadline": false,
+      "linkName": "Contact tax credits",
+      "link": "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries"
+    }
+  }
+}
