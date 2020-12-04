@@ -18,6 +18,12 @@ The Tax Credits Summary response
    
    The nino given must be a valid nino. ([http://www.hmrc.gov.uk/manuals/nimmanual/nim39110.htm](http://www.hmrc.gov.uk/manuals/nimmanual/nim39110.htm))
 
+   **Required:**
+   
+   `journeyId=[String]`
+
+    a string which is included for journey tracking purposes but has no functional impact
+    
 * **Success Responses:**
 
   * **Code:** 200 <br />
