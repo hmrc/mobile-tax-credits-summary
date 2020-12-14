@@ -17,6 +17,7 @@ lazy val microservice = Project(appName, file("."))
       ScoverageSbtPlugin
     ): _*
   )
+  .disablePlugins(JUnitXmlReportPlugin)
   .configs(IntegrationTest)
   .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
   .settings(publishingSettings: _*)
