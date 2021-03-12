@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,10 +49,18 @@ class GuiceModule(
       .annotatedWith(named("tax-credits-broker"))
       .toInstance(servicesConfig.baseUrl("tax-credits-broker"))
     bind(classOf[String])
+      .annotatedWith(named("mobile-tax-credits-renewal"))
+      .toInstance(servicesConfig.baseUrl("mobile-tax-credits-renewal"))
+    bind(classOf[String])
       .annotatedWith(named("mobile-shuttering"))
       .toInstance(servicesConfig.baseUrl("mobile-shuttering"))
     bindConfigString("reportActualProfitPeriod.startDate", "microservice.reportActualProfitPeriod.startDate")
     bindConfigString("reportActualProfitPeriod.endDate", "microservice.reportActualProfitPeriod.endDate")
+    bindConfigString("renewalsStartDate", "microservice.renewals.startDate")
+    bindConfigString("renewalsPackReceivedDate", "microservice.renewals.packReceivedDate")
+    bindConfigString("renewalsEndDate", "microservice.renewals.endDate")
+    bindConfigString("renewalsGracePeriodEndDate", "microservice.renewals.gracePeriodEndDate")
+    bindConfigString("renewalsEndViewDate", "microservice.renewals.endViewRenewalsDate")
 
     bind(classOf[ApiAccess]).toInstance(
       ApiAccess("PRIVATE", configuration.underlying.getStringList("api.access.white-list.applicationIds").asScala)

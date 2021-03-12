@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import play.api.mvc._
 import uk.gov.hmrc.api.controllers._
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, ServiceUnavailableException, BadRequestException}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, NotFoundException, ServiceUnavailableException}
 import uk.gov.hmrc.mobiletaxcreditssummary.connectors.ShutteringConnector
 import uk.gov.hmrc.mobiletaxcreditssummary.controllers.action.{AccessControl, ShutteredCheck}
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
@@ -100,11 +100,13 @@ class LiveTaxCreditsSummaryController @Inject() (
     journeyId: JourneyId
   ): Action[AnyContent] =
     validateAcceptWithAuth(acceptHeaderValidationRules, Option(nino)).async { implicit request =>
-      implicit val hc: HeaderCarrier = fromHeadersAndSession(request.headers, None)
+      implicit val hc: HeaderCarrier =
+        fromHeadersAndSession(request.headers, None).withExtraHeaders(("accept", "application/vnd.hmrc.1.0+json"))
       shutteringConnector.getShutteringStatus(journeyId).flatMap { shuttered =>
         withShuttering(shuttered) {
           errorWrapper {
-            val eventualResponse: Future[TaxCreditsSummaryResponse] = service.getTaxCreditsSummaryResponse(nino)
+            val eventualResponse: Future[TaxCreditsSummaryResponse] =
+              service.getTaxCreditsSummaryResponse(nino, journeyId)
             eventualResponse.map { summary =>
               sendAuditEvent(nino, summary, request.path)
               Ok(toJson(summary))

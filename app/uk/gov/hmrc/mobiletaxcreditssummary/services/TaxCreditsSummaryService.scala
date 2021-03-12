@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobiletaxcreditssummary.connectors._
 import uk.gov.hmrc.mobiletaxcreditssummary.domain._
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.{Child, Claimants, DashboardData, MessageLink, PaymentSummary, Person, TaxCreditsSummary, TaxCreditsSummaryResponse, UnknownCircumstance}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -28,7 +29,8 @@ import scala.concurrent.{ExecutionContext, Future}
 trait TaxCreditsSummaryService {
 
   def getTaxCreditsSummaryResponse(
-    nino:        Nino
+    nino:        Nino,
+    journeyId:   JourneyId
   )(implicit hc: HeaderCarrier,
     ex:          ExecutionContext
   ): Future[TaxCreditsSummaryResponse]
@@ -37,12 +39,14 @@ trait TaxCreditsSummaryService {
 @Singleton
 class LiveTaxCreditsSummaryService @Inject() (
   taxCreditsBrokerConnector: TaxCreditsBrokerConnector,
+  taxCreditsRenewalsService: TaxCreditsRenewalsService,
   reportActualProfitService: ReportActualProfitService,
   informationMessageService: InformationMessageService)
     extends TaxCreditsSummaryService {
 
   override def getTaxCreditsSummaryResponse(
-    nino:        Nino
+    nino:        Nino,
+    journeyId:   JourneyId
   )(implicit hc: HeaderCarrier,
     ex:          ExecutionContext
   ): Future[TaxCreditsSummaryResponse] = {
@@ -74,7 +78,7 @@ class LiveTaxCreditsSummaryService @Inject() (
           informationMessage   = informationMessageService.getInformationMessage(specialCircumstance, isMultipleFTNAE),
           specialCircumstances = specialCircumstance
         )
-      TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(newPayment, claimants)))
+      TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(newPayment, claimants, None)))
     }
 
     def buildResponseFromPaymentSummary: Future[TaxCreditsSummaryResponse] =
