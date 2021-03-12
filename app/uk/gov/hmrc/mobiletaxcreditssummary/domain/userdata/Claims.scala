@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata
 
-import play.api.libs.json.{Format, JsString, JsSuccess, Json, Reads, Writes}
+import play.api.libs.json.{Format, Json}
 
 case class LegacyClaim(
   household: Household,
@@ -66,13 +66,4 @@ case class LegacyRenewal(
 
 object LegacyRenewal {
   implicit val formats: Format[LegacyRenewal] = Json.format[LegacyRenewal]
-}
-
-object LegacyRenewalStatus {
-
-  val AWAITING_BARCODE         = "AWAITING_BARCODE"
-  val NOT_SUBMITTED            = "NOT_SUBMITTED"
-  val SUBMITTED_AND_PROCESSING = "SUBMITTED_AND_PROCESSING"
-  val COMPLETE                 = "COMPLETE"
-
 }
