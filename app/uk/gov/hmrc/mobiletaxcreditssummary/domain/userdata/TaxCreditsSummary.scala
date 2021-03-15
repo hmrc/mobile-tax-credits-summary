@@ -22,7 +22,7 @@ import uk.gov.hmrc.mobiletaxcreditssummary.domain.Renewals
 case class TaxCreditsSummary(
   paymentSummary: PaymentSummary,
   claimants:      Option[Claimants],
-  renewals:       Option[Renewals])
+  renewals:       Option[Renewals] = None)
 
 object TaxCreditsSummary {
   implicit val format: OFormat[TaxCreditsSummary] = Json.format[TaxCreditsSummary]

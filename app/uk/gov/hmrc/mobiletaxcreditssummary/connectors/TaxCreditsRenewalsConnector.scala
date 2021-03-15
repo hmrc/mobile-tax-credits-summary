@@ -26,7 +26,7 @@ import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.LegacyClaims
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RenewalsConnector @Inject() (
+class TaxCreditsRenewalsConnector @Inject()(
   http:                                            CoreGet,
   @Named("mobile-tax-credits-renewal") serviceUrl: String) {
 

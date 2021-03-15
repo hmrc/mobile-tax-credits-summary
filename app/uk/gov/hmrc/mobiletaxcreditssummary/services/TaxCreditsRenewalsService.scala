@@ -17,8 +17,8 @@
 package uk.gov.hmrc.mobiletaxcreditssummary.services
 
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.mobiletaxcreditssummary.connectors.RenewalsConnector
-import uk.gov.hmrc.mobiletaxcreditssummary.domain.{AutoRenewal, Complete, NotStartedSingle, PackNotSent, RenewalStatus, RenewalSubmitted, Renewals, TaxCreditsNino, ViewOnly}
+import uk.gov.hmrc.mobiletaxcreditssummary.connectors.TaxCreditsRenewalsConnector
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.{AutoRenewal, AutoRenewalMultiple, Complete, NotStartedMultiple, NotStartedSingle, PackNotSent, RenewalStatus, RenewalSubmitted, Renewals, TaxCreditsNino, ViewOnly}
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.LegacyClaims
 
@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class TaxCreditsRenewalsService @Inject() (
-  renewalsConnector:                                               RenewalsConnector,
+  renewalsConnector:                                               TaxCreditsRenewalsConnector,
   @Named("renewalsStartDate") renewalsStartDate:                   String,
   @Named("renewalsPackReceivedDate") renewalsPackReceivedDate:     String,
   @Named("renewalsEndDate") renewalsEndDate:                       String,
@@ -55,12 +55,13 @@ class TaxCreditsRenewalsService @Inject() (
       response.flatMap { claims =>
         claims.references.map {
           references =>
-            references.size match {
-              case 1 =>
-                val singleClaim        = references.head
-                val householdBreakdown = singleClaim.household.householdEndReason.getOrElse("") == "HOUSEHOLD BREAKDOWN"
-                if (viewOnlyPeriod) buildRenewalsResponse(ViewOnly, 1, 0, householdBreakdown)
-                else {
+            if (viewOnlyPeriod) buildRenewalsResponse(ViewOnly, 1, 1)
+            else {
+              references.size match {
+                case 1 =>
+                  val singleClaim = references.head
+                  val householdBreakdown = singleClaim.household.householdEndReason
+                      .getOrElse("") == "HOUSEHOLD BREAKDOWN"
                   singleClaim.renewal.renewalStatus match {
                     case Some("AWAITING_BARCODE") => buildRenewalsResponse(PackNotSent, 1, 0, householdBreakdown)
 
@@ -73,17 +74,28 @@ class TaxCreditsRenewalsService @Inject() (
                       buildRenewalsResponse(RenewalSubmitted, 1, 1, householdBreakdown)
                     case Some("COMPLETE") => buildRenewalsResponse(Complete, 1, 1, householdBreakdown)
                   }
-                }
-              case _ => {
-                val totalClaims = references.size
-                val submittedClaims = references.count(claim =>
-                  claim.renewal.renewalStatus.getOrElse("") == "SUBMITTED_AND_PROCESSING" || claim.renewal.renewalStatus
-                    .getOrElse("") == "COMPLETE"
-                )
-                val householdBreakdown =
-                  references.exists(_.household.householdEndReason.getOrElse("") == "HOUSEHOLD BREAKDOWN")
-                if (viewOnlyPeriod) buildRenewalsResponse(ViewOnly, totalClaims, submittedClaims, householdBreakdown)
-                //TODO Implement logic for multi-statuses
+                case _ =>
+                  val totalClaims = references.size
+                  val statuses    = references.map(_.renewal.renewalStatus.getOrElse("NOT_SUBMITTED"))
+                  val submittedClaims =
+                    statuses.count(status => status == "SUBMITTED_AND_PROCESSING" || status == "COMPLETE")
+                  val householdBreakdown =
+                    references.exists(_.household.householdEndReason.getOrElse("") == "HOUSEHOLD BREAKDOWN")
+                  if (statuses.distinct.size == 1)
+                    statuses.head match {
+                      case "NOT_SUBMITTED" =>
+                        val formTypes = references.map(_.renewal.renewalFormType.getOrElse("D"))
+                        if (formTypes.distinct.size == 1 && formTypes.head == "R")
+                          buildRenewalsResponse(AutoRenewalMultiple, totalClaims, submittedClaims, householdBreakdown)
+                        else
+                          buildRenewalsResponse(NotStartedMultiple, totalClaims, submittedClaims, householdBreakdown)
+                      case "SUBMITTED_AND_PROCESSING" =>
+                        buildRenewalsResponse(RenewalSubmitted, totalClaims, submittedClaims, householdBreakdown)
+                      case "COMPLETE" =>
+                        buildRenewalsResponse(Complete, totalClaims, submittedClaims, householdBreakdown)
+                    }
+                  else buildRenewalsResponse(Complete, totalClaims, submittedClaims, householdBreakdown)
+
               }
             }
         }
@@ -111,6 +123,6 @@ class TaxCreditsRenewalsService @Inject() (
 
   private def renewalsClosed: Boolean = currentTime.isBefore(startDate) || currentTime.isAfter(endViewDate)
 
-  private def viewOnlyPeriod: Boolean = currentTime.isAfter(endDate) && currentTime.isBefore(endViewDate)
+  private def viewOnlyPeriod: Boolean = currentTime.isAfter(gracePeriodEndDate) && currentTime.isBefore(endViewDate)
 
 }
