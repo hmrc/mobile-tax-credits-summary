@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.service
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import org.scalatest.{Tag, TestData}
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
@@ -28,13 +28,12 @@ import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.api.sandbox.FileResource
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{Upstream4xxResponse, Upstream5xxResponse}
-import uk.gov.hmrc.mobiletaxcreditssummary.connectors.TaxCreditsBrokerConnector
 import uk.gov.hmrc.mobiletaxcreditssummary.controllers.TestSetup
-import uk.gov.hmrc.mobiletaxcreditssummary.domain.TaxCreditsNino
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.LegacyRenewalStatus.COMPLETE
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.{Complete, Renewals, TaxCreditsNino}
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
 import uk.gov.hmrc.mobiletaxcreditssummary.services.{InformationMessageService, LiveTaxCreditsSummaryService, ReportActualProfitService, TaxCreditsRenewalsService}
 import uk.gov.hmrc.mobiletaxcreditssummary.utils.LocalDateProvider
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -139,7 +138,9 @@ class TaxCreditsSummaryServiceSpec
                                                      informationMessageService)
       mockTaxCreditsBrokerConnectorGetExclusion(None, taxCreditsNino)
 
-      await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe TaxCreditsSummaryResponse(excluded = false, None)
+      await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe TaxCreditsSummaryResponse(excluded =
+                                                                                                              false,
+                                                                                                            None)
     }
 
     "return a tax-credits user payload when a payment summary is returned" in {
@@ -157,8 +158,34 @@ class TaxCreditsSummaryServiceSpec
                            paymentSummary),
         taxCreditsNino
       )
+      mockTaxCreditsRenewalsConnectorNoClaims(tcrNino)
 
       await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe taxCreditsSummary
+    }
+
+    "return a tax-credits user payload with renewals when claims are returned" in {
+      val localDateProvider         = app.injector.instanceOf[LocalDateProvider]
+      val informationMessageService = new InformationMessageService(localDateProvider)
+      val service = new LiveTaxCreditsSummaryService(mockTaxCreditsBrokerConnector,
+                                                     taxCreditsRenewalsService,
+                                                     reportActualProfitService,
+                                                     informationMessageService)
+      mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
+      mockTaxCreditsBrokerConnectorGetDashboardData(
+        dashboardData.copy(personalDetails,
+                           Some(partnerDetails),
+                           Children(Seq(SarahSmith, JosephSmith, MarySmith, JennySmith, PeterSmith, SimonSmith)),
+                           paymentSummary),
+        taxCreditsNino
+      )
+      mockTaxCreditsRenewalsConnectorSingleClaim(tcrNino, COMPLETE)
+
+      val taxCreditsSummaryWithRenewals = taxCreditsSummary.taxCreditsSummary.get.copy(renewals = Some(
+        Renewals(Complete, 1, 1, now.minusMonths(1).toString, now.plusMonths(1).toString, now.plusMonths(3).toString)
+      )
+      )
+      await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe taxCreditsSummary
+        .copy(taxCreditsSummary = Some(taxCreditsSummaryWithRenewals))
     }
 
     "return a tax-credits user payload when a payment summary is returned but when there are no partner details" in {
@@ -176,6 +203,7 @@ class TaxCreditsSummaryServiceSpec
                            paymentSummary),
         taxCreditsNino
       )
+      mockTaxCreditsRenewalsConnectorNoClaims(tcrNino)
 
       await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe taxCreditsSummaryNoPartnerDetails
     }
@@ -192,6 +220,7 @@ class TaxCreditsSummaryServiceSpec
         dashboardData.copy(personalDetails, Some(partnerDetails), Children(Seq.empty), paymentSummary),
         taxCreditsNino
       )
+      mockTaxCreditsRenewalsConnectorNoClaims(tcrNino)
 
       await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe taxCreditsSummaryNoChildren
     }
@@ -204,7 +233,9 @@ class TaxCreditsSummaryServiceSpec
                                                      reportActualProfitService,
                                                      informationMessageService)
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(true)), taxCreditsNino)
-      await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe TaxCreditsSummaryResponse(excluded = true, None)
+      await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe TaxCreditsSummaryResponse(excluded =
+                                                                                                              true,
+                                                                                                            None)
     }
 
     "return an error when dashboard data fails and exclusion returns false" in {
@@ -263,9 +294,12 @@ class TaxCreditsSummaryServiceSpec
           ),
           taxCreditsNino
         )
+        mockTaxCreditsRenewalsConnectorNoClaims(tcrNino)
 
-        await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe taxCreditsSummaryWithFtnae(ftnae = ftnae,
-                                                                                                    currentYear = false)
+        await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe taxCreditsSummaryWithFtnae(
+          ftnae       = ftnae,
+          currentYear = false
+        )
       }
 
       f"return a tax-credits user payload $testName but date is after 31st August and before 8th September ($currentYear-09-01)" taggedAs Tag(
@@ -287,6 +321,7 @@ class TaxCreditsSummaryServiceSpec
           ),
           taxCreditsNino
         )
+        mockTaxCreditsRenewalsConnectorNoClaims(tcrNino)
 
         await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe getExpected(
           testName,
@@ -318,6 +353,7 @@ class TaxCreditsSummaryServiceSpec
           ),
           taxCreditsNino
         )
+        mockTaxCreditsRenewalsConnectorNoClaims(tcrNino)
 
         await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe getExpected(
           testName,
@@ -350,6 +386,7 @@ class TaxCreditsSummaryServiceSpec
           ),
           taxCreditsNino
         )
+        mockTaxCreditsRenewalsConnectorNoClaims(tcrNino)
 
         await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe getExpected(
           testName,
@@ -383,12 +420,13 @@ class TaxCreditsSummaryServiceSpec
           ),
           taxCreditsNino
         )
+        mockTaxCreditsRenewalsConnectorNoClaims(tcrNino)
 
         await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe getExpected(testName,
-                                                                                     None,
-                                                                                     ftnae        = false,
-                                                                                     preSeptember = false,
-                                                                                     ctc          = false)
+                                                                                                None,
+                                                                                                ftnae        = false,
+                                                                                                preSeptember = false,
+                                                                                                ctc          = false)
       }
 
       f"return a tax-credits user payload $testName but date is before 1st September ($currentYear-08-31)" taggedAs Tag(
@@ -410,6 +448,7 @@ class TaxCreditsSummaryServiceSpec
           ),
           taxCreditsNino
         )
+        mockTaxCreditsRenewalsConnectorNoClaims(tcrNino)
 
         await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe getExpected(
           testName,
@@ -440,9 +479,12 @@ class TaxCreditsSummaryServiceSpec
           ),
           taxCreditsNino
         )
+        mockTaxCreditsRenewalsConnectorNoClaims(tcrNino)
 
-        await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe taxCreditsSummaryWithFtnae(currentYear = false,
-                                                                                                    ftnae = ftnae)
+        await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe taxCreditsSummaryWithFtnae(
+          currentYear = false,
+          ftnae       = ftnae
+        )
       }
 
     }
@@ -466,6 +508,7 @@ class TaxCreditsSummaryServiceSpec
         ),
         taxCreditsNino
       )
+      mockTaxCreditsRenewalsConnectorNoClaims(tcrNino)
 
       await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe taxCreditsSummaryWithMultipleFtnae(currentYear =
         false
@@ -499,6 +542,7 @@ class TaxCreditsSummaryServiceSpec
         ),
         taxCreditsNino
       )
+      mockTaxCreditsRenewalsConnectorNoClaims(tcrNino)
 
       await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe taxCreditsSummaryWithReportActualProfitLink(
         reportActualProfit
@@ -532,6 +576,7 @@ class TaxCreditsSummaryServiceSpec
         ),
         taxCreditsNino
       )
+      mockTaxCreditsRenewalsConnectorNoClaims(tcrNino)
 
       await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe taxCreditsSummaryWithReportActualProfitLink(
         reportActualProfit
@@ -565,6 +610,7 @@ class TaxCreditsSummaryServiceSpec
         ),
         taxCreditsNino
       )
+      mockTaxCreditsRenewalsConnectorNoClaims(tcrNino)
 
       await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe taxCreditsSummaryWithReportActualProfitLink(
         reportActualProfit
@@ -599,6 +645,7 @@ class TaxCreditsSummaryServiceSpec
         ),
         taxCreditsNino
       )
+      mockTaxCreditsRenewalsConnectorNoClaims(tcrNino)
 
       await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe taxCreditsSummaryWithReportActualProfitLink(
         reportActualProfit
@@ -633,6 +680,7 @@ class TaxCreditsSummaryServiceSpec
         ),
         taxCreditsNino
       )
+      mockTaxCreditsRenewalsConnectorNoClaims(tcrNino)
 
       await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe taxCreditsSummaryWithReportActualProfitLink(
         reportActualProfit
@@ -660,6 +708,7 @@ class TaxCreditsSummaryServiceSpec
         ),
         taxCreditsNino
       )
+      mockTaxCreditsRenewalsConnectorNoClaims(tcrNino)
 
       await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe taxCreditsSummary
     }
@@ -685,6 +734,7 @@ class TaxCreditsSummaryServiceSpec
         ),
         taxCreditsNino
       )
+      mockTaxCreditsRenewalsConnectorNoClaims(tcrNino)
 
       await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe taxCreditsSummary
     }
@@ -712,6 +762,7 @@ class TaxCreditsSummaryServiceSpec
         ),
         taxCreditsNino
       )
+      mockTaxCreditsRenewalsConnectorNoClaims(tcrNino)
 
       await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe taxCreditsSummaryWithInfoMessage(
         Some(OldRate),
@@ -747,6 +798,7 @@ class TaxCreditsSummaryServiceSpec
         ),
         taxCreditsNino
       )
+      mockTaxCreditsRenewalsConnectorNoClaims(tcrNino)
 
       await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe taxCreditsSummaryWithInfoMessage(
         Some(NewRate),

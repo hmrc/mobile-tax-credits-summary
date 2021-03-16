@@ -52,7 +52,7 @@ class LiveTaxCreditsSummaryService @Inject() (
   ): Future[TaxCreditsSummaryResponse] = {
     val tcNino = TaxCreditsNino(nino.value)
 
-    def buildTaxCreditsSummary(dashboardData: DashboardData): TaxCreditsSummaryResponse = {
+    def buildTaxCreditsSummary(dashboardData: DashboardData): Future[TaxCreditsSummaryResponse] = {
       def getChildrenAge16AndUnder: Seq[Person] =
         Child.getEligibleChildren(dashboardData.childrenDetails.child)
 
@@ -69,16 +69,28 @@ class LiveTaxCreditsSummaryService @Inject() (
         dashboardData.awardDetails.mainApplicantNino
       )
 
+      val renewals = taxCreditsRenewalsService.getTaxCreditsRenewals(tcNino, journeyId)
+
       val messageLink: Option[MessageLink] = informationMessageService.getMessageLink(dashboardData.paymentSummary)
       val claimants       = Some(Claimants(personalDetails, partnerDetails, children, messageLink, reportActualProfit))
       val isMultipleFTNAE = dashboardData.paymentSummary.isMultipleFTNAE.getOrElse(false)
 
-      val newPayment: PaymentSummary =
+      val newPayment: PaymentSummary = {
         dashboardData.paymentSummary.copy(
           informationMessage   = informationMessageService.getInformationMessage(specialCircumstance, isMultipleFTNAE),
           specialCircumstances = specialCircumstance
         )
-      TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(newPayment, claimants, None)))
+      }
+      renewals.flatMap {
+        case Some(renewals) =>
+          Future successful TaxCreditsSummaryResponse(taxCreditsSummary =
+            Some(TaxCreditsSummary(newPayment, claimants, Some(renewals)))
+          )
+        case None =>
+          Future successful TaxCreditsSummaryResponse(taxCreditsSummary =
+            Some(TaxCreditsSummary(newPayment, claimants, None))
+          )
+      }
     }
 
     def buildResponseFromPaymentSummary: Future[TaxCreditsSummaryResponse] =
@@ -89,7 +101,7 @@ class LiveTaxCreditsSummaryService @Inject() (
             // as the app treats excluded false and not other body as no TC
             Future successful TaxCreditsSummaryResponse(excluded = false, None)
           } else {
-            Future successful buildTaxCreditsSummary(dashboardData)
+            buildTaxCreditsSummary(dashboardData)
           }
         case None => Future successful TaxCreditsSummaryResponse(excluded = false, None)
       }
