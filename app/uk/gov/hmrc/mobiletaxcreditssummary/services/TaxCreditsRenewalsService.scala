@@ -100,7 +100,18 @@ class TaxCreditsRenewalsService @Inject() (
                     else {
                       (statuses.contains(NOT_SUBMITTED), statuses.contains(SUBMITTED_AND_PROCESSING)) match {
                         case (true, _) =>
-                          buildRenewalsResponse(OneNotStartedMultiple, totalClaims, submittedClaims, householdBreakdown)
+                          val notSubmittedManualRenewals = references.filter(ref =>
+                            ref.renewal.renewalFormType
+                              .getOrElse("") != autoRenewalFormType && ref.renewal.renewalStatus
+                              .getOrElse("") == NOT_SUBMITTED
+                          )
+                          if (notSubmittedManualRenewals.isEmpty)
+                            buildRenewalsResponse(AutoRenewalMultiple, totalClaims, submittedClaims, householdBreakdown)
+                          else
+                            buildRenewalsResponse(OneNotStartedMultiple,
+                                                  totalClaims,
+                                                  submittedClaims,
+                                                  householdBreakdown)
                         case (_, true) =>
                           buildRenewalsResponse(RenewalSubmitted, totalClaims, submittedClaims, householdBreakdown)
                         case _ => buildRenewalsResponse(PackNotSent, totalClaims, submittedClaims, householdBreakdown)

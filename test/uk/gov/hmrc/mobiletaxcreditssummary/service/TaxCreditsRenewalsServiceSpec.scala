@@ -191,5 +191,21 @@ class TaxCreditsRenewalsServiceSpec
       )
     }
 
+    "return the AutoRenewalMultiple response if the user has multiple claims, but only autoRenew claims have a status of NOT_SUBMITTED" in {
+      mockTaxCreditsRenewalsConnectorMultipleClaims(tcrNino,
+        Seq(singleClaim(COMPLETE), singleClaim(SUBMITTED_AND_PROCESSING), singleClaim(NOT_SUBMITTED, autoRenewal = true)))
+      await(serviceOpen.getTaxCreditsRenewals(tcrNino, journeyId)) shouldBe Some(
+        defaultClaimRenewals(AutoRenewalMultiple, totalClaims = 3, claimsSubmitted = 2)
+      )
+    }
+
+    "return the OneNotStartedMultiple response if the user has multiple claims, and a manual claim has the status of NOT_SUBMITTED" in {
+      mockTaxCreditsRenewalsConnectorMultipleClaims(tcrNino,
+        Seq(singleClaim(COMPLETE), singleClaim(SUBMITTED_AND_PROCESSING), singleClaim(NOT_SUBMITTED)))
+      await(serviceOpen.getTaxCreditsRenewals(tcrNino, journeyId)) shouldBe Some(
+        defaultClaimRenewals(OneNotStartedMultiple, totalClaims = 3, claimsSubmitted = 2)
+      )
+    }
+
   }
 }

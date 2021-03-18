@@ -18,6 +18,7 @@ package uk.gov.hmrc.mobiletaxcreditssummary.connectors
 
 import com.google.inject.name.Named
 import com.google.inject.{Inject, Singleton}
+import play.api.Logger
 import uk.gov.hmrc.http.{CoreGet, HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.TaxCreditsNino
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
@@ -41,10 +42,12 @@ class TaxCreditsRenewalsConnector @Inject()(
   )(implicit headerCarrier: HeaderCarrier,
     ex:                     ExecutionContext
   ): Future[Option[LegacyClaims]] = {
-    println("HEADERS = " + headerCarrier)
-
     http.GET[Option[LegacyClaims]](url(journeyId, nino)).recover {
       case _: NotFoundException => None
+
+      case e =>
+        Logger.warn(s"Call to mobile-tax-credits-renewals failed:\n $e \n No renewals information available.")
+        None
     }
   }
 }
