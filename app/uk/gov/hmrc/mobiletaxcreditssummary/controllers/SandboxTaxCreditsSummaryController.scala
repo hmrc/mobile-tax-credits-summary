@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,7 +83,7 @@ class SandboxTaxCreditsSummaryController @Inject() (
           val resource: String = findResource(s"/resources/taxcreditssummary/${nino.value}.json")
             .getOrElse(throw new IllegalArgumentException("Resource not found!"))
           val taxCreditsSummary: TaxCreditsSummary =
-            TaxCreditsSummary(Json.parse(updateDates(resource)).as[TaxCreditsSummary].paymentSummary, None)
+            TaxCreditsSummary(Json.parse(updateDates(resource)).as[TaxCreditsSummary].paymentSummary, None, None)
           val response = TaxCreditsSummaryResponse(excluded = false, Some(taxCreditsSummary))
           Ok(toJson(response))
         case Some("SHUTTERED") => WebServerIsDown(shuttered)

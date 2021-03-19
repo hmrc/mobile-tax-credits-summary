@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import uk.gov.hmrc.auth.core.ConfidenceLevel._
 import uk.gov.hmrc.auth.core.syntax.retrieved._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.{Renewals, ViewOnly}
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -48,8 +50,8 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
       mockAuthorisationGrantAccess(Some(nino) and L200)
       mockAudit(Nino(nino), expectedResult)
       (mockService
-        .getTaxCreditsSummaryResponse(_: Nino)(_: HeaderCarrier, _: ExecutionContext))
-        .expects(Nino(nino), *, *)
+        .getTaxCreditsSummaryResponse(_: Nino, _: JourneyId)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(Nino(nino), *, *, *)
         .returning(Future.successful(expectedResult))
 
       val result = controller.taxCreditsSummary(Nino(nino), "17d2420c-4fc6-4eee-9311-a37325066704")(
@@ -73,8 +75,8 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
       mockAuthorisationGrantAccess(Some(nino) and L200)
       mockShutteringResponse(notShuttered)
       (mockService
-        .getTaxCreditsSummaryResponse(_: Nino)(_: HeaderCarrier, _: ExecutionContext))
-        .expects(Nino(nino), *, *)
+        .getTaxCreditsSummaryResponse(_: Nino, _: JourneyId)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(Nino(nino), *, *, *)
         .returning(Future failed Upstream5xxResponse("error", 500, 500))
 
       status(
@@ -91,8 +93,8 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
       mockAuthorisationGrantAccess(Some(nino) and L200)
       mockAudit(Nino(nino), expectedResult)
       (mockService
-        .getTaxCreditsSummaryResponse(_: Nino)(_: HeaderCarrier, _: ExecutionContext))
-        .expects(Nino(nino), *, *)
+        .getTaxCreditsSummaryResponse(_: Nino, _: JourneyId)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(Nino(nino), *, *, *)
         .returning(Future.successful(expectedResult))
 
       val result =

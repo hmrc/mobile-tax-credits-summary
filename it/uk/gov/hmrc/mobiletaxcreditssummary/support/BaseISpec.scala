@@ -26,6 +26,7 @@ import play.api.libs.ws.WSClient
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.domain.Nino
 
+import java.time.LocalDate
 import scala.language.postfixOps
 
 class BaseISpec
@@ -48,12 +49,18 @@ class BaseISpec
 
   def configuration: Map[String, Any] =
     Map(
-      "auditing.enabled"                              -> true,
-      "microservice.services.auth.port"               -> wireMockPort,
-      "microservice.services.datastream.port"         -> wireMockPort,
-      "microservice.services.tax-credits-broker.port" -> wireMockPort,
-      "microservice.services.mobile-shuttering.port"  -> wireMockPort,
-      "auditing.consumer.baseUri.port"                -> wireMockPort
+      "auditing.enabled"                                      -> false,
+      "microservice.services.auth.port"                       -> wireMockPort,
+      "microservice.services.datastream.port"                 -> wireMockPort,
+      "microservice.services.tax-credits-broker.port"         -> wireMockPort,
+      "microservice.services.mobile-tax-credits-renewal.port" -> wireMockPort,
+      "microservice.services.mobile-shuttering.port"          -> wireMockPort,
+      "auditing.consumer.baseUri.port"                        -> wireMockPort,
+      "microservice.renewals.startDate"                       -> LocalDate.now().minusMonths(2).atStartOfDay().toString,
+      "microservice.renewals.packReceivedDate"                -> LocalDate.now().minusMonths(1).atStartOfDay().toString,
+      "microservice.renewals.endDate"                         -> LocalDate.now().plusMonths(1).atStartOfDay().toString,
+      "microservice.renewals.gracePeriodEndDate"              -> LocalDate.now().plusMonths(2).atStartOfDay().toString,
+      "microservice.renewals.endViewRenewalsDate"             -> LocalDate.now().plusMonths(3).atStartOfDay().toString
     )
 
   protected def appBuilder: GuiceApplicationBuilder = new GuiceApplicationBuilder().configure(configuration)

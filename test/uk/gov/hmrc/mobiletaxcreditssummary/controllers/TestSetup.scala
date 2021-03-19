@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,15 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.mobiletaxcreditssummary.connectors.{ShutteringConnector, TaxCreditsBrokerConnector}
+import uk.gov.hmrc.mobiletaxcreditssummary.connectors.{ShutteringConnector, TaxCreditsBrokerConnector, TaxCreditsRenewalsConnector}
 import uk.gov.hmrc.mobiletaxcreditssummary.domain._
-import uk.gov.hmrc.mobiletaxcreditssummary.mocks.{AuditMock, AuthorisationMock, ShutteringMock, TaxCreditsBrokerConnectorMock}
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
+import uk.gov.hmrc.mobiletaxcreditssummary.mocks.{AuditMock, AuthorisationMock, ShutteringMock, TaxCreditsBrokerConnectorMock, TaxCreditsRenewalsConnectorMock}
 import uk.gov.hmrc.mobiletaxcreditssummary.services.{InformationMessageService, LiveTaxCreditsSummaryService, ReportActualProfitService}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+
+import eu.timepit.refined.auto._
+import java.time.LocalDateTime
 
 trait TestSetup
     extends WordSpecLike
@@ -38,16 +42,18 @@ trait TestSetup
     with TaxCreditsBrokerConnectorMock
     with AuthorisationMock
     with AuditMock
-    with ShutteringMock {
+    with ShutteringMock
+    with TaxCreditsRenewalsConnectorMock {
 
-  implicit val hc:                            HeaderCarrier                = HeaderCarrier()
-  implicit val mockAuthConnector:             AuthConnector                = mock[AuthConnector]
-  implicit val mockTaxCreditsBrokerConnector: TaxCreditsBrokerConnector    = mock[TaxCreditsBrokerConnector]
-  implicit val mockAuditConnector:            AuditConnector               = mock[AuditConnector]
-  implicit val mockService:                   LiveTaxCreditsSummaryService = mock[LiveTaxCreditsSummaryService]
-  implicit val mockConfiguration:             Configuration                = mock[Configuration]
-  implicit val mockShutteringConnector:       ShutteringConnector          = mock[ShutteringConnector]
-  implicit val mockReportActualProfitService: ReportActualProfitService    = mock[ReportActualProfitService]
+  implicit val hc:                              HeaderCarrier                = HeaderCarrier()
+  implicit val mockAuthConnector:               AuthConnector                = mock[AuthConnector]
+  implicit val mockTaxCreditsBrokerConnector:   TaxCreditsBrokerConnector    = mock[TaxCreditsBrokerConnector]
+  implicit val mockAuditConnector:              AuditConnector               = mock[AuditConnector]
+  implicit val mockService:                     LiveTaxCreditsSummaryService = mock[LiveTaxCreditsSummaryService]
+  implicit val mockConfiguration:               Configuration                = mock[Configuration]
+  implicit val mockShutteringConnector:         ShutteringConnector          = mock[ShutteringConnector]
+  implicit val mockReportActualProfitService:   ReportActualProfitService    = mock[ReportActualProfitService]
+  implicit val mockTaxCreditsRenewalsConnector: TaxCreditsRenewalsConnector  = mock[TaxCreditsRenewalsConnector]
 
   val shuttered =
     Shuttering(shuttered = true, Some("Shuttered"), Some("Tax Credits Summary is currently not available"))
@@ -59,7 +65,10 @@ trait TestSetup
   val lowConfidenceLevelError: JsValue =
     Json.parse("""{"code":"LOW_CONFIDENCE_LEVEL","message":"Confidence Level on account does not allow access"}""")
 
+  val now:       LocalDateTime = LocalDateTime.now()
+  val journeyId: JourneyId     = "17d2420c-4fc6-4eee-9311-a37325066704"
   val nino             = "CS700100A"
+  val tcrNino          = TaxCreditsNino("CS700100A")
   val incorrectNino    = Nino("SC100700A")
   val renewalReference = RenewalReference("111111111111111")
   val acceptHeader: (String, String) = "Accept" -> "application/vnd.hmrc.1.0+json"

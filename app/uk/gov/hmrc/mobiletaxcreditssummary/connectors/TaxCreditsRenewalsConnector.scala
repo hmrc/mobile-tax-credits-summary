@@ -19,38 +19,35 @@ package uk.gov.hmrc.mobiletaxcreditssummary.connectors
 import com.google.inject.name.Named
 import com.google.inject.{Inject, Singleton}
 import play.api.Logger
-import play.api.libs.json.JsValue
-import uk.gov.hmrc.http.{CoreGet, HeaderCarrier, Upstream5xxResponse}
-import uk.gov.hmrc.mobiletaxcreditssummary.domain.Shuttering
+import uk.gov.hmrc.http.{CoreGet, HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.TaxCreditsNino
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.LegacyClaims
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ShutteringConnector @Inject() (
-  http:                                   CoreGet,
-  @Named("mobile-shuttering") serviceUrl: String) {
+class TaxCreditsRenewalsConnector @Inject()(
+  http:                                            CoreGet,
+  @Named("mobile-tax-credits-renewal") serviceUrl: String) {
 
-  def getShutteringStatus(
-    journeyId:              JourneyId
+  def url(
+    journeyId: JourneyId,
+    nino:      TaxCreditsNino
+  ) = s"$serviceUrl/income/${nino.value}/tax-credits/full-claimant-details?journeyId=$journeyId"
+
+  def getRenewals(
+    journeyId:              JourneyId,
+    nino:                   TaxCreditsNino
   )(implicit headerCarrier: HeaderCarrier,
     ex:                     ExecutionContext
-  ): Future[Shuttering] =
-    http
-      .GET[JsValue](
-        s"$serviceUrl/mobile-shuttering/service/mobile-tax-credits-summary/shuttered-status?journeyId=$journeyId"
-      )
-      .map { json =>
-        (json).as[Shuttering]
-      } recover {
-      case e: Upstream5xxResponse =>
-        Logger.warn(s"Internal Server Error received from mobile-shuttering:\n $e \nAssuming unshuttered.")
-        Shuttering.shutteringDisabled
-
+  ): Future[Option[LegacyClaims]] = {
+    http.GET[Option[LegacyClaims]](url(journeyId, nino)).recover {
+      case _: NotFoundException => None
 
       case e =>
-        Logger.warn(s"Call to mobile-shuttering failed:\n $e \nAssuming unshuttered.")
-        Shuttering.shutteringDisabled
-
+        Logger.warn(s"Call to mobile-tax-credits-renewals failed:\n $e \n No renewals information available.")
+        None
     }
+  }
 }

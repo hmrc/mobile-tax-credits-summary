@@ -23,11 +23,15 @@ import play.api.libs.ws.WSRequest
 import uk.gov.hmrc.api.sandbox.FileResource
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.Shuttering
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.LegacyRenewalStatus.{COMPLETE, NOT_SUBMITTED, SUBMITTED_AND_PROCESSING}
 import uk.gov.hmrc.mobiletaxcreditssummary.stubs.AuthStub.grantAccess
 import uk.gov.hmrc.mobiletaxcreditssummary.stubs.ShutteringStub._
 import uk.gov.hmrc.mobiletaxcreditssummary.stubs.TaxCreditsBrokerStub._
+import uk.gov.hmrc.mobiletaxcreditssummary.stubs.TaxCreditsRenewalsStub._
 import uk.gov.hmrc.mobiletaxcreditssummary.support.BaseISpec
 import uk.gov.hmrc.time.DateTimeUtils
+
+import java.time.{LocalDate, LocalDateTime}
 
 class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
 
@@ -53,6 +57,8 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       grantAccess(nino1.value)
       dashboardDataIsFound(nino1, nino2)
       exclusionFlagIsFound(nino1, excluded = false)
+      noRenewalClaimsFound(nino1)
+      stubForShutteringDisabled
 
       val response = await(request(nino1).get())
       response.status                          shouldBe 200
@@ -66,12 +72,14 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       ((response.json \\ "claimants").head \ "partnerDetails" \ "surname").as[String]        shouldBe "Hunter-Smith"
       (((response.json \\ "claimants").head \ "children")(0) \ "forename").as[String]        shouldBe "Sarah"
       (((response.json \\ "claimants").head \ "children")(0) \ "surname").as[String]         shouldBe "Smith"
+      (response.json \\ "renewals").isEmpty                                                  shouldBe true
     }
 
     "return a valid response for TAX-CREDITS-USER with report actual profit if applicable" in {
       grantAccess(sandboxNino.value)
       exclusionFlagIsFound(sandboxNino, excluded = false)
       dashboardDataIsFound(sandboxNino, nino2)
+      stubForShutteringDisabled
 
       val response = await(request(sandboxNino).get())
       response.status                          shouldBe 200
@@ -93,6 +101,7 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       grantAccess(nino1.value)
       dashboardDataIsFound(nino1, nino2, "OLD RATE")
       exclusionFlagIsFound(nino1, excluded = false)
+      stubForShutteringDisabled
 
       val response = await(request(nino1).get())
       response.status                          shouldBe 200
@@ -104,7 +113,7 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "title")
         .as[String] shouldBe "Tax credit payment amounts increased on 6 April"
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "message")
-        .as[String]                                               shouldBe "You should only contact HMRC if you have not received your revised payment by 18 May."
+        .as[String]                                                                 shouldBe "You should only contact HMRC if you have not received your revised payment by 18 May."
       ((response.json \\ "claimants").head \ "messageLink" \ "linkName").as[String] shouldBe "Contact tax credits"
       ((response.json \\ "claimants").head \ "messageLink" \ "link")
         .as[String]                                                                          shouldBe "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries"
@@ -121,6 +130,7 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       grantAccess(nino1.value)
       dashboardDataIsFound(nino1, nino2, "NEW RATE")
       exclusionFlagIsFound(nino1, excluded = false)
+      stubForShutteringDisabled
 
       val response = await(request(nino1).get())
       response.status                          shouldBe 200
@@ -132,7 +142,7 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "title")
         .as[String] shouldBe "Tax credit payment amounts increased on 6 April"
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "message")
-        .as[String]                                               shouldBe "Your payments have been revised. You should only contact HMRC if there is a problem with your revised payments."
+        .as[String]                                                                 shouldBe "Your payments have been revised. You should only contact HMRC if there is a problem with your revised payments."
       ((response.json \\ "claimants").head \ "messageLink" \ "linkName").as[String] shouldBe "Contact tax credits"
       ((response.json \\ "claimants").head \ "messageLink" \ "link")
         .as[String]                                                                          shouldBe "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries"
@@ -149,6 +159,7 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       grantAccess(nino1.value)
       dashboardDataIsFound(nino1, nino2, "PXP5")
       exclusionFlagIsFound(nino1, excluded = false)
+      stubForShutteringDisabled
 
       val response = await(request(nino1).get())
       response.status                          shouldBe 200
@@ -175,6 +186,7 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       grantAccess(nino1.value)
       dashboardDataIsFound(nino1, nino2, "UNKNOWN CIRCUMSTANCE")
       exclusionFlagIsFound(nino1, excluded = false)
+      stubForShutteringDisabled
 
       val response = await(request(nino1).get())
       response.status                          shouldBe 200
@@ -183,7 +195,7 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
         .as[String]                                                                             shouldBe "WEEKLY"
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "specialCircumstances").isEmpty shouldBe true
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage").isEmpty   shouldBe true
-      ((response.json \\ "claimants").head \ "messageLink").isEmpty                               shouldBe true
+      ((response.json \\ "claimants").head \ "messageLink").isEmpty                             shouldBe true
       ((response.json \\ "claimants").head \ "personalDetails" \ "forename").as[String]         shouldBe "Nuala"
       ((response.json \\ "claimants").head \ "personalDetails" \ "surname").as[String]          shouldBe "O'Shea"
       ((response.json \\ "claimants").head \ "partnerDetails" \ "forename").as[String]          shouldBe "Frederick"
@@ -193,9 +205,86 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (((response.json \\ "claimants").head \ "children")(0) \ "surname").as[String]            shouldBe "Smith"
     }
 
+    "return a valid response for TAX-CREDITS-USER with renewals info if applicable" in {
+      grantAccess(sandboxNino.value)
+      exclusionFlagIsFound(sandboxNino, excluded = false)
+      dashboardDataIsFound(sandboxNino, nino2)
+      singleRenewalClaimIsFound(sandboxNino, COMPLETE)
+      stubForShutteringDisabled
+
+      val response = await(request(sandboxNino).get())
+      response.status                                                                shouldBe 200
+      (response.json \ "excluded").as[Boolean]                                       shouldBe false
+      (response.json \ "taxCreditsSummary" \ "paymentSummary").isDefined             shouldBe true
+      (response.json \ "taxCreditsSummary" \ "claimants").isDefined                  shouldBe true
+      (response.json \ "taxCreditsSummary" \ "renewals").isDefined                   shouldBe true
+      (response.json \ "taxCreditsSummary" \ "renewals" \ "status").as[String]       shouldBe "complete"
+      (response.json \ "taxCreditsSummary" \ "renewals" \ "totalClaims").as[Int]     shouldBe 1
+      (response.json \ "taxCreditsSummary" \ "renewals" \ "claimsSubmitted").as[Int] shouldBe 1
+      (response.json \ "taxCreditsSummary" \ "renewals" \ "packReceivedDate")
+        .as[String] shouldBe LocalDate.now().minusMonths(1).atStartOfDay().toString
+      (response.json \ "taxCreditsSummary" \ "renewals" \ "renewalsEndDate")
+        .as[String] shouldBe LocalDate.now().plusMonths(1).atStartOfDay().toString
+      (response.json \ "taxCreditsSummary" \ "renewals" \ "viewRenewalsEndDate")
+        .as[String]                                                                         shouldBe LocalDate.now().plusMonths(3).atStartOfDay().toString
+      (response.json \ "taxCreditsSummary" \ "renewals" \ "householdBreakdown").as[Boolean] shouldBe false
+      (response.json \ "taxCreditsSummary" \ "renewals" \ "inGracePeriod").as[Boolean]      shouldBe false
+      (response.json \ "taxCreditsSummary" \ "renewals" \ "currentYear").as[Int]            shouldBe LocalDate.now().getYear
+    }
+
+    "return correct response for TAX-CREDITS-USER with multiple claim renewals info if applicable" in {
+      grantAccess(sandboxNino.value)
+      exclusionFlagIsFound(sandboxNino, excluded = false)
+      dashboardDataIsFound(sandboxNino, nino2)
+      multipleRenewalClaimsAreFound(sandboxNino, SUBMITTED_AND_PROCESSING, NOT_SUBMITTED)
+      stubForShutteringDisabled
+
+      val response = await(request(sandboxNino).get())
+      response.status                                                                shouldBe 200
+      (response.json \ "excluded").as[Boolean]                                       shouldBe false
+      (response.json \ "taxCreditsSummary" \ "paymentSummary").isDefined             shouldBe true
+      (response.json \ "taxCreditsSummary" \ "claimants").isDefined                  shouldBe true
+      (response.json \ "taxCreditsSummary" \ "renewals").isDefined                   shouldBe true
+      (response.json \ "taxCreditsSummary" \ "renewals" \ "status").as[String]       shouldBe "one_not_started_multiple"
+      (response.json \ "taxCreditsSummary" \ "renewals" \ "totalClaims").as[Int]     shouldBe 2
+      (response.json \ "taxCreditsSummary" \ "renewals" \ "claimsSubmitted").as[Int] shouldBe 1
+      (response.json \ "taxCreditsSummary" \ "renewals" \ "packReceivedDate")
+        .as[String] shouldBe LocalDate.now().minusMonths(1).atStartOfDay().toString
+      (response.json \ "taxCreditsSummary" \ "renewals" \ "renewalsEndDate")
+        .as[String] shouldBe LocalDate.now().plusMonths(1).atStartOfDay().toString
+      (response.json \ "taxCreditsSummary" \ "renewals" \ "viewRenewalsEndDate")
+        .as[String]                                                                         shouldBe LocalDate.now().plusMonths(3).atStartOfDay().toString
+      (response.json \ "taxCreditsSummary" \ "renewals" \ "householdBreakdown").as[Boolean] shouldBe true
+      (response.json \ "taxCreditsSummary" \ "renewals" \ "inGracePeriod").as[Boolean]      shouldBe false
+      (response.json \ "taxCreditsSummary" \ "renewals" \ "currentYear").as[Int]            shouldBe LocalDate.now().getYear
+    }
+
+    "return a valid response for TAX-CREDITS-USER - with no renewals info if call to tax-credits-renewals fails" in {
+      grantAccess(nino1.value)
+      dashboardDataIsFound(nino1, nino2)
+      exclusionFlagIsFound(nino1, excluded = false)
+      renewalsCallFails(nino1)
+      stubForShutteringDisabled
+
+      val response = await(request(nino1).get())
+      response.status                          shouldBe 200
+      (response.json \ "excluded").as[Boolean] shouldBe false
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
+        .as[String]                                                                          shouldBe "WEEKLY"
+      ((response.json \\ "claimants").head \ "personalDetails" \ "forename").as[String]      shouldBe "Nuala"
+      ((response.json \\ "claimants").head \ "personalDetails" \ "surname").as[String]       shouldBe "O'Shea"
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "forename").as[String]       shouldBe "Frederick"
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "otherForenames").as[String] shouldBe "Tarquin"
+      ((response.json \\ "claimants").head \ "partnerDetails" \ "surname").as[String]        shouldBe "Hunter-Smith"
+      (((response.json \\ "claimants").head \ "children")(0) \ "forename").as[String]        shouldBe "Sarah"
+      (((response.json \\ "claimants").head \ "children")(0) \ "surname").as[String]         shouldBe "Smith"
+      (response.json \\ "renewals").isEmpty                                                  shouldBe true
+    }
+
     "return a valid response for EXCLUDED-TAX-CREDITS-USER" in {
       grantAccess(nino1.value)
       exclusionFlagIsFound(nino1, excluded = true)
+      stubForShutteringDisabled
 
       val response = await(request(nino1).get())
       response.status                          shouldBe 200
@@ -205,6 +294,7 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
     "return a valid response for NON-TAX-CREDITS-USER" in {
       exclusionFlagIsNotFound(nino1)
       grantAccess(nino1.value)
+      stubForShutteringDisabled
 
       val response = await(request(nino1).get())
       response.status                          shouldBe 200
@@ -223,6 +313,7 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       grantAccess(nino1.value)
       dashboardDataIsNotFound(nino1)
       exclusionFlagIsFound(nino1, excluded = false)
+      stubForShutteringDisabled
 
       val response = await(request(nino1).get())
       response.status                          shouldBe 200
@@ -232,6 +323,7 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
     "return a valid response for ERROR-503 - tcs/:nino/exclusion call returns 503" in {
       grantAccess(nino1.value)
       exclusion503(nino1)
+      stubForShutteringDisabled
 
       val response = await(request(nino1).get())
       response.status shouldBe 500
