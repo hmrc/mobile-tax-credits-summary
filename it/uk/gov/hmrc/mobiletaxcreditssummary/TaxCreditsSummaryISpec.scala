@@ -229,7 +229,8 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
         .as[String]                                                                         shouldBe LocalDate.now().plusMonths(3).atStartOfDay().toString
       (response.json \ "taxCreditsSummary" \ "renewals" \ "householdBreakdown").as[Boolean] shouldBe false
       (response.json \ "taxCreditsSummary" \ "renewals" \ "inGracePeriod").as[Boolean]      shouldBe false
-      (response.json \ "taxCreditsSummary" \ "renewals" \ "currentYear").as[Int]            shouldBe LocalDate.now().getYear
+      (response.json \ "taxCreditsSummary" \ "renewals" \ "currentYear")
+        .as[String] shouldBe LocalDate.now().getYear.toString
     }
 
     "return correct response for TAX-CREDITS-USER with multiple claim renewals info if applicable" in {
@@ -256,7 +257,8 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
         .as[String]                                                                         shouldBe LocalDate.now().plusMonths(3).atStartOfDay().toString
       (response.json \ "taxCreditsSummary" \ "renewals" \ "householdBreakdown").as[Boolean] shouldBe true
       (response.json \ "taxCreditsSummary" \ "renewals" \ "inGracePeriod").as[Boolean]      shouldBe false
-      (response.json \ "taxCreditsSummary" \ "renewals" \ "currentYear").as[Int]            shouldBe LocalDate.now().getYear
+      (response.json \ "taxCreditsSummary" \ "renewals" \ "currentYear")
+        .as[String] shouldBe LocalDate.now().getYear.toString
     }
 
     "return a valid response for TAX-CREDITS-USER - with no renewals info if call to tax-credits-renewals fails" in {

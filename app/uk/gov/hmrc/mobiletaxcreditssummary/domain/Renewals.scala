@@ -29,7 +29,7 @@ case class Renewals(
   viewRenewalsEndDate: String,
   householdBreakdown:  Boolean = false,
   inGracePeriod:       Boolean = false,
-  currentYear:         Int = LocalDate.now().getYear
+  currentYear:         String = LocalDate.now().getYear.toString
   )
 
 object Renewals {
