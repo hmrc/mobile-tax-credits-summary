@@ -57,6 +57,7 @@ object RenewalStatus {
     case JsString("not_started_single")       => JsSuccess(NotStartedSingle)
     case JsString("renewal_submitted")        => JsSuccess(RenewalSubmitted)
     case JsString("one_not_started_multiple") => JsSuccess(OneNotStartedMultiple)
+    case JsString("not_started_multiple")     => JsSuccess(NotStartedMultiple)
     case JsString("complete")                 => JsSuccess(Complete)
     case JsString("view_only")                => JsSuccess(ViewOnly)
   }
@@ -68,6 +69,7 @@ object RenewalStatus {
     case NotStartedSingle      => JsString("not_started_single")
     case RenewalSubmitted      => JsString("renewal_submitted")
     case OneNotStartedMultiple => JsString("one_not_started_multiple")
+    case NotStartedMultiple    => JsString("not_started_multiple")
     case Complete              => JsString("complete")
     case ViewOnly              => JsString("view_only")
     case e                     => throw new IllegalStateException(s"$e is an Invalid Renewal Status")
