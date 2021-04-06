@@ -36,7 +36,6 @@ class TaxCreditsRenewalsService @Inject() (
   @Named("renewalsGracePeriodEndDate") renewalsGracePeriodEndDate: String,
   @Named("renewalsEndViewDate") renewalsEndViewDate:               String) {
 
-  val currentTime:              LocalDateTime = LocalDateTime.now(ZoneId.of("Europe/London"))
   val startDate:                LocalDateTime = LocalDateTime.parse(renewalsStartDate)
   val endDate:                  LocalDateTime = LocalDateTime.parse(renewalsEndDate)
   val gracePeriodEndDate:       LocalDateTime = LocalDateTime.parse(renewalsGracePeriodEndDate)
@@ -123,6 +122,8 @@ class TaxCreditsRenewalsService @Inject() (
         }
       )
     }
+  
+  private def currentTime: LocalDateTime = LocalDateTime.now(ZoneId.of("Europe/London"))
 
   private def buildRenewalsResponse(
     status:             RenewalStatus,
