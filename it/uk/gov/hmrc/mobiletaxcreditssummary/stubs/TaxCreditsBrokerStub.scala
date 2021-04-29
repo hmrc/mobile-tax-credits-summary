@@ -4,7 +4,6 @@ import java.time.{LocalDate, ZoneId}
 
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, stubFor, urlPathEqualTo}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.SpecialCircumstance
 
 object TaxCreditsBrokerStub {
 

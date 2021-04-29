@@ -27,7 +27,7 @@ import play.api.libs.json.Json.parse
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.api.sandbox.FileResource
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{Upstream4xxResponse, Upstream5xxResponse}
+import uk.gov.hmrc.http.{Upstream4xxResponse, Upstream5xxResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.mobiletaxcreditssummary.controllers.TestSetup
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.LegacyRenewalStatus.COMPLETE
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.{Complete, Renewals, TaxCreditsNino}
@@ -52,13 +52,13 @@ class TaxCreditsSummaryServiceSpec
   val exclusionPaymentSummary: PaymentSummary = PaymentSummary(None, None, None, None, excluded = Some(true))
   val taxCreditsNino:          TaxCreditsNino = TaxCreditsNino(nino)
 
-  val upstream4xxException: Upstream4xxResponse = Upstream4xxResponse("blows up for excluded users", 405, 405)
-  val upstream5xxException: Upstream5xxResponse = Upstream5xxResponse("blows up for excluded users", 500, 500)
+  val upstream4xxException: UpstreamErrorResponse = UpstreamErrorResponse("blows up for excluded users", 405, 405)
+  val upstream5xxException: UpstreamErrorResponse = UpstreamErrorResponse("blows up for excluded users", 500, 500)
 
   val taxCreditsSummary: TaxCreditsSummaryResponse =
     TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummary, Some(claimants))))
 
-  def taxCreditsSummaryWithFtnae(
+  protected def taxCreditsSummaryWithFtnae(
     link:         Option[MessageLink] = None,
     preSeptember: Boolean             = false,
     currentYear:  Boolean             = true,

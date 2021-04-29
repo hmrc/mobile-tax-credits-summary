@@ -29,7 +29,7 @@ import uk.gov.hmrc.mobiletaxcreditssummary.connectors.{ShutteringConnector, TaxC
 import uk.gov.hmrc.mobiletaxcreditssummary.domain._
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
 import uk.gov.hmrc.mobiletaxcreditssummary.mocks.{AuditMock, AuthorisationMock, ShutteringMock, TaxCreditsBrokerConnectorMock, TaxCreditsRenewalsConnectorMock}
-import uk.gov.hmrc.mobiletaxcreditssummary.services.{InformationMessageService, LiveTaxCreditsSummaryService, ReportActualProfitService}
+import uk.gov.hmrc.mobiletaxcreditssummary.services.{LiveTaxCreditsSummaryService, ReportActualProfitService}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import eu.timepit.refined.auto._
@@ -55,9 +55,9 @@ trait TestSetup
   implicit val mockReportActualProfitService:   ReportActualProfitService    = mock[ReportActualProfitService]
   implicit val mockTaxCreditsRenewalsConnector: TaxCreditsRenewalsConnector  = mock[TaxCreditsRenewalsConnector]
 
-  val shuttered =
+  val shuttered: Shuttering =
     Shuttering(shuttered = true, Some("Shuttered"), Some("Tax Credits Summary is currently not available"))
-  val notShuttered = Shuttering.shutteringDisabled
+  val notShuttered: Shuttering = Shuttering.shutteringDisabled
 
   val noNinoFoundOnAccount: JsValue =
     Json.parse("""{"code":"UNAUTHORIZED","message":"NINO does not exist on account"}""")
@@ -65,13 +65,13 @@ trait TestSetup
   val lowConfidenceLevelError: JsValue =
     Json.parse("""{"code":"LOW_CONFIDENCE_LEVEL","message":"Confidence Level on account does not allow access"}""")
 
-  val now:       LocalDateTime = LocalDateTime.now()
-  val journeyId: JourneyId     = "17d2420c-4fc6-4eee-9311-a37325066704"
-  val nino             = "CS700100A"
-  val tcrNino          = TaxCreditsNino("CS700100A")
-  val incorrectNino    = Nino("SC100700A")
-  val renewalReference = RenewalReference("111111111111111")
-  val acceptHeader: (String, String) = "Accept" -> "application/vnd.hmrc.1.0+json"
+  val now:              LocalDateTime    = LocalDateTime.now()
+  val journeyId:        JourneyId        = "17d2420c-4fc6-4eee-9311-a37325066704"
+  val nino:             String           = "CS700100A"
+  val tcrNino:          TaxCreditsNino   = TaxCreditsNino("CS700100A")
+  val incorrectNino:    Nino             = Nino("SC100700A")
+  val renewalReference: RenewalReference = RenewalReference("111111111111111")
+  val acceptHeader:     (String, String) = "Accept" -> "application/vnd.hmrc.1.0+json"
 
   lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
     .withSession(
