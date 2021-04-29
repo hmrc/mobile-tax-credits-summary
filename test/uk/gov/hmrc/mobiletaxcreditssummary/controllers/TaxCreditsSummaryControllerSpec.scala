@@ -26,7 +26,6 @@ import uk.gov.hmrc.auth.core.ConfidenceLevel._
 import uk.gov.hmrc.auth.core.syntax.retrieved._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.mobiletaxcreditssummary.domain.{Renewals, ViewOnly}
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
 

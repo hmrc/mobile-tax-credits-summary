@@ -17,12 +17,12 @@
 package uk.gov.hmrc.mobiletaxcreditssummary.connectors
 
 import java.time.{LocalDate, LocalDateTime}
-
 import akka.actor.ActorSystem
 import com.typesafe.config.Config
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{Matchers, WordSpecLike}
+import play.api.{Configuration, Environment}
 import play.api.libs.json.Json
 import play.api.libs.json.Json.parse
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
@@ -47,12 +47,12 @@ class TaxCreditsBrokerSpec
   trait Setup extends MockFactory {
     implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
-    val expectedNextDueDate: LocalDateTime = LocalDate.parse("2015-07-16").atStartOfDay()
-
-    val expectedPaymentWTC: FuturePayment  = FuturePayment(160.34, expectedNextDueDate, oneOffPayment = false)
-    val expectedPaymentCTC: FuturePayment  = FuturePayment(140.12, expectedNextDueDate, oneOffPayment = false)
-    val paymentSectionCTC:  PaymentSection = PaymentSection(List(expectedPaymentCTC), "WEEKLY")
-    val paymentSectionWTC:  PaymentSection = PaymentSection(List(expectedPaymentWTC), "WEEKLY")
+    val expectedNextDueDate: LocalDateTime            = LocalDate.parse("2015-07-16").atStartOfDay()
+    val headers:             Map[String, Seq[String]] = Map("Accept" -> Seq("application/vnd.hmrc.1.0+json"))
+    val expectedPaymentWTC:  FuturePayment            = FuturePayment(160.34, expectedNextDueDate, oneOffPayment = false)
+    val expectedPaymentCTC:  FuturePayment            = FuturePayment(140.12, expectedNextDueDate, oneOffPayment = false)
+    val paymentSectionCTC:   PaymentSection           = PaymentSection(List(expectedPaymentCTC), "WEEKLY")
+    val paymentSectionWTC:   PaymentSection           = PaymentSection(List(expectedPaymentWTC), "WEEKLY")
 
     val paymentSummary: PaymentSummary =
       PaymentSummary(Some(paymentSectionWTC), Some(paymentSectionCTC), paymentEnabled = Some(true))
@@ -63,34 +63,34 @@ class TaxCreditsBrokerSpec
         .fromJson[DashboardData](parse(findResource("/resources/taxcreditssummary/CS700100A-dashboard-data.json").get))
         .get
 
-    lazy val http500Response: Future[Nothing]      = Future.failed(Upstream5xxResponse("Error", 500, 500))
+    lazy val http500Response: Future[Nothing]      = Future.failed(UpstreamErrorResponse("Error", 500, 500))
     lazy val response:        Future[HttpResponse] = http200Person
 
     lazy val http200Person: Future[AnyRef with HttpResponse] =
-      Future.successful(HttpResponse(200, Some(Json.toJson(personalDetails))))
+      Future.successful(HttpResponse(200, Json.toJson(personalDetails), headers))
 
     lazy val http200Partner: Future[AnyRef with HttpResponse] =
-      Future.successful(HttpResponse(200, Some(Json.toJson(partnerDetails))))
-    lazy val http400Exception: Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(400, None))
-    lazy val http404NoPartner: Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(404, None))
+      Future.successful(HttpResponse(200, Json.toJson(partnerDetails), headers))
+    lazy val http400Exception: Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(400, "BAD_REQUEST"))
+    lazy val http404NoPartner: Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(404, "NOT_FOUND"))
 
     lazy val http200Children: Future[AnyRef with HttpResponse] =
-      Future.successful(HttpResponse(200, Some(Json.toJson(tcbChildren))))
+      Future.successful(HttpResponse(200, Json.toJson(tcbChildren), headers))
 
     lazy val http200Payment: Future[AnyRef with HttpResponse] =
-      Future.successful(HttpResponse(200, Some(Json.toJson(paymentSummary))))
-    lazy val http404Payment: Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(404, None))
+      Future.successful(HttpResponse(200, Json.toJson(paymentSummary), headers))
+    lazy val http404Payment: Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(404, "NOT_FOUND"))
 
     lazy val http200Exclusion: Future[AnyRef with HttpResponse] =
-      Future.successful(HttpResponse(200, Some(Json.toJson(exclusion))))
+      Future.successful(HttpResponse(200, Json.toJson(exclusion), headers))
 
     lazy val http200NotExcluded: Future[AnyRef with HttpResponse] =
-      Future.successful(HttpResponse(200, Some(Json.toJson(notExcluded))))
-    lazy val http404Exclusion: Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(404, None))
+      Future.successful(HttpResponse(200, Json.toJson(notExcluded), headers))
+    lazy val http404Exclusion: Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(404, "NOT_FOUND"))
 
     lazy val http200dashboardData: Future[AnyRef with HttpResponse] =
-      Future.successful(HttpResponse(200, Some(Json.toJson(dashboardData))))
-    lazy val http404dashboardData: Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(404, None))
+      Future.successful(HttpResponse(200, Json.toJson(dashboardData), headers))
+    lazy val http404dashboardData: Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(404, "NOT_FOUND"))
 
     val AGE17 = "1999-08-31"
     val AGE18 = "1998-01-09"
@@ -114,7 +114,7 @@ class TaxCreditsBrokerSpec
 
     val exclusion:   Exclusion = Exclusion(true)
     val notExcluded: Exclusion = Exclusion(false)
-    val serviceUrl = "someUrl"
+    val serviceUrl = "https://localhost"
 
     class TestTaxCreditsBrokerConnector(http: CoreGet) extends TaxCreditsBrokerConnector(http, serviceUrl)
 
@@ -123,13 +123,12 @@ class TaxCreditsBrokerSpec
       val http: CoreGet = new CoreGet with HttpGet with GetHttpTransport {
         override val hooks: Seq[HttpHook] = NoneRequired
 
-        override def configuration: Option[Config] = None
+        override def configuration: Config = Configuration.load(Environment.simple()).underlying
 
         override def doGet(
           url:         String,
           headers:     Seq[(String, String)] = Seq.empty
-        )(implicit hc: HeaderCarrier,
-          ec:          ExecutionContext
+        )(implicit ec: ExecutionContext
         ): Future[HttpResponse] =
           response.getOrElse(throw new Exception("No response defined!"))
 

@@ -18,7 +18,7 @@ package uk.gov.hmrc.mobiletaxcreditssummary
 
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone.UTC
-import play.api.libs.json.{JsArray, Json}
+import play.api.libs.json.Json
 import play.api.libs.ws.WSRequest
 import uk.gov.hmrc.api.sandbox.FileResource
 import uk.gov.hmrc.domain.Nino
@@ -31,7 +31,7 @@ import uk.gov.hmrc.mobiletaxcreditssummary.stubs.TaxCreditsRenewalsStub._
 import uk.gov.hmrc.mobiletaxcreditssummary.support.BaseISpec
 import uk.gov.hmrc.time.DateTimeUtils
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
 
 class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
 

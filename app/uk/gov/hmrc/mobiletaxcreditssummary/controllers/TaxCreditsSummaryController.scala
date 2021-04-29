@@ -29,11 +29,11 @@ import uk.gov.hmrc.mobiletaxcreditssummary.controllers.action.{AccessControl, Sh
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
 import uk.gov.hmrc.mobiletaxcreditssummary.services.LiveTaxCreditsSummaryService
-import uk.gov.hmrc.play.HeaderCarrierConverter.fromHeadersAndSession
 import uk.gov.hmrc.play.audit.AuditExtensions.auditHeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
-import uk.gov.hmrc.play.bootstrap.controller.BackendController
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+import uk.gov.hmrc.play.http.HeaderCarrierConverter.fromRequest
 import uk.gov.hmrc.service.Auditor
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -101,7 +101,7 @@ class LiveTaxCreditsSummaryController @Inject() (
   ): Action[AnyContent] =
     validateAcceptWithAuth(acceptHeaderValidationRules, Option(nino)).async { implicit request =>
       implicit val hc: HeaderCarrier =
-        fromHeadersAndSession(request.headers, None).withExtraHeaders(("accept", "application/vnd.hmrc.1.0+json"))
+        fromRequest(request).withExtraHeaders(("accept", "application/vnd.hmrc.1.0+json"))
       shutteringConnector.getShutteringStatus(journeyId).flatMap { shuttered =>
         withShuttering(shuttered) {
           errorWrapper {
