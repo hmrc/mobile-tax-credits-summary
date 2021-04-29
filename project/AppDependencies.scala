@@ -3,27 +3,29 @@ import sbt.{ModuleID, _}
 
 private object AppDependencies {
 
-  private val bootstrapPlayVersion = "1.3.0"
-  private val playHmrcApiVersion = "4.1.0-play-26"
-  private val domainVersion = "5.6.0-play-26"
+  private val bootstrapPlayVersion = "4.3.0"
+  private val playHmrcApiVersion   = "6.2.0-play-26"
+  private val domainVersion        = "5.6.0-play-26"
 
-  private val scalaTestVersion = "3.0.8"
+  private val scalaTestVersion         = "3.0.8"
   private val scalaTestPlusPlayVersion = "3.1.2"
-  private val pegdownVersion = "1.6.0"
-  private val refinedVersion = "0.9.4"
-  private val wireMockVersion = "2.21.0"
-  private val scalaMockVersion = "4.1.0"
+  private val pegdownVersion           = "1.6.0"
+  private val refinedVersion           = "0.9.4"
+  private val wireMockVersion          = "2.21.0"
+  private val scalaMockVersion         = "4.1.0"
+  private val timeVersion              = "3.19.0"
 
   val compile = Seq(
-    "uk.gov.hmrc" %% "bootstrap-play-26" % bootstrapPlayVersion,
-    "uk.gov.hmrc" %% "play-hmrc-api" % playHmrcApiVersion,
-    "uk.gov.hmrc" %% "domain" % domainVersion,
-    "eu.timepit" %% "refined" % refinedVersion
+    "uk.gov.hmrc" %% "bootstrap-backend-play-26" % bootstrapPlayVersion,
+    "uk.gov.hmrc" %% "play-hmrc-api"             % playHmrcApiVersion,
+    "uk.gov.hmrc" %% "domain"                    % domainVersion,
+    "eu.timepit"  %% "refined"                   % refinedVersion,
+    "uk.gov.hmrc" %% "time"                      % timeVersion
   )
 
   trait TestDependencies {
-    lazy val scope: String = "test"
-    lazy val test: Seq[ModuleID] = ???
+    lazy val scope: String        = "test"
+    lazy val test:  Seq[ModuleID] = ???
   }
 
   private def testCommon(scope: String) = Seq(
@@ -36,10 +38,10 @@ private object AppDependencies {
       new TestDependencies {
 
         override lazy val test: Seq[ModuleID] = testCommon(scope) ++ Seq(
-          "org.scalatest" %% "scalatest" % scalaTestVersion % scope,
-          "org.scalamock" %% "scalamock" % scalaMockVersion % scope,
-          "org.pegdown" % "pegdown" % pegdownVersion % scope
-        )
+            "org.scalatest" %% "scalatest" % scalaTestVersion % scope,
+            "org.scalamock" %% "scalamock" % scalaMockVersion % scope,
+            "org.pegdown"   % "pegdown"    % pegdownVersion   % scope
+          )
       }.test
   }
 
@@ -50,9 +52,9 @@ private object AppDependencies {
         override lazy val scope: String = "it"
 
         override lazy val test: Seq[ModuleID] = testCommon(scope) ++ Seq(
-          "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
-          "com.github.tomakehurst" % "wiremock" % wireMockVersion % scope
-        )
+            "com.typesafe.play"      %% "play-test" % PlayVersion.current % scope,
+            "com.github.tomakehurst" % "wiremock"   % wireMockVersion     % scope
+          )
       }.test
   }
 
@@ -62,20 +64,20 @@ private object AppDependencies {
   val jettyVersion = "9.2.13.v20150730"
 
   val jettyOverrides: Seq[ModuleID] = Seq(
-    "org.eclipse.jetty" % "jetty-server" % jettyVersion,
-    "org.eclipse.jetty" % "jetty-servlet" % jettyVersion,
-    "org.eclipse.jetty" % "jetty-security" % jettyVersion,
-    "org.eclipse.jetty" % "jetty-servlets" % jettyVersion,
-    "org.eclipse.jetty" % "jetty-continuation" % jettyVersion,
-    "org.eclipse.jetty" % "jetty-webapp" % jettyVersion,
-    "org.eclipse.jetty" % "jetty-xml" % jettyVersion,
-    "org.eclipse.jetty" % "jetty-client" % jettyVersion,
-    "org.eclipse.jetty" % "jetty-http" % jettyVersion,
-    "org.eclipse.jetty" % "jetty-io" % jettyVersion,
-    "org.eclipse.jetty" % "jetty-util" % jettyVersion,
-    "org.eclipse.jetty.websocket" % "websocket-api" % jettyVersion,
-    "org.eclipse.jetty.websocket" % "websocket-common" % jettyVersion,
-    "org.eclipse.jetty.websocket" % "websocket-client" % jettyVersion
+    "org.eclipse.jetty"           % "jetty-server"       % jettyVersion,
+    "org.eclipse.jetty"           % "jetty-servlet"      % jettyVersion,
+    "org.eclipse.jetty"           % "jetty-security"     % jettyVersion,
+    "org.eclipse.jetty"           % "jetty-servlets"     % jettyVersion,
+    "org.eclipse.jetty"           % "jetty-continuation" % jettyVersion,
+    "org.eclipse.jetty"           % "jetty-webapp"       % jettyVersion,
+    "org.eclipse.jetty"           % "jetty-xml"          % jettyVersion,
+    "org.eclipse.jetty"           % "jetty-client"       % jettyVersion,
+    "org.eclipse.jetty"           % "jetty-http"         % jettyVersion,
+    "org.eclipse.jetty"           % "jetty-io"           % jettyVersion,
+    "org.eclipse.jetty"           % "jetty-util"         % jettyVersion,
+    "org.eclipse.jetty.websocket" % "websocket-api"      % jettyVersion,
+    "org.eclipse.jetty.websocket" % "websocket-common"   % jettyVersion,
+    "org.eclipse.jetty.websocket" % "websocket-client"   % jettyVersion
   )
 
   def apply(): Seq[ModuleID] = compile ++ Test() ++ IntegrationTest()

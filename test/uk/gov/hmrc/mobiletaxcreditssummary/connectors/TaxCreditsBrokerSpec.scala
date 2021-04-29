@@ -17,12 +17,12 @@
 package uk.gov.hmrc.mobiletaxcreditssummary.connectors
 
 import java.time.{LocalDate, LocalDateTime}
-
 import akka.actor.ActorSystem
 import com.typesafe.config.Config
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{Matchers, WordSpecLike}
+import play.api.{Configuration, Environment}
 import play.api.libs.json.Json
 import play.api.libs.json.Json.parse
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
@@ -114,7 +114,7 @@ class TaxCreditsBrokerSpec
 
     val exclusion:   Exclusion = Exclusion(true)
     val notExcluded: Exclusion = Exclusion(false)
-    val serviceUrl = "someUrl"
+    val serviceUrl = "https://localhost"
 
     class TestTaxCreditsBrokerConnector(http: CoreGet) extends TaxCreditsBrokerConnector(http, serviceUrl)
 
@@ -123,13 +123,12 @@ class TaxCreditsBrokerSpec
       val http: CoreGet = new CoreGet with HttpGet with GetHttpTransport {
         override val hooks: Seq[HttpHook] = NoneRequired
 
-        override def configuration: Option[Config] = None
+        override def configuration: Config = Configuration.load(Environment.simple()).underlying
 
         override def doGet(
           url:         String,
           headers:     Seq[(String, String)] = Seq.empty
-        )(implicit hc: HeaderCarrier,
-          ec:          ExecutionContext
+        )(implicit ec: ExecutionContext
         ): Future[HttpResponse] =
           response.getOrElse(throw new Exception("No response defined!"))
 

@@ -46,7 +46,7 @@ class WSHttpImpl @Inject() (
     with WSDelete
     with WSPatch
     with Hooks {
-  override protected def configuration: Option[Config] = Some(config.underlying)
+  override protected def configuration: Config = config.underlying
 }
 
 class MicroserviceAudit @Inject() (
