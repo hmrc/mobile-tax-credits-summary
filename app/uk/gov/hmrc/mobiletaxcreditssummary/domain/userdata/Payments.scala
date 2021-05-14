@@ -83,6 +83,7 @@ case object PXP5 extends SpecialCircumstance
 case object UnknownCircumstance extends SpecialCircumstance
 
 object SpecialCircumstance {
+  val logger: Logger = Logger(this.getClass)
 
   implicit val reads: Reads[SpecialCircumstance] = Reads {
     case JsString("FTNAE")    => JsSuccess(FTNAE)
@@ -90,7 +91,7 @@ object SpecialCircumstance {
     case JsString("NEW RATE") => JsSuccess(NewRate)
     case JsString("PXP5")     => JsSuccess(PXP5)
     case e =>
-      Logger.warn(s"Unknown special circumstance received: $e")
+      logger.warn(s"Unknown special circumstance received: $e")
       JsSuccess(UnknownCircumstance)
   }
 

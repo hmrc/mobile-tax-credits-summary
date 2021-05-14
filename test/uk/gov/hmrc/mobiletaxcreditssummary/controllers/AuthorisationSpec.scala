@@ -19,7 +19,7 @@ package uk.gov.hmrc.mobiletaxcreditssummary.controllers
 import org.scalatest.Matchers
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.auth.core.ConfidenceLevel.{L100, L200}
+import uk.gov.hmrc.auth.core.ConfidenceLevel.{L50, L200}
 import uk.gov.hmrc.auth.core.syntax.retrieved._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mobiletaxcreditssummary.controllers.action.{Authorisation, Authority}
@@ -42,7 +42,7 @@ class AuthorisationSpec extends TestSetup with FutureAwaits with DefaultAwaitTim
     }
 
     "error with unauthorised when account has low CL" in {
-      mockAuthorisationGrantAccess(Some(nino) and L100)
+      mockAuthorisationGrantAccess(Some(nino) and L50)
       intercept[AccountWithLowCL] {
         await(authorisation(mockAuthConnector).grantAccess(Nino(nino)))
       }

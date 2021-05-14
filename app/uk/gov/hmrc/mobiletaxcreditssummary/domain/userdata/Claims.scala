@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata
 
-import play.api.libs.json.{Format, JsString, JsSuccess, Json, Reads, Writes}
+import play.api.libs.json.{Format, Json}
 
 case class LegacyClaim(
   household: Household,

@@ -41,6 +41,8 @@ import scala.concurrent.{ExecutionContext, Future}
 trait ErrorHandling {
   self: BaseController =>
 
+  val logger: Logger = Logger(this.getClass)
+
   def notFound: Result = Status(ErrorNotFound.httpStatusCode)(toJson(ErrorNotFound))
 
   def errorWrapper(
@@ -54,15 +56,15 @@ trait ErrorHandling {
       case ex: ServiceUnavailableException =>
         // The hod can return a 503 HTTP status which is translated to a 429 response code.
         // The 503 HTTP status code must only be returned from the API gateway and not from downstream API's.
-        Logger.error(s"ServiceUnavailableException reported: ${ex.getMessage}", ex)
+        logger.error(s"ServiceUnavailableException reported: ${ex.getMessage}", ex)
         Status(ClientRetryRequest.httpStatusCode)(toJson(ClientRetryRequest))
 
       case ex: BadRequestException =>
-        Logger.error(s"BadRequestException reported: ${ex.getMessage}", ex)
+        logger.error(s"BadRequestException reported: ${ex.getMessage}", ex)
         Status(ErrorBadRequest.httpStatusCode)(toJson(ErrorBadRequest))
 
       case e: Throwable =>
-        Logger.error(s"Internal server error: ${e.getMessage}", e)
+        logger.error(s"Internal server error: ${e.getMessage}", e)
         Status(ErrorInternalServerError.httpStatusCode)(toJson(ErrorInternalServerError))
     }
 }
@@ -94,6 +96,8 @@ class LiveTaxCreditsSummaryController @Inject() (
     with ShutteredCheck {
 
   override def parser: BodyParser[AnyContent] = cc.parsers.anyContent
+
+  override val logger: Logger = Logger(this.getClass)
 
   override final def taxCreditsSummary(
     nino:      Nino,

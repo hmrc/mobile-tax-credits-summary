@@ -41,6 +41,7 @@ trait Authorisation extends Results with AuthorisedFunctions {
   lazy val ninoNotFoundOnAccount = new NinoNotFoundOnAccount
   lazy val failedToMatchNino     = new FailToMatchTaxIdOnAuth
   lazy val lowConfidenceLevel    = new AccountWithLowCL
+  val logger: Logger = Logger(this.getClass)
 
   def grantAccess(requestedNino: Nino)(implicit hc: HeaderCarrier): Future[Authority] =
     authorised(Enrolment("HMRC-NI", Seq(EnrolmentIdentifier("NINO", requestedNino.value)), "Activated", None))
@@ -67,19 +68,19 @@ trait Authorisation extends Results with AuthorisedFunctions {
       }
       .recover {
         case _: uk.gov.hmrc.http.Upstream4xxResponse =>
-          Logger.info("Unauthorized! Failed to grant access since 4xx response!")
+          logger.info("Unauthorized! Failed to grant access since 4xx response!")
           Unauthorized(Json.toJson(ErrorUnauthorizedMicroService))
 
         case _: NinoNotFoundOnAccount =>
-          Logger.info("Unauthorized! NINO not found on account!")
+          logger.info("Unauthorized! NINO not found on account!")
           Unauthorized(Json.toJson(ErrorUnauthorizedNoNino))
 
         case _: FailToMatchTaxIdOnAuth =>
-          Logger.info("Forbidden! Failure to match URL NINO against Auth NINO")
+          logger.info("Forbidden! Failure to match URL NINO against Auth NINO")
           Forbidden(Json.toJson(ErrorForbidden))
 
         case _: AccountWithLowCL =>
-          Logger.info("Unauthorized! Account with low CL!")
+          logger.info("Unauthorized! Account with low CL!")
           Unauthorized(Json.toJson(ErrorUnauthorizedLowCL))
       }
   }
