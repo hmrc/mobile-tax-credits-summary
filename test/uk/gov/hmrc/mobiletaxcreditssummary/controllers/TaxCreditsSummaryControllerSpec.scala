@@ -115,7 +115,7 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
     }
 
     "return unauthorized when authority record has a low CL" in {
-      mockAuthorisationGrantAccess(Some(nino) and L100)
+      mockAuthorisationGrantAccess(Some(nino) and L50)
 
       val result = controller.taxCreditsSummary(Nino(nino), "17d2420c-4fc6-4eee-9311-a37325066704")(
         emptyRequestWithAcceptHeader(renewalReference, Nino(nino))

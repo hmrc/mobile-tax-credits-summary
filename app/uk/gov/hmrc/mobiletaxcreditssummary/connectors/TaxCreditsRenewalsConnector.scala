@@ -23,6 +23,7 @@ import uk.gov.hmrc.http.{CoreGet, HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.TaxCreditsNino
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.LegacyClaims
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -30,6 +31,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class TaxCreditsRenewalsConnector @Inject()(
   http:                                            CoreGet,
   @Named("mobile-tax-credits-renewal") serviceUrl: String) {
+
+  val logger: Logger = Logger(this.getClass)
 
   def url(
     journeyId: JourneyId,
@@ -46,7 +49,7 @@ class TaxCreditsRenewalsConnector @Inject()(
       case _: NotFoundException => None
 
       case e =>
-        Logger.warn(s"Call to mobile-tax-credits-renewals failed:\n $e \n No renewals information available.")
+        logger.warn(s"Call to mobile-tax-credits-renewals failed:\n $e \n No renewals information available.")
         None
     }
   }

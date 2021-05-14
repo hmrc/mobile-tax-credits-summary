@@ -164,7 +164,7 @@ class TaxCreditsBrokerSpec
     "return an error response for getPartnerDetails when a 4xx response is returned (excluding 404)" in new Setup {
       override lazy val response: Future[AnyRef with HttpResponse] = http400Exception
 
-      intercept[BadRequestException] {
+      intercept[UpstreamErrorResponse] {
         await(connector.getPartnerDetails(TaxCreditsNino(nino.value)))
       }
     }
