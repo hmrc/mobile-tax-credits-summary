@@ -63,23 +63,10 @@ class TaxCreditsBrokerSpec
         .fromJson[DashboardData](parse(findResource("/resources/taxcreditssummary/CS700100A-dashboard-data.json").get))
         .get
 
-    lazy val http500Response: Future[Nothing]      = Future.failed(UpstreamErrorResponse("Error", 500, 500))
     lazy val response:        Future[HttpResponse] = http200Person
 
     lazy val http200Person: Future[AnyRef with HttpResponse] =
       Future.successful(HttpResponse(200, Json.toJson(personalDetails), headers))
-
-    lazy val http200Partner: Future[AnyRef with HttpResponse] =
-      Future.successful(HttpResponse(200, Json.toJson(partnerDetails), headers))
-    lazy val http400Exception: Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(400, "BAD_REQUEST"))
-    lazy val http404NoPartner: Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(404, "NOT_FOUND"))
-
-    lazy val http200Children: Future[AnyRef with HttpResponse] =
-      Future.successful(HttpResponse(200, Json.toJson(tcbChildren), headers))
-
-    lazy val http200Payment: Future[AnyRef with HttpResponse] =
-      Future.successful(HttpResponse(200, Json.toJson(paymentSummary), headers))
-    lazy val http404Payment: Future[AnyRef with HttpResponse] = Future.successful(HttpResponse(404, "NOT_FOUND"))
 
     lazy val http200Exclusion: Future[AnyRef with HttpResponse] =
       Future.successful(HttpResponse(200, Json.toJson(exclusion), headers))
@@ -143,38 +130,6 @@ class TaxCreditsBrokerSpec
 
   "taxCreditsBroker connector" should {
 
-    "return a valid response for getPersonalDetails when a 200 response is received with a valid json payload" in new Setup {
-      override lazy val response: Future[AnyRef with HttpResponse] = http200Person
-
-      await(connector.getPersonalDetails(TaxCreditsNino(nino.value))) shouldBe personalDetails
-    }
-
-    "return a valid response for getPartnerDetails when a 200 response is received with a valid json payload" in new Setup {
-      override lazy val response: Future[AnyRef with HttpResponse] = http200Partner
-
-      await(connector.getPartnerDetails(TaxCreditsNino(nino.value))) shouldBe Some(partnerDetails)
-    }
-
-    "return a valid response for getPartnerDetails when a 404 response is received for no partner" in new Setup {
-      override lazy val response: Future[AnyRef with HttpResponse] = http404NoPartner
-
-      await(connector.getPartnerDetails(TaxCreditsNino(nino.value))) shouldBe None
-    }
-
-    "return an error response for getPartnerDetails when a 4xx response is returned (excluding 404)" in new Setup {
-      override lazy val response: Future[AnyRef with HttpResponse] = http400Exception
-
-      intercept[UpstreamErrorResponse] {
-        await(connector.getPartnerDetails(TaxCreditsNino(nino.value)))
-      }
-    }
-
-    "return a valid response for getChildren when a 200 response is received with a valid json payload" in new Setup {
-      override lazy val response: Future[AnyRef with HttpResponse] = http200Children
-
-      await(connector.getChildren(TaxCreditsNino(nino.value))) shouldBe children
-    }
-
     "return exclusion = true when 200 response is received with a valid json payload of exclusion = true" in new Setup {
       override lazy val response: Future[AnyRef with HttpResponse] = http200Exclusion
 
@@ -191,24 +146,6 @@ class TaxCreditsBrokerSpec
       override lazy val response: Future[AnyRef with HttpResponse] = http404Exclusion
 
       await(connector.getExclusion(TaxCreditsNino(nino.value))) shouldBe None
-    }
-
-    "return a valid response for getPaymentSummary when a 200 response is received with a valid json payload" in new Setup {
-      override lazy val response: Future[AnyRef with HttpResponse] = http200Payment
-      val result:                 Option[PaymentSummary]           = await(connector.getPaymentSummary(TaxCreditsNino(nino.value)))
-      result shouldBe Some(paymentSummary)
-    }
-
-    "return excluded payment summary response" in new Setup {
-      override lazy val response: Future[AnyRef with HttpResponse] = http200Exclusion
-      val result:                 Option[PaymentSummary]           = await(connector.getPaymentSummary(TaxCreditsNino(nino.value)))
-      result shouldBe Some(exclusionPaymentSummary)
-    }
-
-    "return None when payment summary response is 404" in new Setup {
-      override lazy val response: Future[AnyRef with HttpResponse] = http404Payment
-      val result:                 Option[PaymentSummary]           = await(connector.getPaymentSummary(TaxCreditsNino(nino.value)))
-      result shouldBe None
     }
 
     "return a valid response for getDashboardData when a 200 response is received with a valid json payload" in new Setup {
