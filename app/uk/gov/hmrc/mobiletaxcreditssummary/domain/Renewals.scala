@@ -29,8 +29,8 @@ case class Renewals(
   viewRenewalsEndDate: String,
   householdBreakdown:  Boolean = false,
   inGracePeriod:       Boolean = false,
-  currentYear:         String = LocalDate.now().getYear.toString
-  )
+  currentYear:         String = LocalDate.now().getYear.toString,
+  renewNowLink:        Option[String])
 
 object Renewals {
   implicit val formats: Format[Renewals] = Json.format[Renewals]

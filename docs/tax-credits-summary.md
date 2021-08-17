@@ -85,7 +85,7 @@ The Tax Credits Summary response
   },
   "claimants": {
   "ftnaeLink": {
-      "link":  "/tax-credits-service/home/children-and-childcare",
+      "link":  "/",
       "preFtnaeDeadline": true
   },
     "personalDetails": {

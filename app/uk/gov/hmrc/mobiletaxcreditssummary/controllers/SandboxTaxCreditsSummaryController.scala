@@ -52,9 +52,9 @@ class SandboxTaxCreditsSummaryController @Inject() (
   override def parser: BodyParser[AnyContent] = cc.parsers.anyContent
 
   override final def taxCreditsSummary(
-                                        nino: Nino,
-                                        journeyId: JourneyId
-                                      ): Action[AnyContent] =
+    nino:      Nino,
+    journeyId: JourneyId
+  ): Action[AnyContent] =
     validateAccept(acceptHeaderValidationRules).async { implicit request =>
       Future successful (request.headers.get("SANDBOX-CONTROL") match {
         case Some("NON-TAX-CREDITS-USER") => Ok(toJson(TaxCreditsSummaryResponse(taxCreditsSummary = None)))
@@ -79,6 +79,12 @@ class SandboxTaxCreditsSummaryController @Inject() (
           Ok(toJson(TaxCreditsSummaryResponse(excluded = false, readData("new-rate.json"))))
         case Some("PAYMENTS-NOT-ENABLED") =>
           Ok(toJson(TaxCreditsSummaryResponse(excluded = false, readData("payments-not-enabled.json"))))
+        case Some("RENEWALS-ACTIVE") =>
+          val resource: String = findResource(s"/resources/taxcreditssummary/CS700100A-with-renewals.json")
+            .getOrElse(throw new IllegalArgumentException("Resource not found!"))
+          val response =
+            TaxCreditsSummaryResponse(excluded = false, Some(Json.parse(updateDates(resource)).as[TaxCreditsSummary]))
+          Ok(toJson(response))
         case Some("CLAIMANTS-FAILURE") =>
           val resource: String = findResource(s"/resources/taxcreditssummary/${nino.value}.json")
             .getOrElse(throw new IllegalArgumentException("Resource not found!"))
@@ -96,12 +102,17 @@ class SandboxTaxCreditsSummaryController @Inject() (
       })
     }
 
-  private def readData(resource: String) = {
-    Some(Json.parse(updateDates(
-      findResource(s"/resources/taxcreditssummary/$resource")
-        .getOrElse(throw new IllegalArgumentException("Resource not found!"))
-    )).as[TaxCreditsSummary])
-  }
+  private def readData(resource: String) =
+    Some(
+      Json
+        .parse(
+          updateDates(
+            findResource(s"/resources/taxcreditssummary/$resource")
+              .getOrElse(throw new IllegalArgumentException("Resource not found!"))
+          )
+        )
+        .as[TaxCreditsSummary]
+    )
 
   private def updateDates(resource: String): String = {
     val currentTime = new LocalDate().toDateTimeAtStartOfDay
@@ -117,5 +128,9 @@ class SandboxTaxCreditsSummaryController @Inject() (
       .replaceAll("date6", currentTime.plusWeeks(6).getMillis.toString)
       .replaceAll("date7", currentTime.plusWeeks(7).getMillis.toString)
       .replaceAll("date8", currentTime.plusWeeks(8).getMillis.toString)
+      .replaceAll("year", currentTime.getYear.toString)
+      .replaceAll("packReceivedDateValue", currentTime.minusWeeks(2).toString)
+      .replaceAll("renewalsEndDateValue", currentTime.plusWeeks(4).toString)
+      .replaceAll("viewRenewalsEndDateValue", currentTime.plusWeeks(8).toString)
   }
 }
