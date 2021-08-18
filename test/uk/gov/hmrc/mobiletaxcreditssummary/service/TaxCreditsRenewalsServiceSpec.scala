@@ -41,19 +41,30 @@ class TaxCreditsRenewalsServiceSpec
                                                   now.plusMonths(3).toString)
 
   val viewOnlyRenewals: Renewals =
-    Renewals(ViewOnly, 1, 1, now.minusMonths(3).toString, now.minusMonths(2).toString, now.plusMonths(1).toString)
+    Renewals(
+      ViewOnly,
+      1,
+      1,
+      now.minusMonths(3).toString,
+      now.minusMonths(2).toString,
+      now.plusMonths(1).toString,
+      renewNowLink = Some("/tax-credits-service/renewals/barcode-picker")
+    )
 
   def defaultClaimRenewals(
     status:          RenewalStatus,
     totalClaims:     Int = 1,
     claimsSubmitted: Int = 0
   ): Renewals =
-    Renewals(status,
-             totalClaims,
-             claimsSubmitted,
-             now.minusMonths(1).toString,
-             now.plusMonths(1).toString,
-             now.plusMonths(3).toString)
+    Renewals(
+      status,
+      totalClaims,
+      claimsSubmitted,
+      now.minusMonths(1).toString,
+      now.plusMonths(1).toString,
+      now.plusMonths(3).toString,
+      renewNowLink = Some("/tax-credits-service/renewals/barcode-picker")
+    )
 
   "getTaxCreditsRenewals" should {
     "return nothing if the renewal period is closed" in {
@@ -193,15 +204,19 @@ class TaxCreditsRenewalsServiceSpec
 
     "return the AutoRenewalMultiple response if the user has multiple claims, but only autoRenew claims have a status of NOT_SUBMITTED" in {
       mockTaxCreditsRenewalsConnectorMultipleClaims(tcrNino,
-        Seq(singleClaim(COMPLETE), singleClaim(SUBMITTED_AND_PROCESSING), singleClaim(NOT_SUBMITTED, autoRenewal = true)))
+                                                    Seq(singleClaim(COMPLETE),
+                                                        singleClaim(SUBMITTED_AND_PROCESSING),
+                                                        singleClaim(NOT_SUBMITTED, autoRenewal = true)))
       await(serviceOpen.getTaxCreditsRenewals(tcrNino, journeyId)) shouldBe Some(
         defaultClaimRenewals(AutoRenewalMultiple, totalClaims = 3, claimsSubmitted = 2)
       )
     }
 
     "return the OneNotStartedMultiple response if the user has multiple claims, and a manual claim has the status of NOT_SUBMITTED" in {
-      mockTaxCreditsRenewalsConnectorMultipleClaims(tcrNino,
-        Seq(singleClaim(COMPLETE), singleClaim(SUBMITTED_AND_PROCESSING), singleClaim(NOT_SUBMITTED)))
+      mockTaxCreditsRenewalsConnectorMultipleClaims(
+        tcrNino,
+        Seq(singleClaim(COMPLETE), singleClaim(SUBMITTED_AND_PROCESSING), singleClaim(NOT_SUBMITTED))
+      )
       await(serviceOpen.getTaxCreditsRenewals(tcrNino, journeyId)) shouldBe Some(
         defaultClaimRenewals(OneNotStartedMultiple, totalClaims = 3, claimsSubmitted = 2)
       )

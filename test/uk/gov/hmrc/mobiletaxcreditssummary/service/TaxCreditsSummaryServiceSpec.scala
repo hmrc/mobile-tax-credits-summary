@@ -181,7 +181,15 @@ class TaxCreditsSummaryServiceSpec
       mockTaxCreditsRenewalsConnectorSingleClaim(tcrNino, COMPLETE)
 
       val taxCreditsSummaryWithRenewals = taxCreditsSummary.taxCreditsSummary.get.copy(renewals = Some(
-        Renewals(Complete, 1, 1, now.minusMonths(1).toString, now.plusMonths(1).toString, now.plusMonths(3).toString)
+        Renewals(
+          Complete,
+          1,
+          1,
+          now.minusMonths(1).toString,
+          now.plusMonths(1).toString,
+          now.plusMonths(3).toString,
+          renewNowLink = Some("/tax-credits-service/renewals/barcode-picker")
+        )
       )
       )
       await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId)) shouldBe taxCreditsSummary

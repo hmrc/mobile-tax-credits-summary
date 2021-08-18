@@ -24,6 +24,8 @@ import uk.gov.hmrc.mobiletaxcreditssummary.domain.Shuttering
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.Person
 import uk.gov.hmrc.mobiletaxcreditssummary.support.BaseISpec
 
+import java.time.LocalDateTime
+
 class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
 
   private val mobileHeader = "X-MOBILE-USER-ID" -> "208606423740"
@@ -190,6 +192,20 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
       response.status                          shouldBe 200
       (response.json \ "excluded").as[Boolean] shouldBe false
       assertEmptyTaxCreditsSummary(response)
+    }
+
+    "return excluded = false and a tax credit summary where SANDBOX-CONTROL is RENEWALS-ACTIVE" in {
+      val response =
+        await(request(sandboxNino).addHttpHeaders(mobileHeader, "SANDBOX-CONTROL" -> "RENEWALS-ACTIVE").get())
+      response.status                          shouldBe 200
+      (response.json \ "excluded").as[Boolean] shouldBe false
+
+      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
+        .as[String]                                                                                   shouldBe "WEEKLY"
+      (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String] shouldBe "Nuala"
+      (response.json \ "taxCreditsSummary" \ "claimants" \ "children").as[List[Person]].head.forename shouldBe "Sarah"
+      (response.json \ "taxCreditsSummary" \ "renewals" \ "currentYear")
+        .as[String] shouldBe LocalDateTime.now.getYear.toString
     }
 
     "return 401 if unauthenticated where SANDBOX-CONTROL is ERROR-401" in {

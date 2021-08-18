@@ -1,0 +1,263 @@
+{
+  "paymentSummary": {
+    "workingTaxCredit": {
+      "paymentSeq": [
+        {
+          "amount": 80.29,
+          "paymentDate": date1,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 80.29,
+          "paymentDate": date2,
+          "oneOffPayment": false,
+          "holidayType": "bankHoliday",
+          "earlyPayment": true,
+          "explanatoryText": "Your payment is early because of UK bank holidays."
+        },
+        {
+          "amount": 80.29,
+          "paymentDate": date3,
+          "oneOffPayment": true,
+          "earlyPayment": false,
+          "explanatoryText": "One-off payment because of a recent change to help you get the right amount of tax credits."
+        },
+        {
+          "amount": 80.29,
+          "paymentDate": date4,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 80.29,
+          "paymentDate": date5,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 80.29,
+          "paymentDate": date6,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 80.29,
+          "paymentDate": date7,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 80.29,
+          "paymentDate": date8,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        }
+      ],
+      "paymentFrequency": "WEEKLY",
+      "specialCircumstances": "FTNAE",
+      "informationMessage": {
+        "title": "We are currently working out your payments as your children are changing their education or training. This should be done by 7 September 2019.",
+        "message": "If your children are staying in education or training, you should update their details."
+      },
+      "previousPaymentSeq": [
+        {
+          "amount": 100,
+          "paymentDate": previousDate1,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 100,
+          "paymentDate": previousDate2,
+          "oneOffPayment": false,
+          "holidayType": "bankHoliday",
+          "earlyPayment": true,
+          "explanatoryText": "Your payment was early because of UK bank holidays."
+        },
+        {
+          "amount": 170.31,
+          "paymentDate": previousDate3,
+          "oneOffPayment": true,
+          "earlyPayment": false,
+          "explanatoryText": "This was because of a recent change and was to help you get the right amount of tax credits."
+        }
+      ]
+    },
+    "childTaxCredit": {
+      "paymentSeq": [
+        {
+          "amount": 171.84,
+          "paymentDate": date1,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 171.84,
+          "paymentDate": date2,
+          "oneOffPayment": false,
+          "holidayType": "bankHoliday",
+          "earlyPayment": true,
+          "explanatoryText": "Your payment is early because of UK bank holidays."
+        },
+        {
+          "amount": 171.84,
+          "paymentDate": date3,
+          "oneOffPayment": true,
+          "earlyPayment": false,
+          "explanatoryText": "One-off payment because of a recent change to help you get the right amount of tax credits."
+        },
+        {
+          "amount": 171.84,
+          "paymentDate": date4,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 171.84,
+          "paymentDate": date5,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 171.84,
+          "paymentDate": date6,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 171.84,
+          "paymentDate": date7,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 171.84,
+          "paymentDate": date8,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        }
+      ],
+      "paymentFrequency": "WEEKLY",
+      "previousPaymentSeq": [
+        {
+          "amount": 140.70,
+          "paymentDate": previousDate1,
+          "oneOffPayment": false,
+          "earlyPayment": false
+        },
+        {
+          "amount": 140.70,
+          "paymentDate": previousDate2,
+          "oneOffPayment": false,
+          "holidayType": "bankHoliday",
+          "earlyPayment": true,
+          "explanatoryText": "Your payment was early because of UK bank holidays."
+        },
+        {
+          "amount": 100,
+          "paymentDate": previousDate3,
+          "oneOffPayment": true,
+          "earlyPayment": false,
+          "explanatoryText": "This was because of a recent change and was to help you get the right amount of tax credits."
+        }
+      ]
+    },
+    "paymentEnabled": true,
+    "totalsByDate": [
+      {
+        "amount": 252.13,
+        "paymentDate": date1
+      },
+      {
+        "amount": 252.13,
+        "paymentDate": date2
+      },
+      {
+        "amount": 252.13,
+        "paymentDate": date3
+      },
+      {
+        "amount": 252.13,
+        "paymentDate": date4
+      },
+      {
+        "amount": 252.13,
+        "paymentDate": date5
+      },
+      {
+        "amount": 252.13,
+        "paymentDate": date6
+      },
+      {
+        "amount": 252.13,
+        "paymentDate": date7
+      },
+      {
+        "amount": 252.13,
+        "paymentDate": date8
+      }
+    ],
+    "previousTotalsByDate": [
+      {
+        "amount": 240.70,
+        "paymentDate": previousDate1
+      },
+      {
+        "amount": 240.70,
+        "paymentDate": previousDate2
+      },
+      {
+        "amount": 270.31,
+        "paymentDate": previousDate3
+      }
+    ]
+  },
+  "claimants": {
+    "reportActualProfit": {
+      "link": "/",
+      "endDate": "2020-01-31T10:00:00.000Z",
+      "userMustReportIncome": true,
+      "partnerMustReportIncome": false
+    },
+    "ftnaeLink": {
+      "preFtnaeDeadline": true,
+      "link": "/"
+    },
+    "personalDetails": {
+      "forename": "Nuala",
+      "surname": "O'Shea"
+    },
+    "partnerDetails": {
+      "forename": "Frederick",
+      "otherForenames": "Tarquin",
+      "surname": "Hunter-Smith"
+    },
+    "children": [
+      {
+        "forename": "Sarah",
+        "surname": "Smith"
+      },
+      {
+        "forename": "Joseph",
+        "surname": "Smith"
+      },
+      {
+        "forename": "Mary",
+        "surname": "Smith"
+      }
+    ]
+  },
+  "renewals": {
+    "status": "not_started_single",
+    "totalClaims": 1,
+    "claimsSubmitted": 0,
+    "packReceivedDate": "packReceivedDateValue",
+    "renewalsEndDate": "renewalsEndDateValue",
+    "viewRenewalsEndDate": "viewRenewalsEndDateValue",
+    "householdBreakdown": false,
+    "inGracePeriod": false,
+    "currentYear": "year",
+    "renewNowLink" : "/"
+  }
+}

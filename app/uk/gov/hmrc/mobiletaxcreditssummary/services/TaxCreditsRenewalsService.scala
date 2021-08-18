@@ -122,7 +122,7 @@ class TaxCreditsRenewalsService @Inject() (
         }
       )
     }
-  
+
   private def currentTime: LocalDateTime = LocalDateTime.now(ZoneId.of("Europe/London"))
 
   private def buildRenewalsResponse(
@@ -132,14 +132,17 @@ class TaxCreditsRenewalsService @Inject() (
     householdBreakdown: Boolean = false
   ): Renewals = {
     val inGracePeriod = currentTime.isAfter(endDate) && currentTime.isBefore(gracePeriodEndDate)
-    Renewals(status,
-             totalClaims,
-             claimsSubmitted,
-             renewalsPackReceivedDate,
-             renewalsEndDate,
-             renewalsEndViewDate,
-             householdBreakdown,
-             inGracePeriod)
+    Renewals(
+      status,
+      totalClaims,
+      claimsSubmitted,
+      renewalsPackReceivedDate,
+      renewalsEndDate,
+      renewalsEndViewDate,
+      householdBreakdown,
+      inGracePeriod,
+      renewNowLink = Some("/tax-credits-service/renewals/barcode-picker")
+    )
   }
 
   private def renewalsClosed: Boolean = currentTime.isBefore(startDate) || currentTime.isAfter(endViewDate)
