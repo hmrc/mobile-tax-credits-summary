@@ -48,7 +48,7 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
         .as[String]                                                                                   shouldBe "WEEKLY"
       (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String] shouldBe "Nuala"
-      (response.json \ "taxCreditsSummary" \ "claimants" \ "children").as[List[Person]].head.forename shouldBe "Sarah"
+      (response.json \ "taxCreditsSummary" \ "claimants" \ "children").as[List[Person]].head.forename shouldBe "Kai"
 
     }
 
@@ -100,7 +100,7 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (response.json \\ "childTaxCredit")                                                             shouldBe empty
       (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String] shouldBe "Nuala"
       (response.json \ "taxCreditsSummary" \ "claimants" \\ "messageLink")                            shouldBe empty
-      (response.json \ "taxCreditsSummary" \ "claimants" \ "children").as[List[Person]].head.forename shouldBe "Sarah"
+      (response.json \ "taxCreditsSummary" \ "claimants" \ "children").as[List[Person]].head.forename shouldBe "Kai"
     }
 
     "return excluded = false and a tax credit summary with only working tax credit data where SANDBOX-CONTROL is CHILD-TAX-CREDIT-ONLY" in {
@@ -203,7 +203,7 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
         .as[String]                                                                                   shouldBe "WEEKLY"
       (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String] shouldBe "Nuala"
-      (response.json \ "taxCreditsSummary" \ "claimants" \ "children").as[List[Person]].head.forename shouldBe "Sarah"
+      (response.json \ "taxCreditsSummary" \ "claimants" \ "children").as[List[Person]].head.forename shouldBe "Kai"
       (response.json \ "taxCreditsSummary" \ "renewals" \ "currentYear")
         .as[String] shouldBe LocalDateTime.now.getYear.toString
     }
