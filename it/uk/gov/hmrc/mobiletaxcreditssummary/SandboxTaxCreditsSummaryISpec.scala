@@ -47,7 +47,7 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
 
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
         .as[String]                                                                                   shouldBe "WEEKLY"
-      (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String] shouldBe "Nuala"
+      (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String] shouldBe "Nia"
       (response.json \ "taxCreditsSummary" \ "claimants" \ "children").as[List[Person]].head.forename shouldBe "Kai"
 
     }
@@ -123,7 +123,7 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (response.json \ "excluded").as[Boolean] shouldBe false
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
         .as[String]                                                                                   shouldBe "WEEKLY"
-      (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String] shouldBe "Nuala"
+      (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String] shouldBe "Nia"
     }
 
     "return excluded = false and a tax credit summary with no claimants section where SANDBOX-CONTROL is CLAIMANTS-FAILURE" in {
