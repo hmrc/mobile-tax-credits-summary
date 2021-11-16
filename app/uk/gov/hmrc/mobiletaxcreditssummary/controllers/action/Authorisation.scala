@@ -69,19 +69,19 @@ trait Authorisation extends Results with AuthorisedFunctions {
       .recover {
         case _: uk.gov.hmrc.http.Upstream4xxResponse =>
           logger.info("Unauthorized! Failed to grant access since 4xx response!")
-          Unauthorized(Json.toJson(ErrorUnauthorizedMicroService))
+          Unauthorized(Json.toJson[ErrorResponse](ErrorUnauthorizedMicroService))
 
         case _: NinoNotFoundOnAccount =>
           logger.info("Unauthorized! NINO not found on account!")
-          Unauthorized(Json.toJson(ErrorUnauthorizedNoNino))
+          Unauthorized(Json.toJson[ErrorResponse](ErrorUnauthorizedNoNino))
 
         case _: FailToMatchTaxIdOnAuth =>
           logger.info("Forbidden! Failure to match URL NINO against Auth NINO")
-          Forbidden(Json.toJson(ErrorForbidden))
+          Forbidden(Json.toJson[ErrorResponse](ErrorForbidden))
 
         case _: AccountWithLowCL =>
           logger.info("Unauthorized! Account with low CL!")
-          Unauthorized(Json.toJson(ErrorUnauthorizedLowCL))
+          Unauthorized(Json.toJson[ErrorResponse](ErrorUnauthorizedLowCL))
       }
   }
 }
@@ -102,7 +102,7 @@ trait AccessControl extends HeaderValidator with Authorisation {
         if (rules(request.headers.get("Accept"))) {
           if (requiresAuth) invokeAuthBlock(request, block, taxId)
           else block(request)
-        } else Future.successful(Status(ErrorAcceptHeaderInvalid.httpStatusCode)(Json.toJson(ErrorAcceptHeaderInvalid)))
+        } else Future.successful(Status(ErrorAcceptHeaderInvalid.httpStatusCode)(Json.toJson[ErrorResponse](ErrorAcceptHeaderInvalid)))
 
       override def parser: BodyParser[AnyContent] = outer.parser
 

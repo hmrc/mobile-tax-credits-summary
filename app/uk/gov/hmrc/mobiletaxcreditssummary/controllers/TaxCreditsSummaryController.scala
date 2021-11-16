@@ -43,7 +43,7 @@ trait ErrorHandling {
 
   val logger: Logger = Logger(this.getClass)
 
-  def notFound: Result = Status(ErrorNotFound.httpStatusCode)(toJson(ErrorNotFound))
+  def notFound: Result = Status(ErrorNotFound.httpStatusCode)(toJson[ErrorResponse](ErrorNotFound))
 
   def errorWrapper(
     func:             => Future[mvc.Result]
@@ -57,15 +57,15 @@ trait ErrorHandling {
         // The hod can return a 503 HTTP status which is translated to a 429 response code.
         // The 503 HTTP status code must only be returned from the API gateway and not from downstream API's.
         logger.error(s"ServiceUnavailableException reported: ${ex.getMessage}", ex)
-        Status(ClientRetryRequest.httpStatusCode)(toJson(ClientRetryRequest))
+        Status(ClientRetryRequest.httpStatusCode)(toJson[ErrorResponse](ClientRetryRequest))
 
       case ex: BadRequestException =>
         logger.error(s"BadRequestException reported: ${ex.getMessage}", ex)
-        Status(ErrorBadRequest.httpStatusCode)(toJson(ErrorBadRequest))
+        Status(ErrorBadRequest.httpStatusCode)(toJson[ErrorResponse](ErrorBadRequest))
 
       case e: Throwable =>
         logger.error(s"Internal server error: ${e.getMessage}", e)
-        Status(ErrorInternalServerError.httpStatusCode)(toJson(ErrorInternalServerError))
+        Status(ErrorInternalServerError.httpStatusCode)(toJson[ErrorResponse](ErrorInternalServerError))
     }
 }
 

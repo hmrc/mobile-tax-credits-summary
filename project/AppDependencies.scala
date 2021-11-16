@@ -3,9 +3,9 @@ import sbt.{ModuleID, _}
 
 private object AppDependencies {
 
-  private val bootstrapPlayVersion = "5.1.0"
-  private val playHmrcApiVersion   = "6.2.0-play-27"
-  private val domainVersion        = "5.11.0-play-27"
+  private val bootstrapPlayVersion = "5.16.0"
+  private val playHmrcApiVersion   = "6.4.0-play-28"
+  private val domainVersion        = "6.2.0-play-28"
 
   private val scalaTestVersion         = "3.0.8"
   private val scalaTestPlusPlayVersion = "4.0.3"
@@ -13,10 +13,10 @@ private object AppDependencies {
   private val refinedVersion           = "0.9.4"
   private val wireMockVersion          = "2.21.0"
   private val scalaMockVersion         = "4.1.0"
-  private val timeVersion              = "3.19.0"
+  private val timeVersion              = "3.25.0"
 
   val compile = Seq(
-    "uk.gov.hmrc" %% "bootstrap-backend-play-27" % bootstrapPlayVersion,
+    "uk.gov.hmrc" %% "bootstrap-backend-play-28" % bootstrapPlayVersion,
     "uk.gov.hmrc" %% "play-hmrc-api"             % playHmrcApiVersion,
     "uk.gov.hmrc" %% "domain"                    % domainVersion,
     "eu.timepit"  %% "refined"                   % refinedVersion,
