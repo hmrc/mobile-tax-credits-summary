@@ -58,32 +58,6 @@ class TaxCreditsSummaryServiceSpec
   val taxCreditsSummary: TaxCreditsSummaryResponse =
     TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummary, Some(claimants))))
 
-  protected def taxCreditsSummaryWithFtnae(
-    link:         Option[MessageLink] = None,
-    preSeptember: Boolean             = false,
-    currentYear:  Boolean             = true,
-    ftnae:        Boolean             = true,
-    ctc:          Boolean             = true
-  ): TaxCreditsSummaryResponse =
-    TaxCreditsSummaryResponse(
-      taxCreditsSummary =
-        Some(TaxCreditsSummary(paymentSummaryFtnae(preSeptember, currentYear, ftnae, ctc), Some(claimantsFtnae(link))))
-    )
-
-  def taxCreditsSummaryWithMultipleFtnae(
-    link:         Option[MessageLink] = None,
-    preSeptember: Boolean             = false,
-    currentYear:  Boolean             = true,
-    ftnae:        Boolean             = true,
-    ctc:          Boolean             = true
-  ): TaxCreditsSummaryResponse =
-    TaxCreditsSummaryResponse(
-      taxCreditsSummary = Some(
-        TaxCreditsSummary(paymentSummaryMultipleFtnae(preSeptember, currentYear, ftnae, ctc),
-                          Some(claimantsMultipleFtnae(link)))
-      )
-    )
-
   def taxCreditsSummaryWithInfoMessage(
     specialCircumstance: Option[SpecialCircumstance] = None,
     informationMessage:  Option[InformationMessage] = None,
@@ -573,21 +547,6 @@ class TaxCreditsSummaryServiceSpec
     }
 
   }
-
-  def getExpected(
-    testName:     String,
-    link:         Option[MessageLink],
-    ftnae:        Boolean,
-    preSeptember: Boolean,
-    ctc:          Boolean = true
-  ): TaxCreditsSummaryResponse =
-    if (testName.equals("with FTNAE")) {
-      taxCreditsSummaryWithFtnae(preSeptember = preSeptember, link = link, ftnae = ftnae, ctc = ctc)
-    } else if (testName.equals("without FTNAE")) {
-      taxCreditsSummaryWithFtnae(preSeptember = preSeptember, ftnae = ftnae, ctc = ctc)
-    } else {
-      throw new IllegalArgumentException("Invalid test name - check tests")
-    }
 
   override def newAppForTest(testData: TestData): Application =
     testData.tags.headOption match {
