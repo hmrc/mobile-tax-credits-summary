@@ -52,44 +52,6 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
 
     }
 
-    "return excluded = false and a tax credit summary where SANDBOX-CONTROL header is set to PRE-FTNAE" in {
-      val response = await(request(sandboxNino).addHttpHeaders(mobileHeader, "SANDBOX-CONTROL" -> "PRE-FTNAE").get())
-      response.status                          shouldBe 200
-      (response.json \ "excluded").as[Boolean] shouldBe false
-
-      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "title")
-        .as[String] shouldBe "We are currently working out your payments as your children are changing their education or training. This should be done by 7 September 2019."
-      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "message")
-        .as[String] shouldBe "If your children are staying in education or training, you should update their details."
-      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
-        .as[String]                                                                                   shouldBe "WEEKLY"
-      (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String] shouldBe "Betty"
-      (response.json \ "taxCreditsSummary" \ "claimants" \ "children").as[List[Person]].head.forename shouldBe "Maya"
-      (response.json \ "taxCreditsSummary" \ "claimants" \ "messageLink" \ "linkName")
-        .as[String] shouldBe "Update details"
-      (response.json \ "taxCreditsSummary" \ "claimants" \ "messageLink" \ "link")
-        .as[String] shouldBe "/tax-credits-service/home/children-and-childcare"
-    }
-
-    "return excluded = false and a tax credit summary where SANDBOX-CONTROL header is set to POST-FTNAE" in {
-      val response = await(request(sandboxNino).addHttpHeaders(mobileHeader, "SANDBOX-CONTROL" -> "POST-FTNAE").get())
-      response.status                          shouldBe 200
-      (response.json \ "excluded").as[Boolean] shouldBe false
-
-      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "title")
-        .as[String] shouldBe "We are currently working out your payments as your children are changing their education or training. This should be done by 7 September 2019."
-      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "message")
-        .as[String] shouldBe "If you have let us know that your children are staying in education or training, they will be added back automatically. Otherwise, you can add them back to your claim."
-      (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
-        .as[String]                                                                                   shouldBe "WEEKLY"
-      (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String] shouldBe "Betty"
-      (response.json \ "taxCreditsSummary" \ "claimants" \ "children").as[List[Person]].head.forename shouldBe "Maya"
-      (response.json \ "taxCreditsSummary" \ "claimants" \ "messageLink" \ "linkName")
-        .as[String] shouldBe "Update details"
-      (response.json \ "taxCreditsSummary" \ "claimants" \ "messageLink" \ "link")
-        .as[String] shouldBe "/tax-credits-service/children/add-child/who-do-you-want-to-add"
-    }
-
     "return excluded = false and a tax credit summary with only working tax credit data where SANDBOX-CONTROL is WORKING-TAX-CREDIT-ONLY" in {
       val response =
         await(request(sandboxNino).addHttpHeaders(mobileHeader, "SANDBOX-CONTROL" -> "WORKING-TAX-CREDIT-ONLY").get())

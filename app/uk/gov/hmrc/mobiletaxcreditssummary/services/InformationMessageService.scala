@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.services
 
-import java.time.{LocalDate, Month}
+import java.time.LocalDate
 
 import javax.inject.{Inject, Singleton}
-import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.{FTNAE, FuturePayment, InformationMessage, MessageLink, NewRate, OldRate, PXP5, PaymentSummary, SpecialCircumstance}
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.{InformationMessage, MessageLink, NewRate, OldRate, PXP5, PaymentSummary, SpecialCircumstance}
 import uk.gov.hmrc.mobiletaxcreditssummary.utils.LocalDateProvider
 
 @Singleton
@@ -29,24 +29,6 @@ class InformationMessageService @Inject() (localDateProvider: LocalDateProvider)
 
   def getMessageLink(paymentSummary: PaymentSummary): Option[MessageLink] =
     paymentSummary.specialCircumstances match {
-
-      case Some(FTNAE) =>
-        val hasFtnaePayment: Boolean = hasAFtnaePayment(paymentSummary)
-
-        if (hasFtnaePayment) {
-          if (now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 1))) {
-            Some(
-              MessageLink(preFtnaeDeadline = true, "Update details", "/tax-credits-service/home/children-and-childcare")
-            )
-          } else if (now.isAfter(createLocalDate(now.getYear, Month.AUGUST, 31)) &&
-                     now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 8))) {
-            Some(
-              MessageLink(preFtnaeDeadline = false,
-                          "Update details",
-                          "/tax-credits-service/children/add-child/who-do-you-want-to-add")
-            )
-          } else None
-        } else None
 
       case Some(NewRate) | Some(OldRate) =>
         Some(
@@ -60,33 +42,8 @@ class InformationMessageService @Inject() (localDateProvider: LocalDateProvider)
       case _ => None
     }
 
-  def getInformationMessage(
-    specialCircumstances: Option[SpecialCircumstance],
-    isMultipleFTNAE:      Boolean
-  ): Option[InformationMessage] =
+  def getInformationMessage(specialCircumstances: Option[SpecialCircumstance]): Option[InformationMessage] =
     specialCircumstances match {
-
-      case Some(FTNAE) =>
-        val childChildren = if (isMultipleFTNAE) "children are" else "child is"
-
-        if (now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 1))) {
-          Some(
-            InformationMessage(
-              f"We are currently working out your payments as your $childChildren changing their education or training. This should be done by 7 September ${now.getYear}.",
-              f"If your $childChildren staying in education or training, you should update their details."
-            )
-          )
-        } else if (now.isAfter(createLocalDate(now.getYear, Month.AUGUST, 31)) &&
-                   now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 8))) {
-          Some(
-            InformationMessage(
-              f"We are currently working out your payments as your $childChildren changing their education or training. This should be done by 7 September ${now.getYear}.",
-              f"If you have let us know that your $childChildren staying in education or training, they will be added back automatically. Otherwise, you can add them back to your claim."
-            )
-          )
-        } else {
-          None
-        }
 
       case Some(OldRate) =>
         Some(
@@ -114,23 +71,5 @@ class InformationMessageService @Inject() (localDateProvider: LocalDateProvider)
 
       case _ => None
     }
-
-  private def isFtnaeDate(payment: FuturePayment): Boolean =
-    payment.paymentDate.isAfter(createLocalDate(now.getYear, Month.AUGUST, 31).atStartOfDay()) && payment.paymentDate.getYear == now.getYear
-
-  // Payments after August 31st are hidden if special circumstances is "FTNAE" to work out if payments are FTNAE we check there
-  // are no payments after the 31st and this is coupled with other logic in the match
-  private def hasAFtnaePayment(paymentSummary: PaymentSummary): Boolean =
-    paymentSummary.childTaxCredit match {
-      case None if (now.isBefore(createLocalDate(now.getYear, Month.SEPTEMBER, 8))) => true
-      case None                                                                     => false
-      case Some(ctc)                                                                => ctc.paymentSeq.count(payment => isFtnaeDate(payment)) == 0
-    }
-
-  private def createLocalDate(
-    year:  Int,
-    month: Month,
-    day:   Int
-  ): LocalDate = LocalDate.of(year, month, day)
 
 }

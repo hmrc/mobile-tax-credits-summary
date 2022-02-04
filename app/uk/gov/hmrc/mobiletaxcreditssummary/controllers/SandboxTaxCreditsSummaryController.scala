@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,10 +67,6 @@ class SandboxTaxCreditsSummaryController @Inject() (
           Ok(toJson(TaxCreditsSummaryResponse(excluded = false, readData("working-tax-credit-only.json"))))
         case Some("CHILD-TAX-CREDIT-ONLY") =>
           Ok(toJson(TaxCreditsSummaryResponse(excluded = false, readData("child-tax-credit-only.json"))))
-        case Some("PRE-FTNAE") =>
-          Ok(toJson(TaxCreditsSummaryResponse(excluded = false, readData("pre-ftnae.json"))))
-        case Some("POST-FTNAE") =>
-          Ok(toJson(TaxCreditsSummaryResponse(excluded = false, readData("post-ftnae.json"))))
         case Some("PXP5") =>
           Ok(toJson(TaxCreditsSummaryResponse(excluded = false, readData("pxp5.json"))))
         case Some("OLD-RATE") =>

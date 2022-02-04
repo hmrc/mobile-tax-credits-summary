@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,12 +72,11 @@ class LiveTaxCreditsSummaryService @Inject() (
       val renewals = taxCreditsRenewalsService.getTaxCreditsRenewals(tcNino, journeyId)
 
       val messageLink: Option[MessageLink] = informationMessageService.getMessageLink(dashboardData.paymentSummary)
-      val claimants       = Some(Claimants(personalDetails, partnerDetails, children, messageLink, reportActualProfit))
-      val isMultipleFTNAE = dashboardData.paymentSummary.isMultipleFTNAE.getOrElse(false)
+      val claimants = Some(Claimants(personalDetails, partnerDetails, children, messageLink, reportActualProfit))
 
       val newPayment: PaymentSummary = {
         dashboardData.paymentSummary.copy(
-          informationMessage   = informationMessageService.getInformationMessage(specialCircumstance, isMultipleFTNAE),
+          informationMessage   = informationMessageService.getInformationMessage(specialCircumstance),
           specialCircumstances = specialCircumstance
         )
       }
