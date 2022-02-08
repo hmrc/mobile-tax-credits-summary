@@ -35,8 +35,6 @@ To test different scenarios, add a header "SANDBOX-CONTROL" with one of the foll
 | "TAX-CREDITS-USER" | Happy path, non-excluded Tax Credits User with full summary |
 | "WORKING-TAX-CREDIT-ONLY" | Happy path, non-excluded Tax Credits User with working tax credit data but no child tax credit data |
 | "CHILD-TAX-CREDIT-ONLY" | Happy path, non-excluded Tax Credits User with child tax credit data but no working tax credit data |
-| "PRE-FTNAE" | Happy path, where they have FTNAE children but it is BEFORE the 31st August deadline |
-| "POST-FTNAE" | Happy path, where they have FTNAE children but it is AFTER the 31st August deadline |
 | "NON-TAX-CREDITS-USER" | Happy path, non-excluded, Non Tax Credits User with no summary |
 | "EXCLUDED-TAX-CREDITS-USER" | Happy path, excluded Tax Credits User with no summary |
 | "PXP5" | Happy path, where PXP5 period is open to calculate new tax credits rates |
