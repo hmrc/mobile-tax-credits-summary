@@ -402,66 +402,6 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
       jsonDiff(None, Json.toJson(paymentSummary), expectedResponse) shouldBe 'empty
     }
   }
-  "correctly return the informationMessage" in {
-    val wtc =
-      s"""
-         |"workingTaxCredit": {
-         |  "paymentSeq": [
-         |    ${payment(50.00, now.plusMonths(1), oneOffPayment = false)},
-         |    ${payment(82.00, now.plusMonths(2), oneOffPayment = true, None, futureOneOffPaymentText)},
-         |    ${payment(82.00, now.plusMonths(3), oneOffPayment = false, bankHoliday, futureEarlyPaymentText)}
-         |  ],
-         |  "paymentFrequency": "WEEKLY"
-         |}
-         """.stripMargin
-    val ctc =
-      s"""
-         |"childTaxCredit": {
-         |  "paymentSeq": [
-         |    ${payment(25.00, now.plusMonths(1), oneOffPayment = false)},
-         |    ${payment(25.00, now.plusMonths(2), oneOffPayment = true, None, futureOneOffPaymentText)},
-         |    ${payment(50.00, now.plusMonths(3), oneOffPayment = false, bankHoliday, futureEarlyPaymentText)}
-         |  ],
-         |  "paymentFrequency": "WEEKLY"
-         |}
-         """.stripMargin
-    val totalsByDate =
-      s"""
-         |"totalsByDate": [
-         |  ${total(75.00, now.plusMonths(1))},
-         |  ${total(107.00, now.plusMonths(2))},
-         |  ${total(132.00, now.plusMonths(3))}
-         |]
-         """.stripMargin
-
-    val request =
-      s"""{$wtc, $ctc, "specialCircumstances": "FTNAE","informationMessage": {
-         |"title": "We are currently working out your payments as your child is changing their education or training. This should be done by 7 September ${now.getYear}.",
-         |"message" : "If your child is staying in education or training, you should update their details."
-         |}, "paymentEnabled": true}""".stripMargin
-    val expectedResponse = Json.parse(s"""{
-                                         |$wtc, $ctc,
-                                         |"paymentEnabled": true,
-                                         |"specialCircumstances":"FTNAE",
-                                         |"informationMessage": {
-                                         |"title": "We are currently working out your payments as your child is changing their education or training. This should be done by 7 September ${now.getYear}.",
-                                         |"message" : "If your child is staying in education or training, you should update their details."
-                                         |},
-                                         |$totalsByDate
-                                         |}""".stripMargin)
-    val response         = Json.parse(request).validate[PaymentSummary]
-    val paymentSummary   = response.asOpt.value
-
-    paymentSummary.paymentEnabled.get             shouldBe true
-    paymentSummary.childTaxCredit.isDefined       shouldBe true
-    paymentSummary.workingTaxCredit.isDefined     shouldBe true
-    paymentSummary.informationMessage.get.message shouldBe "If your child is staying in education or training, you should update their details."
-    paymentSummary.informationMessage.get.title   shouldBe f"We are currently working out your payments as your child is changing their education or training. This should be done by 7 September ${now.getYear}."
-
-    paymentSummary.totalsByDate.isDefined shouldBe true
-
-    jsonDiff(None, Json.toJson(paymentSummary), expectedResponse) shouldBe 'empty
-  }
 
   "Future Payment " should {
     "return the correct explanatory text for a one-off payment" in {
