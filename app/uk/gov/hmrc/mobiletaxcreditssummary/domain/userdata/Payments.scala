@@ -72,8 +72,6 @@ case class PaymentSummary(
 
 sealed trait SpecialCircumstance
 
-case object FTNAE extends SpecialCircumstance
-
 case object OldRate extends SpecialCircumstance
 
 case object NewRate extends SpecialCircumstance
@@ -86,7 +84,6 @@ object SpecialCircumstance {
   val logger: Logger = Logger(this.getClass)
 
   implicit val reads: Reads[SpecialCircumstance] = Reads {
-    case JsString("FTNAE")    => JsSuccess(FTNAE)
     case JsString("OLD RATE") => JsSuccess(OldRate)
     case JsString("NEW RATE") => JsSuccess(NewRate)
     case JsString("PXP5")     => JsSuccess(PXP5)
@@ -96,7 +93,6 @@ object SpecialCircumstance {
   }
 
   implicit val writes: Writes[SpecialCircumstance] = Writes {
-    case FTNAE               => JsString("FTNAE")
     case OldRate             => JsString("OLD RATE")
     case NewRate             => JsString("NEW RATE")
     case PXP5                => JsString("PXP5")
