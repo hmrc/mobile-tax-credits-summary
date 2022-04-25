@@ -24,7 +24,7 @@ import play.api.mvc._
 import uk.gov.hmrc.api.controllers._
 import uk.gov.hmrc.api.sandbox.FileResource
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.mobiletaxcreditssummary.domain.Shuttering
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.{ChangeOfCircumstanceLinks, Shuttering}
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
@@ -41,6 +41,10 @@ class SandboxTaxCreditsSummaryController @Inject() (
     with HeaderValidator {
 
   private final val WebServerIsDown = new Status(521)
+
+  val sandboxChangeOfCircumstanceLinks: Option[ChangeOfCircumstanceLinks] = Some(
+    ChangeOfCircumstanceLinks("/", "/", "/", "/")
+  )
 
   private val shuttered =
     Json.toJson(
@@ -64,36 +68,78 @@ class SandboxTaxCreditsSummaryController @Inject() (
         case Some("ERROR-403") => Forbidden
         case Some("ERROR-500") => InternalServerError
         case Some("WORKING-TAX-CREDIT-ONLY") =>
-          Ok(toJson(TaxCreditsSummaryResponse(excluded = false, readData("working-tax-credit-only.json"))))
+          Ok(
+            toJson(
+              TaxCreditsSummaryResponse(excluded = false,
+                                        readData("working-tax-credit-only.json"),
+                                        changeOfCircumstanceLinks = sandboxChangeOfCircumstanceLinks)
+            )
+          )
         case Some("CHILD-TAX-CREDIT-ONLY") =>
-          Ok(toJson(TaxCreditsSummaryResponse(excluded = false, readData("child-tax-credit-only.json"))))
+          Ok(
+            toJson(
+              TaxCreditsSummaryResponse(excluded = false,
+                                        readData("child-tax-credit-only.json"),
+                                        changeOfCircumstanceLinks = sandboxChangeOfCircumstanceLinks)
+            )
+          )
         case Some("PXP5") =>
-          Ok(toJson(TaxCreditsSummaryResponse(excluded = false, readData("pxp5.json"))))
+          Ok(
+            toJson(
+              TaxCreditsSummaryResponse(excluded = false,
+                                        readData("pxp5.json"),
+                                        changeOfCircumstanceLinks = sandboxChangeOfCircumstanceLinks)
+            )
+          )
         case Some("OLD-RATE") =>
-          Ok(toJson(TaxCreditsSummaryResponse(excluded = false, readData("old-rate.json"))))
+          Ok(
+            toJson(
+              TaxCreditsSummaryResponse(excluded = false,
+                                        readData("old-rate.json"),
+                                        changeOfCircumstanceLinks = sandboxChangeOfCircumstanceLinks)
+            )
+          )
         case Some("NEW-RATE") =>
-          Ok(toJson(TaxCreditsSummaryResponse(excluded = false, readData("new-rate.json"))))
+          Ok(
+            toJson(
+              TaxCreditsSummaryResponse(excluded = false,
+                                        readData("new-rate.json"),
+                                        changeOfCircumstanceLinks = sandboxChangeOfCircumstanceLinks)
+            )
+          )
         case Some("PAYMENTS-NOT-ENABLED") =>
-          Ok(toJson(TaxCreditsSummaryResponse(excluded = false, readData("payments-not-enabled.json"))))
+          Ok(
+            toJson(
+              TaxCreditsSummaryResponse(excluded = false,
+                                        readData("payments-not-enabled.json"),
+                                        changeOfCircumstanceLinks = sandboxChangeOfCircumstanceLinks)
+            )
+          )
         case Some("RENEWALS-ACTIVE") =>
           val resource: String = findResource(s"/resources/taxcreditssummary/CS700100A-with-renewals.json")
             .getOrElse(throw new IllegalArgumentException("Resource not found!"))
           val response =
-            TaxCreditsSummaryResponse(excluded = false, Some(Json.parse(updateDates(resource)).as[TaxCreditsSummary]))
+            TaxCreditsSummaryResponse(excluded = false,
+                                      Some(Json.parse(updateDates(resource)).as[TaxCreditsSummary]),
+                                      changeOfCircumstanceLinks = sandboxChangeOfCircumstanceLinks)
           Ok(toJson(response))
         case Some("CLAIMANTS-FAILURE") =>
           val resource: String = findResource(s"/resources/taxcreditssummary/${nino.value}.json")
             .getOrElse(throw new IllegalArgumentException("Resource not found!"))
           val taxCreditsSummary: TaxCreditsSummary =
             TaxCreditsSummary(Json.parse(updateDates(resource)).as[TaxCreditsSummary].paymentSummary, None, None)
-          val response = TaxCreditsSummaryResponse(excluded = false, Some(taxCreditsSummary))
+          val response = TaxCreditsSummaryResponse(excluded = false,
+                                                   Some(taxCreditsSummary),
+                                                   changeOfCircumstanceLinks = sandboxChangeOfCircumstanceLinks)
           Ok(toJson(response))
         case Some("SHUTTERED") => WebServerIsDown(shuttered)
         case _ => //TAX-CREDITS-USER
           val resource: String = findResource(s"/resources/taxcreditssummary/${nino.value}.json")
             .getOrElse(throw new IllegalArgumentException("Resource not found!"))
           val response =
-            TaxCreditsSummaryResponse(excluded = false, Some(Json.parse(updateDates(resource)).as[TaxCreditsSummary]))
+            TaxCreditsSummaryResponse(excluded = false,
+                                      Some(Json.parse(updateDates(resource)).as[TaxCreditsSummary]),
+                                      changeOfCircumstanceLinks = sandboxChangeOfCircumstanceLinks)
           Ok(toJson(response))
       })
     }

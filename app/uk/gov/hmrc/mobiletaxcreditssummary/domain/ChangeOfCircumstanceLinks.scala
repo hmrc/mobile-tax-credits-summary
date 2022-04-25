@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata
+package uk.gov.hmrc.mobiletaxcreditssummary.domain
 
 import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.mobiletaxcreditssummary.domain.ChangeOfCircumstanceLinks
 
-case class TaxCreditsSummaryResponse(
-  excluded:                  Boolean = false,
-  taxCreditsSummary:         Option[TaxCreditsSummary],
-  changeOfCircumstanceLinks: Option[ChangeOfCircumstanceLinks] = None)
+case class ChangeOfCircumstanceLinks(
+  changePersonalDetails:    String = "/tax-credits-service/home/your-details",
+  changeJobsOrIncome:       String = "/tax-credits-service/home/jobs-and-income",
+  addEditChildrenChildcare: String = "/tax-credits-service/home/children-and-childcare",
+  otherChanges:             String = "/tax-credits-service/home/other-changes")
 
-object TaxCreditsSummaryResponse {
-  implicit val format: OFormat[TaxCreditsSummaryResponse] = Json.format[TaxCreditsSummaryResponse]
+object ChangeOfCircumstanceLinks {
+  implicit val format: OFormat[ChangeOfCircumstanceLinks] = Json.format[ChangeOfCircumstanceLinks]
 }

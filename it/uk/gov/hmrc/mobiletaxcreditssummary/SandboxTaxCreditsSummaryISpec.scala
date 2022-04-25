@@ -49,6 +49,7 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
         .as[String]                                                                                   shouldBe "WEEKLY"
       (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String] shouldBe "Nia"
       (response.json \ "taxCreditsSummary" \ "claimants" \ "children").as[List[Person]].head.forename shouldBe "Kai"
+      (response.json \ "changeOfCircumstanceLinks" \ "changePersonalDetails").as[String]              shouldBe "/"
 
     }
 
@@ -63,6 +64,7 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String] shouldBe "Nuala"
       (response.json \ "taxCreditsSummary" \ "claimants" \\ "messageLink")                            shouldBe empty
       (response.json \ "taxCreditsSummary" \ "claimants" \ "children").as[List[Person]].head.forename shouldBe "Kai"
+      (response.json \ "changeOfCircumstanceLinks" \ "changePersonalDetails").as[String]              shouldBe "/"
     }
 
     "return excluded = false and a tax credit summary with only working tax credit data where SANDBOX-CONTROL is CHILD-TAX-CREDIT-ONLY" in {
@@ -76,6 +78,7 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String] shouldBe "Nuala"
       (response.json \ "taxCreditsSummary" \ "claimants" \\ "messageLink")                            shouldBe empty
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \\ "informationMessage")                shouldBe empty
+      (response.json \ "changeOfCircumstanceLinks" \ "changePersonalDetails").as[String]              shouldBe "/"
 
     }
 
@@ -86,6 +89,7 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
         .as[String]                                                                                   shouldBe "WEEKLY"
       (response.json \ "taxCreditsSummary" \ "claimants" \ "personalDetails" \ "forename").as[String] shouldBe "Nia"
+      (response.json \ "changeOfCircumstanceLinks" \ "changePersonalDetails").as[String]              shouldBe "/"
     }
 
     "return excluded = false and a tax credit summary with no claimants section where SANDBOX-CONTROL is CLAIMANTS-FAILURE" in {
@@ -96,6 +100,7 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
         .as[String]                                                shouldBe "WEEKLY"
       (response.json \ "taxCreditsSummary" \ "claimants").toOption shouldBe None
+      (response.json \ "changeOfCircumstanceLinks" \ "changePersonalDetails").as[String]              shouldBe "/"
     }
 
     "return excluded = true and no tax credit summary data if excluded where SANDBOX-CONTROL is EXCLUDED-TAX-CREDITS-USER" in {
@@ -115,6 +120,7 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
         .as[String] shouldBe "PXP5"
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "informationMessage" \ "title")
         .as[String] shouldBe "Your payments are being processed"
+      (response.json \ "changeOfCircumstanceLinks" \ "changePersonalDetails").as[String]              shouldBe "/"
     }
 
     "return excluded = false and the NEW_RATE info message where SANDBOX-CONTROL is NEW-RATE" in {
@@ -168,6 +174,7 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (response.json \ "taxCreditsSummary" \ "claimants" \ "children").as[List[Person]].head.forename shouldBe "Kai"
       (response.json \ "taxCreditsSummary" \ "renewals" \ "currentYear")
         .as[String] shouldBe LocalDateTime.now.getYear.toString
+      (response.json \ "changeOfCircumstanceLinks" \ "changePersonalDetails").as[String]              shouldBe "/"
     }
 
     "return 401 if unauthenticated where SANDBOX-CONTROL is ERROR-401" in {
