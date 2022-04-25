@@ -83,12 +83,12 @@ class LiveTaxCreditsSummaryService @Inject() (
       renewals.flatMap {
         case Some(renewals) =>
           Future successful TaxCreditsSummaryResponse(taxCreditsSummary =
-            Some(TaxCreditsSummary(newPayment, claimants, Some(renewals)))
-          )
+                                                        Some(TaxCreditsSummary(newPayment, claimants, Some(renewals))),
+                                                      changeOfCircumstanceLinks = Some(ChangeOfCircumstanceLinks()))
         case None =>
           Future successful TaxCreditsSummaryResponse(taxCreditsSummary =
-            Some(TaxCreditsSummary(newPayment, claimants, None))
-          )
+                                                        Some(TaxCreditsSummary(newPayment, claimants, None)),
+                                                      changeOfCircumstanceLinks = Some(ChangeOfCircumstanceLinks()))
       }
     }
 

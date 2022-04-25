@@ -73,6 +73,14 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (((response.json \\ "claimants").head \ "children")(0) \ "forename").as[String]        shouldBe "Sarah"
       (((response.json \\ "claimants").head \ "children")(0) \ "surname").as[String]         shouldBe "Smith"
       (response.json \\ "renewals").isEmpty                                                  shouldBe true
+      (response.json \ "changeOfCircumstanceLinks" \ "changePersonalDetails")
+        .as[String] shouldBe "/tax-credits-service/home/your-details"
+      (response.json \ "changeOfCircumstanceLinks" \ "changeJobsOrIncome")
+        .as[String] shouldBe "/tax-credits-service/home/jobs-and-income"
+      (response.json \ "changeOfCircumstanceLinks" \ "addEditChildrenChildcare")
+        .as[String] shouldBe "/tax-credits-service/home/children-and-childcare"
+      (response.json \ "changeOfCircumstanceLinks" \ "otherChanges")
+        .as[String] shouldBe "/tax-credits-service/home/other-changes"
     }
 
     "return a valid response for TAX-CREDITS-USER with report actual profit if applicable" in {

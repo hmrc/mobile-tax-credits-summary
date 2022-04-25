@@ -26,6 +26,7 @@ import uk.gov.hmrc.auth.core.ConfidenceLevel._
 import uk.gov.hmrc.auth.core.syntax.retrieved._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.ChangeOfCircumstanceLinks
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
 
@@ -44,7 +45,9 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
                                                          mockShutteringConnector)
     "process the request successfully and filter children older than 20 and where deceased flags are active and user is not excluded" in {
       val expectedResult =
-        TaxCreditsSummaryResponse(excluded = false, Some(TaxCreditsSummary(paymentSummary, Some(claimants))))
+        TaxCreditsSummaryResponse(excluded = false,
+                                  Some(TaxCreditsSummary(paymentSummary, Some(claimants))),
+                                  Some(ChangeOfCircumstanceLinks()))
       mockShutteringResponse(notShuttered)
       mockAuthorisationGrantAccess(Some(nino) and L200)
       mockAudit(Nino(nino), expectedResult)
@@ -87,7 +90,9 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
 
     "return the summary successfully when journeyId is supplied and user is not excluded" in {
       val expectedResult =
-        TaxCreditsSummaryResponse(excluded = false, Some(TaxCreditsSummary(paymentSummary, Some(claimants))))
+        TaxCreditsSummaryResponse(excluded = false,
+                                  Some(TaxCreditsSummary(paymentSummary, Some(claimants))),
+                                  Some(ChangeOfCircumstanceLinks()))
       mockShutteringResponse(notShuttered)
       mockAuthorisationGrantAccess(Some(nino) and L200)
       mockAudit(Nino(nino), expectedResult)
@@ -168,7 +173,8 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
           )
           .as[TaxCreditsSummary]
       val expectedResult: TaxCreditsSummaryResponse =
-        TaxCreditsSummaryResponse(taxCreditsSummary = Some(expectedTaxCreditsSummary))
+        TaxCreditsSummaryResponse(taxCreditsSummary         = Some(expectedTaxCreditsSummary),
+                                  changeOfCircumstanceLinks = Some(ChangeOfCircumstanceLinks("/", "/", "/", "/")))
       contentAsJson(result) shouldBe toJson(expectedResult)
     }
   }

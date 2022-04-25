@@ -30,7 +30,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{Upstream4xxResponse, Upstream5xxResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.mobiletaxcreditssummary.controllers.TestSetup
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.LegacyRenewalStatus.COMPLETE
-import uk.gov.hmrc.mobiletaxcreditssummary.domain.{Complete, Renewals, TaxCreditsNino}
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.{ChangeOfCircumstanceLinks, Complete, Renewals, TaxCreditsNino}
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
 import uk.gov.hmrc.mobiletaxcreditssummary.services.{InformationMessageService, LiveTaxCreditsSummaryService, ReportActualProfitService, TaxCreditsRenewalsService}
 import uk.gov.hmrc.mobiletaxcreditssummary.utils.LocalDateProvider
@@ -56,35 +56,42 @@ class TaxCreditsSummaryServiceSpec
   val upstream5xxException: UpstreamErrorResponse = UpstreamErrorResponse("blows up for excluded users", 500, 500)
 
   val taxCreditsSummary: TaxCreditsSummaryResponse =
-    TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummary, Some(claimants))))
+    TaxCreditsSummaryResponse(taxCreditsSummary         = Some(TaxCreditsSummary(paymentSummary, Some(claimants))),
+                              changeOfCircumstanceLinks = Some(ChangeOfCircumstanceLinks()))
 
   def taxCreditsSummaryWithInfoMessage(
     specialCircumstance: Option[SpecialCircumstance] = None,
     informationMessage:  Option[InformationMessage] = None,
     messageLink:         Option[MessageLink]
   ): TaxCreditsSummaryResponse =
-    TaxCreditsSummaryResponse(taxCreditsSummary = Some(
-      TaxCreditsSummary(paymentSummaryWithInfoMessage(specialCircumstance, informationMessage),
-                        Some(claimants.copy(messageLink = messageLink)))
-    )
+    TaxCreditsSummaryResponse(
+      taxCreditsSummary = Some(
+        TaxCreditsSummary(paymentSummaryWithInfoMessage(specialCircumstance, informationMessage),
+                          Some(claimants.copy(messageLink = messageLink)))
+      ),
+      changeOfCircumstanceLinks = Some(ChangeOfCircumstanceLinks())
     )
 
   val taxCreditsSummaryNoPartnerDetails: TaxCreditsSummaryResponse =
     TaxCreditsSummaryResponse(taxCreditsSummary =
-      Some(TaxCreditsSummary(paymentSummary, Some(claimantsNoPartnerDetails)))
+      Some(TaxCreditsSummary(paymentSummary, Some(claimantsNoPartnerDetails))),
+      changeOfCircumstanceLinks = Some(ChangeOfCircumstanceLinks())
     )
 
   val taxCreditsSummaryNoChildren: TaxCreditsSummaryResponse =
-    TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummary, Some(claimantsNoChildren))))
+    TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummary, Some(claimantsNoChildren))),
+      changeOfCircumstanceLinks = Some(ChangeOfCircumstanceLinks()))
 
   val taxCreditsSummaryNoClaimants: TaxCreditsSummaryResponse =
-    TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummary, None)))
+    TaxCreditsSummaryResponse(taxCreditsSummary = Some(TaxCreditsSummary(paymentSummary, None)),
+      changeOfCircumstanceLinks = Some(ChangeOfCircumstanceLinks()))
 
   val taxCreditsSummaryEmpty: TaxCreditsSummaryResponse = TaxCreditsSummaryResponse(taxCreditsSummary = None)
 
   def taxCreditsSummaryWithReportActualProfitLink(reportActualProfit: ReportActualProfit): TaxCreditsSummaryResponse =
     TaxCreditsSummaryResponse(taxCreditsSummary =
-      Some(TaxCreditsSummary(paymentSummary, Some(claimantsWithReportActualProfit(reportActualProfit))))
+      Some(TaxCreditsSummary(paymentSummary, Some(claimantsWithReportActualProfit(reportActualProfit)))),
+      changeOfCircumstanceLinks = Some(ChangeOfCircumstanceLinks())
     )
 
   val dashboardData: DashboardData =

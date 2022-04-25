@@ -132,5 +132,11 @@
         }
       ]
     }
+  },
+  "changeOfCircumstanceLinks": {
+    "changePersonalDetails": "/tax-credits-service/home/your-details",
+    "changeJobsOrIncome": "/tax-credits-service/home/jobs-and-income",
+    "addEditChildrenChildcare": "/tax-credits-service/home/children-and-childcare",
+    "otherChanges": "/tax-credits-service/home/other-changes"
   }
 }
