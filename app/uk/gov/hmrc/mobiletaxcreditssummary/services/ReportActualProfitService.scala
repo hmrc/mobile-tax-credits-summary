@@ -16,8 +16,7 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.services
 
-import java.time.{LocalDateTime, ZonedDateTime}
-
+import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
 import javax.inject.{Inject, Named, Singleton}
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.TaxCreditsNino
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.{ClaimActualIncomeEligibilityStatus, ReportActualProfit}
@@ -104,11 +103,10 @@ class ReportActualProfitService @Inject() (
   }
 
   def reportActualProfitPeriodOpen: Boolean = {
-    val startDate = ZonedDateTime.parse(reportActualProfitStartDate)
-    val endDate   = ZonedDateTime.parse(reportActualProfitEndDate)
-    (LocalDateTime.now().isAfter(startDate.toLocalDateTime) && LocalDateTime
-      .now()
-      .isBefore(endDate.toLocalDateTime))
+    val currentTime: LocalDateTime = LocalDateTime.now(ZoneId.of("Europe/London"))
+    val startDate = LocalDateTime.parse(reportActualProfitStartDate)
+    val endDate   = LocalDateTime.parse(reportActualProfitEndDate)
+    (currentTime.isAfter(startDate) && currentTime.isBefore(endDate))
   }
 
 }
