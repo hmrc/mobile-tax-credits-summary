@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary
 
+import com.github.nscala_time.time.StaticDateTimeZone.UTC
+import org.joda.time.DateTime
 import play.api.libs.json.Json
 import play.api.libs.ws.WSRequest
 import uk.gov.hmrc.api.sandbox.FileResource
@@ -27,14 +29,17 @@ import uk.gov.hmrc.mobiletaxcreditssummary.stubs.ShutteringStub._
 import uk.gov.hmrc.mobiletaxcreditssummary.stubs.TaxCreditsBrokerStub._
 import uk.gov.hmrc.mobiletaxcreditssummary.stubs.TaxCreditsRenewalsStub._
 import uk.gov.hmrc.mobiletaxcreditssummary.support.BaseISpec
+import uk.gov.hmrc.time.DateTimeUtils
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
 
 class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
 
-  protected def reportActualProfitStartDate: String = LocalDateTime.now.toString
+  protected val now: DateTime = DateTimeUtils.now.withZone(UTC)
 
-  protected def reportActualProfitEndDate: String = LocalDateTime.now.plusDays(1).toString
+  protected def reportActualProfitStartDate: String = now.toString
+
+  protected def reportActualProfitEndDate: String = now.plusDays(1).toString
 
   override def configuration: Map[String, Any] =
     super.configuration ++
