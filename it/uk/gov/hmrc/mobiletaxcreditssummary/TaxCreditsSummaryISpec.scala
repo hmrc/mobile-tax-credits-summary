@@ -46,7 +46,7 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
   "GET /income/:nino/tax-credits/tax-credits-summary " should {
     def request(nino: Nino): WSRequest =
       wsUrl(s"/income/${nino.value}/tax-credits/tax-credits-summary?journeyId=17d2420c-4fc6-4eee-9311-a37325066704")
-        .addHttpHeaders(acceptJsonHeader)
+        .addHttpHeaders(acceptJsonHeader, authorisationJsonHeader)
 
     "return a valid response for TAX-CREDITS-USER - check more details on github.com/hmrc/mobile-tax-credits-summary" in {
       grantAccess(nino1.value)

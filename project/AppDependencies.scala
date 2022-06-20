@@ -3,8 +3,8 @@ import sbt.{ModuleID, _}
 
 private object AppDependencies {
 
-  private val bootstrapPlayVersion = "5.16.0"
-  private val playHmrcApiVersion   = "6.4.0-play-28"
+  private val bootstrapPlayVersion = "5.24.0"
+  private val playHmrcApiVersion   = "7.0.0-play-28"
   private val domainVersion        = "8.1.0-play-28"
 
   private val scalaTestVersion         = "3.0.8"
