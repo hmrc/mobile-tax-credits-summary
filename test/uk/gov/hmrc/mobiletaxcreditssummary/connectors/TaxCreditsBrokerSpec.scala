@@ -47,7 +47,7 @@ class TaxCreditsBrokerSpec
   trait Setup extends MockFactory {
     implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
-    val expectedNextDueDate: LocalDateTime            = LocalDate.parse("2015-07-16").atStartOfDay()
+    val expectedNextDueDate: LocalDate                = LocalDate.parse("2015-07-16")
     val headers:             Map[String, Seq[String]] = Map("Accept" -> Seq("application/vnd.hmrc.1.0+json"))
     val expectedPaymentWTC:  FuturePayment            = FuturePayment(160.34, expectedNextDueDate, oneOffPayment = false)
     val expectedPaymentCTC:  FuturePayment            = FuturePayment(140.12, expectedNextDueDate, oneOffPayment = false)
@@ -63,7 +63,7 @@ class TaxCreditsBrokerSpec
         .fromJson[DashboardData](parse(findResource("/resources/taxcreditssummary/CS700100A-dashboard-data.json").get))
         .get
 
-    lazy val response:        Future[HttpResponse] = http200Person
+    lazy val response: Future[HttpResponse] = http200Person
 
     lazy val http200Person: Future[AnyRef with HttpResponse] =
       Future.successful(HttpResponse(200, Json.toJson(personalDetails), headers))

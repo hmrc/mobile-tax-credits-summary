@@ -17,7 +17,6 @@
 package uk.gov.hmrc.mobiletaxcreditssummary.controllers
 
 import eu.timepit.refined.auto._
-import org.joda.time.LocalDate
 import play.api.libs.json.Json
 import play.api.libs.json.Json.toJson
 import play.api.test.Helpers._
@@ -30,6 +29,7 @@ import uk.gov.hmrc.mobiletaxcreditssummary.domain.ChangeOfCircumstanceLinks
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
 
+import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -154,22 +154,22 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
     "return the summary response from a resource" in {
       val controller  = new SandboxTaxCreditsSummaryController(stubControllerComponents())
       val result      = controller.taxCreditsSummary(Nino(nino), "17d2420c-4fc6-4eee-9311-a37325066704").apply(fakeRequest)
-      val currentTime = new LocalDate().toDateTimeAtStartOfDay
+      val currentTime = LocalDate.now()
       val expectedTaxCreditsSummary: TaxCreditsSummary =
         Json
           .parse(
             findResource(s"/resources/taxcreditssummary/$nino.json").get
-              .replaceAll("previousDate1", currentTime.minusWeeks(2).getMillis.toString)
-              .replaceAll("previousDate2", currentTime.minusWeeks(1).getMillis.toString)
-              .replaceAll("previousDate3", currentTime.getMillis.toString)
-              .replaceAll("date1", currentTime.plusWeeks(1).getMillis.toString)
-              .replaceAll("date2", currentTime.plusWeeks(2).getMillis.toString)
-              .replaceAll("date3", currentTime.plusWeeks(3).getMillis.toString)
-              .replaceAll("date4", currentTime.plusWeeks(4).getMillis.toString)
-              .replaceAll("date5", currentTime.plusWeeks(5).getMillis.toString)
-              .replaceAll("date6", currentTime.plusWeeks(6).getMillis.toString)
-              .replaceAll("date7", currentTime.plusWeeks(7).getMillis.toString)
-              .replaceAll("date8", currentTime.plusWeeks(8).getMillis.toString)
+              .replaceAll("previousDate1", currentTime.minusWeeks(2).toString)
+              .replaceAll("previousDate2", currentTime.minusWeeks(1).toString)
+              .replaceAll("previousDate3", currentTime.toString)
+              .replaceAll("date1", currentTime.plusWeeks(1).toString)
+              .replaceAll("date2", currentTime.plusWeeks(2).toString)
+              .replaceAll("date3", currentTime.plusWeeks(3).toString)
+              .replaceAll("date4", currentTime.plusWeeks(4).toString)
+              .replaceAll("date5", currentTime.plusWeeks(5).toString)
+              .replaceAll("date6", currentTime.plusWeeks(6).toString)
+              .replaceAll("date7", currentTime.plusWeeks(7).toString)
+              .replaceAll("date8", currentTime.plusWeeks(8).toString)
           )
           .as[TaxCreditsSummary]
       val expectedResult: TaxCreditsSummaryResponse =

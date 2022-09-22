@@ -4,13 +4,13 @@
       "paymentSeq": [
         {
           "amount": 80.29,
-          "paymentDate": date1,
+          "paymentDate": "date1",
           "oneOffPayment": false,
           "earlyPayment": false
         },
         {
           "amount": 80.29,
-          "paymentDate": date2,
+          "paymentDate": "date2",
           "oneOffPayment": false,
           "holidayType": "bankHoliday",
           "earlyPayment": true,
@@ -18,38 +18,38 @@
         },
         {
           "amount": 80.29,
-          "paymentDate": date3,
+          "paymentDate": "date3",
           "oneOffPayment": true,
           "earlyPayment": false,
           "explanatoryText": "One-off payment because of a recent change to help you get the right amount of tax credits."
         },
         {
           "amount": 80.29,
-          "paymentDate": date4,
+          "paymentDate": "date4",
           "oneOffPayment": false,
           "earlyPayment": false
         },
         {
           "amount": 80.29,
-          "paymentDate": date5,
+          "paymentDate": "date5",
           "oneOffPayment": false,
           "earlyPayment": false
         },
         {
           "amount": 80.29,
-          "paymentDate": date6,
+          "paymentDate": "date6",
           "oneOffPayment": false,
           "earlyPayment": false
         },
         {
           "amount": 80.29,
-          "paymentDate": date7,
+          "paymentDate": "date7",
           "oneOffPayment": false,
           "earlyPayment": false
         },
         {
           "amount": 80.29,
-          "paymentDate": date8,
+          "paymentDate": "date8",
           "oneOffPayment": false,
           "earlyPayment": false
         }
@@ -58,13 +58,13 @@
       "previousPaymentSeq": [
         {
           "amount": 100,
-          "paymentDate": previousDate1,
+          "paymentDate": "previousDate1",
           "oneOffPayment": false,
           "earlyPayment": false
         },
         {
           "amount": 100,
-          "paymentDate": previousDate2,
+          "paymentDate": "previousDate2",
           "oneOffPayment": false,
           "holidayType": "bankHoliday",
           "earlyPayment": true,
@@ -72,7 +72,7 @@
         },
         {
           "amount": 170.31,
-          "paymentDate": previousDate3,
+          "paymentDate": "previousDate3",
           "oneOffPayment": true,
           "earlyPayment": false,
           "explanatoryText": "This was because of a recent change and was to help you get the right amount of tax credits."
@@ -83,13 +83,13 @@
       "paymentSeq": [
         {
           "amount": 171.84,
-          "paymentDate": date1,
+          "paymentDate": "date1",
           "oneOffPayment": false,
           "earlyPayment": false
         },
         {
           "amount": 171.84,
-          "paymentDate": date2,
+          "paymentDate": "date2",
           "oneOffPayment": false,
           "holidayType": "bankHoliday",
           "earlyPayment": true,
@@ -97,38 +97,38 @@
         },
         {
           "amount": 171.84,
-          "paymentDate": date3,
+          "paymentDate": "date3",
           "oneOffPayment": true,
           "earlyPayment": false,
           "explanatoryText": "One-off payment because of a recent change to help you get the right amount of tax credits."
         },
         {
           "amount": 171.84,
-          "paymentDate": date4,
+          "paymentDate": "date4",
           "oneOffPayment": false,
           "earlyPayment": false
         },
         {
           "amount": 171.84,
-          "paymentDate": date5,
+          "paymentDate": "date5",
           "oneOffPayment": false,
           "earlyPayment": false
         },
         {
           "amount": 171.84,
-          "paymentDate": date6,
+          "paymentDate": "date6",
           "oneOffPayment": false,
           "earlyPayment": false
         },
         {
           "amount": 171.84,
-          "paymentDate": date7,
+          "paymentDate": "date7",
           "oneOffPayment": false,
           "earlyPayment": false
         },
         {
           "amount": 171.84,
-          "paymentDate": date8,
+          "paymentDate": "date8",
           "oneOffPayment": false,
           "earlyPayment": false
         }
@@ -137,13 +137,13 @@
       "previousPaymentSeq": [
         {
           "amount": 140.70,
-          "paymentDate": previousDate1,
+          "paymentDate": "previousDate1",
           "oneOffPayment": false,
           "earlyPayment": false
         },
         {
           "amount": 140.70,
-          "paymentDate": previousDate2,
+          "paymentDate": "previousDate2",
           "oneOffPayment": false,
           "holidayType": "bankHoliday",
           "earlyPayment": true,
@@ -151,7 +151,7 @@
         },
         {
           "amount": 100,
-          "paymentDate": previousDate3,
+          "paymentDate": "previousDate3",
           "oneOffPayment": true,
           "earlyPayment": false,
           "explanatoryText": "This was because of a recent change and was to help you get the right amount of tax credits."
@@ -162,49 +162,49 @@
     "totalsByDate": [
       {
         "amount": 252.13,
-        "paymentDate": date1
+        "paymentDate": "date1"
       },
       {
         "amount": 252.13,
-        "paymentDate": date2
+        "paymentDate": "date2"
       },
       {
         "amount": 252.13,
-        "paymentDate": date3
+        "paymentDate": "date3"
       },
       {
         "amount": 252.13,
-        "paymentDate": date4
+        "paymentDate": "date4"
       },
       {
         "amount": 252.13,
-        "paymentDate": date5
+        "paymentDate": "date5"
       },
       {
         "amount": 252.13,
-        "paymentDate": date6
+        "paymentDate": "date6"
       },
       {
         "amount": 252.13,
-        "paymentDate": date7
+        "paymentDate": "date7"
       },
       {
         "amount": 252.13,
-        "paymentDate": date8
+        "paymentDate": "date8"
       }
     ],
     "previousTotalsByDate": [
       {
         "amount": 240.70,
-        "paymentDate": previousDate1
+        "paymentDate": "previousDate1"
       },
       {
         "amount": 240.70,
-        "paymentDate": previousDate2
+        "paymentDate": "previousDate2"
       },
       {
         "amount": 270.31,
-        "paymentDate": previousDate3
+        "paymentDate": "previousDate3"
       }
     ]
   },

@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary
 
-import com.github.nscala_time.time.StaticDateTimeZone.UTC
-import org.joda.time.DateTime
 import play.api.libs.json.Json
 import play.api.libs.ws.WSRequest
 import uk.gov.hmrc.api.sandbox.FileResource
@@ -29,17 +27,16 @@ import uk.gov.hmrc.mobiletaxcreditssummary.stubs.ShutteringStub._
 import uk.gov.hmrc.mobiletaxcreditssummary.stubs.TaxCreditsBrokerStub._
 import uk.gov.hmrc.mobiletaxcreditssummary.stubs.TaxCreditsRenewalsStub._
 import uk.gov.hmrc.mobiletaxcreditssummary.support.BaseISpec
-import uk.gov.hmrc.time.DateTimeUtils
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
 
 class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
 
-  protected val now: DateTime = DateTimeUtils.now.withZone(UTC)
+  protected val now: LocalDate = LocalDate.now
 
-  protected def reportActualProfitStartDate: String = now.toString
+  protected def reportActualProfitStartDate: String = ZonedDateTime.now.toString
 
-  protected def reportActualProfitEndDate: String = now.plusDays(1).toString
+  protected def reportActualProfitEndDate: String = ZonedDateTime.now.plusDays(1).toString
 
   override def configuration: Map[String, Any] =
     super.configuration ++
@@ -61,6 +58,8 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       stubForShutteringDisabled
 
       val response = await(request(nino1).get())
+
+      println(Json.prettyPrint(response.json))
       response.status                          shouldBe 200
       (response.json \ "excluded").as[Boolean] shouldBe false
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")

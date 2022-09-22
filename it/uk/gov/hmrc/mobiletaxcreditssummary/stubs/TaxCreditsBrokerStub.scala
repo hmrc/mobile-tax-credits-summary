@@ -39,11 +39,18 @@ object TaxCreditsBrokerStub {
         .willReturn(aResponse().withStatus(503).withHeader("Content-Type", "application/json"))
     )
 
-  def dashboardDataIsFound(nino: Nino, partnerNino: Nino, specialCircumstance: String = ""): Unit =
+  def dashboardDataIsFound(
+    nino:                Nino,
+    partnerNino:         Nino,
+    specialCircumstance: String = ""
+  ): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${nino.value}/dashboard-data"))
         .willReturn(
-          aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(dashboardDataJson(nino, partnerNino, specialCircumstance))
+          aResponse()
+            .withStatus(200)
+            .withHeader("Content-Type", "application/json")
+            .withBody(dashboardDataJson(nino, partnerNino, specialCircumstance))
         )
     )
 
@@ -53,7 +60,11 @@ object TaxCreditsBrokerStub {
         .willReturn(aResponse().withStatus(404).withHeader("Content-Type", "application/json"))
     )
 
-  def dashboardDataJson(nino: Nino, partnerNino: Nino, specialCircumstance: String): String =
+  def dashboardDataJson(
+    nino:                Nino,
+    partnerNino:         Nino,
+    specialCircumstance: String
+  ): String =
     s"""
   {
     "personalDetails": {
@@ -102,10 +113,8 @@ object TaxCreditsBrokerStub {
         {
           "firstNames": "Sarah",
           "surname": "Smith",
-          "dateOfBirth": ${LocalDate
-      .of(LocalDate.now.minusYears(19).getYear, 8, 31)
-      .atStartOfDay(ZoneId.systemDefault())
-      .toEpochSecond() * 1000},
+          "dateOfBirth": "${LocalDate
+      .of(LocalDate.now.minusYears(19).getYear, 8, 31)}",
           "hasFTNAE": false,
           "hasConnexions": false,
           "isActive": true
@@ -113,7 +122,7 @@ object TaxCreditsBrokerStub {
         {
           "firstNames": "Joseph",
           "surname": "Smith",
-          "dateOfBirth": 884304000000,
+          "dateOfBirth": "1998-01-01",
           "hasFTNAE": false,
           "hasConnexions": false,
           "isActive": true
@@ -121,7 +130,7 @@ object TaxCreditsBrokerStub {
         {
           "firstNames": "Mary",
           "surname": "Smith",
-          "dateOfBirth": 852768000000,
+          "dateOfBirth": "2001-03-07",
           "hasFTNAE": false,
           "hasConnexions": false,
           "isActive": true
@@ -133,13 +142,13 @@ object TaxCreditsBrokerStub {
       "paymentSeq": [
         {
           "amount": 55,
-          "paymentDate": 1509008158781,
+          "paymentDate": "2022-04-02",
           "oneOffPayment": false,
           "earlyPayment": false
         },
         {
           "amount": 55,
-          "paymentDate": 1511690158781,
+          "paymentDate": "2022-03-02",
           "oneOffPayment": false,
           "holidayType": "bankHoliday",
           "earlyPayment": true,
@@ -147,7 +156,7 @@ object TaxCreditsBrokerStub {
         },
         {
           "amount": 55,
-          "paymentDate": 1514282158781,
+          "paymentDate": "2022-02-02",
           "oneOffPayment": true,
           "earlyPayment": false,
           "explanatoryText" : "One-off payment because of a recent change to help you get the right amount of tax credits."
@@ -157,13 +166,13 @@ object TaxCreditsBrokerStub {
       "previousPaymentSeq": [
         {
           "amount": 33,
-          "paymentDate": 1503737758781,
+          "paymentDate": "2022-04-02",
           "oneOffPayment": false,
           "earlyPayment": false
         },
         {
           "amount": 43,
-          "paymentDate": 1501059358781,
+          "paymentDate": "2022-03-26",
           "oneOffPayment": false,
           "holidayType": "bankHoliday",
           "earlyPayment": true,
@@ -171,7 +180,7 @@ object TaxCreditsBrokerStub {
         },
         {
           "amount": 53,
-          "paymentDate": 1498467358781,
+          "paymentDate": "2022-03-19",
           "oneOffPayment": true,
           "earlyPayment": false,
           "explanatoryText" : "This was because of a recent change and was to help you get the right amount of tax credits."
@@ -182,13 +191,13 @@ object TaxCreditsBrokerStub {
         "paymentSeq": [
           {
             "amount": 55,
-            "paymentDate": 1509008158781,
+            "paymentDate": "2022-04-02",
             "oneOffPayment": false,
             "earlyPayment": false
           },
           {
             "amount": 55,
-            "paymentDate": 1511690158781,
+            "paymentDate": "2022-03-02",
             "oneOffPayment": false,
             "holidayType": "bankHoliday",
             "earlyPayment": true,
@@ -196,7 +205,7 @@ object TaxCreditsBrokerStub {
           },
           {
             "amount": 55,
-            "paymentDate": 1514282158781,
+            "paymentDate": "2022-02-02",
             "oneOffPayment": true,
             "earlyPayment": false,
             "explanatoryText" : "One-off payment because of a recent change to help you get the right amount of tax credits."
@@ -209,29 +218,29 @@ object TaxCreditsBrokerStub {
       "totalsByDate": [
         {
           "amount": 110,
-          "paymentDate": 1509008158781
+          "paymentDate": "2022-04-02"
         },
         {
           "amount": 110,
-          "paymentDate": 1511690158781
+          "paymentDate": "2022-03-02"
         },
         {
           "amount": 110,
-          "paymentDate": 1514282158781
+          "paymentDate": "2022-02-02"
         }
       ],
       "previousTotalsByDate": [
         {
           "amount": 53,
-          "paymentDate": 1498467358781
+          "paymentDate": "2022-04-02"
         },
         {
           "amount": 43,
-          "paymentDate": 1501059358781
+          "paymentDate": "2022-03-02"
         },
         {
           "amount": 33,
-          "paymentDate": 1503737758781
+          "paymentDate": "2022-02-02"
         }
       ]
     },
