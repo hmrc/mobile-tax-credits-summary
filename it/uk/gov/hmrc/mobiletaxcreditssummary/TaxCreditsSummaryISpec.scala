@@ -36,7 +36,7 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
 
   protected def reportActualProfitStartDate: String = ZonedDateTime.now.toString
 
-  protected def reportActualProfitEndDate: String = ZonedDateTime.now.plusDays(1).toString
+  protected def reportActualProfitEndDate: String = LocalDateTime.now.plusDays(1).toString + "Z"
 
   override def configuration: Map[String, Any] =
     super.configuration ++
