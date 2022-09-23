@@ -42,7 +42,6 @@ class SandboxTaxCreditsSummaryISpec extends BaseISpec with FileResource {
 
     "return excluded = false and a tax credit summary where no SANDBOX-CONTROL header is set" in {
       val response = await(request(sandboxNino).addHttpHeaders(mobileHeader).get())
-      println(Json.prettyPrint(response.json))
       response.status                          shouldBe 200
       (response.json \ "excluded").as[Boolean] shouldBe false
 

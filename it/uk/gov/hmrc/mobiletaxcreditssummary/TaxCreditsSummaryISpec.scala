@@ -59,7 +59,6 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
 
       val response = await(request(nino1).get())
 
-      println(Json.prettyPrint(response.json))
       response.status                          shouldBe 200
       (response.json \ "excluded").as[Boolean] shouldBe false
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
