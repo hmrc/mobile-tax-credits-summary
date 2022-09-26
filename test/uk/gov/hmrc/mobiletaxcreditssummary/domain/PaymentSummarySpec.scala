@@ -16,21 +16,19 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.domain
 
-import java.time.{LocalDateTime, ZoneOffset}
-
 import org.scalatest.{Matchers, OptionValues, WordSpecLike}
 import play.api.libs.json._
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.{FuturePayment, PastPayment, PaymentSummary}
 
+import java.time.{LocalDate, ZoneId, ZoneOffset}
+
 class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
 
-  private val now = LocalDateTime.now
-
-  def millis(ldt: LocalDateTime): Long = ldt.toInstant(ZoneOffset.UTC).toEpochMilli
+  private val now = LocalDate.now
 
   def payment(
     amount:          Double,
-    paymentDate:     LocalDateTime,
+    paymentDate:     LocalDate,
     oneOffPayment:   Boolean,
     holidayType:     Option[String] = None,
     explanatoryText: Option[String] = None
@@ -41,7 +39,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
 
     s"""{
        | "amount": $amount,
-       | "paymentDate": ${millis(paymentDate)},
+       | "paymentDate": "${paymentDate.toString}",
        | "oneOffPayment": $oneOffPayment,
        $bankHolidayJson
        | "earlyPayment": ${holidayType.isDefined}
@@ -51,11 +49,11 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
 
   def total(
     amount:      Double,
-    paymentDate: LocalDateTime
+    paymentDate: LocalDate
   ): String =
     s"""{
        |"amount": $amount,
-       |"paymentDate": ${millis(paymentDate)}
+       |"paymentDate": "${paymentDate.toString}"
        |}""".stripMargin
 
   private val futureEarlyPaymentText = Some("Your payment is early because of UK bank holidays.")
@@ -70,6 +68,23 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
   )
 
   private val bankHoliday = Some("bankHoliday")
+
+  def convertDates(json: String): String =
+    json
+      .replaceAll("\"" + now.plusMonths(1) + "\"",
+                  now.plusMonths(1).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli.toString)
+      .replaceAll("\"" + now.plusMonths(2) + "\"",
+                  now.plusMonths(2).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli.toString)
+      .replaceAll("\"" + now.plusMonths(3) + "\"",
+                  now.plusMonths(3).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli.toString)
+      .replaceAll("\"" + now.minusMonths(1) + "\"",
+                  now.minusMonths(1).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli.toString)
+      .replaceAll("\"" + now.minusMonths(2) + "\"",
+                  now.minusMonths(2).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli.toString)
+      .replaceAll("\"" + now.minusMonths(3) + "\"",
+                  now.minusMonths(3).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli.toString)
+      .replaceAll("\"" + now.minusMonths(5) + "\"",
+                  now.minusMonths(5).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli.toString)
 
   "PaymentSummary" should {
     "parse correctly if no wtc or ctc is provided" in {
@@ -108,9 +123,9 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
          """.stripMargin
 
       val request          = s"""{$ctc, "paymentEnabled": true}""".stripMargin
-      val expectedResponse = Json.parse(s"""{ $ctc, "paymentEnabled": true, $totalsByDate }""")
+      val expectedResponse = Json.parse(convertDates(s"""{ $ctc, "paymentEnabled": true, $totalsByDate }"""))
       val response         = Json.parse(request).validate[PaymentSummary]
-      val paymentSummary   = response.asOpt.value
+      val paymentSummary: PaymentSummary = response.asOpt.value
 
       paymentSummary.paymentEnabled.get         shouldBe true
       paymentSummary.childTaxCredit.isDefined   shouldBe true
@@ -143,7 +158,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
          """.stripMargin
 
       val request          = s"""{$wtc,"paymentEnabled": true}""".stripMargin
-      val expectedResponse = Json.parse(s"""{ $wtc, "paymentEnabled": true, $totalsByDate }""")
+      val expectedResponse = Json.parse(convertDates(s"""{ $wtc, "paymentEnabled": true, $totalsByDate }"""))
       val response         = Json.parse(request).validate[PaymentSummary]
       val paymentSummary   = response.asOpt.value
       paymentSummary.paymentEnabled.get         shouldBe true
@@ -189,7 +204,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
          """.stripMargin
 
       val request          = s"""{ $wtc, $ctc, "paymentEnabled": true}""".stripMargin
-      val expectedResponse = Json.parse(s"""{ $wtc, $ctc, "paymentEnabled": true, $totalsByDate }""")
+      val expectedResponse = Json.parse(convertDates(s"""{ $wtc, $ctc, "paymentEnabled": true, $totalsByDate }"""))
 
       val response       = Json.parse(request).validate[PaymentSummary]
       val paymentSummary = response.asOpt.value
@@ -251,7 +266,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
 
       val request = s"""{ $wtc, $ctc, "paymentEnabled": true}""".stripMargin
       val expectedResponse =
-        Json.parse(s"""{ $wtc, $ctc, "paymentEnabled": true, $totalsByDate, $previousTotalsByDate }""")
+        Json.parse(convertDates(s"""{ $wtc, $ctc, "paymentEnabled": true, $totalsByDate, $previousTotalsByDate }"""))
       val response       = Json.parse(request).validate[PaymentSummary]
       val paymentSummary = response.asOpt.value
       paymentSummary.paymentEnabled.get                             shouldBe true
@@ -312,7 +327,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
 
       val request = s"""{ $wtc, $ctc, "paymentEnabled": true}""".stripMargin
       val expectedResponse =
-        Json.parse(s"""{ $wtc, $ctc, "paymentEnabled": true, $totalsByDate, $previousTotalsByDate }""")
+        Json.parse(convertDates(s"""{ $wtc, $ctc, "paymentEnabled": true, $totalsByDate, $previousTotalsByDate }"""))
       val response       = Json.parse(request).validate[PaymentSummary]
       val paymentSummary = response.asOpt.value
       paymentSummary.paymentEnabled.get                             shouldBe true
@@ -391,7 +406,7 @@ class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
 
       val request = s"""{ $wtc, $ctc, "paymentEnabled": true}""".stripMargin
       val expectedResponse =
-        Json.parse(s"""{ $wtc, $ctc, "paymentEnabled": true, $totalsByDate, $previousTotalsByDate }""")
+        Json.parse(convertDates(s"""{ $wtc, $ctc, "paymentEnabled": true, $totalsByDate, $previousTotalsByDate }"""))
       val response       = Json.parse(request).validate[PaymentSummary]
       val paymentSummary = response.asOpt.value
       paymentSummary.paymentEnabled.get                             shouldBe true

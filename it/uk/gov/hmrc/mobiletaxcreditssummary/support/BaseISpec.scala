@@ -60,7 +60,7 @@ class BaseISpec
       "microservice.renewals.packReceivedDate"                -> LocalDate.now().minusMonths(1).atStartOfDay().toString,
       "microservice.renewals.endDate"                         -> LocalDate.now().plusMonths(1).atStartOfDay().toString,
       "microservice.renewals.gracePeriodEndDate"              -> LocalDate.now().plusMonths(2).atStartOfDay().toString,
-      "microservice.renewals.endViewRenewalsDate"             -> LocalDate.now().plusMonths(3).atStartOfDay().toString
+      "microservice.renewals.endViewRenewalsDate"             -> LocalDate.now().plusMonths(3).atStartOfDay().toString,
     )
 
   protected def appBuilder: GuiceApplicationBuilder = new GuiceApplicationBuilder().configure(configuration)

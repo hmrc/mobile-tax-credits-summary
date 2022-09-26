@@ -259,42 +259,42 @@
       "paymentSeq": [
         {
           "amount": 160.45,
-          "paymentDate": "2020-01-09T00:00:00.000Z",
+          "paymentDate": "2020-01-09",
           "oneOffPayment": false
         },
         {
           "amount": 160.45,
-          "paymentDate": "2020-01-16T00:00:00.000Z",
+          "paymentDate": "2020-01-16",
           "oneOffPayment": false
         },
         {
           "amount": 160.45,
-          "paymentDate": "2020-01-23T00:00:00.000Z",
+          "paymentDate": "2020-01-23",
           "oneOffPayment": false
         },
         {
           "amount": 160.45,
-          "paymentDate": "2020-01-30T00:00:00.000Z",
+          "paymentDate": "2020-01-30",
           "oneOffPayment": false
         },
         {
           "amount": 160.45,
-          "paymentDate": "2020-02-06T00:00:00.000Z",
+          "paymentDate": "2020-02-06",
           "oneOffPayment": false
         },
         {
           "amount": 160.45,
-          "paymentDate": "2020-02-13T00:00:00.000Z",
+          "paymentDate": "2020-02-13",
           "oneOffPayment": false
         },
         {
           "amount": 160.45,
-          "paymentDate": "2020-02-20T00:00:00.000Z",
+          "paymentDate": "2020-02-20",
           "oneOffPayment": false
         },
         {
           "amount": 160.45,
-          "paymentDate": "2020-02-27T00:00:00.000Z",
+          "paymentDate": "2020-02-27",
           "oneOffPayment": false
         }
       ],
@@ -304,42 +304,42 @@
       "paymentSeq": [
         {
           "amount": 140.12,
-          "paymentDate": "2020-01-09T00:00:00.000Z",
+          "paymentDate": "2020-01-09",
           "oneOffPayment": false
         },
         {
           "amount": 140.12,
-          "paymentDate": "2020-01-16T00:00:00.000Z",
+          "paymentDate": "2020-01-16",
           "oneOffPayment": false
         },
         {
           "amount": 140.12,
-          "paymentDate": "2020-01-23T00:00:00.000Z",
+          "paymentDate": "2020-01-23",
           "oneOffPayment": false
         },
         {
           "amount": 140.12,
-          "paymentDate": "2020-01-30T00:00:00.000Z",
+          "paymentDate": "2020-01-30",
           "oneOffPayment": false
         },
         {
           "amount": 140.12,
-          "paymentDate": "2020-02-06T00:00:00.000Z",
+          "paymentDate": "2020-02-06",
           "oneOffPayment": false
         },
         {
           "amount": 140.12,
-          "paymentDate": "2020-02-13T00:00:00.000Z",
+          "paymentDate": "2020-02-13",
           "oneOffPayment": false
         },
         {
           "amount": 140.12,
-          "paymentDate": "2020-02-20T00:00:00.000Z",
+          "paymentDate": "2020-02-20",
           "oneOffPayment": false
         },
         {
           "amount": 140.12,
-          "paymentDate": "2020-02-27T00:00:00.000Z",
+          "paymentDate": "2020-02-27",
           "oneOffPayment": false
         }
       ],

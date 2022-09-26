@@ -15,32 +15,18 @@
  */
 
 package uk.gov.hmrc.mobiletaxcreditssummary.domain
-import java.time.{LocalDate, LocalDateTime, ZoneOffset}
-
-import play.api.libs.json.Reads.{DefaultLocalDateReads, DefaultLocalDateTimeReads}
-import play.api.libs.json._
+import java.time.{LocalDate, ZoneOffset}
+import play.api.libs.json.Reads.DefaultLocalDateReads
+import play.api.libs.json.{Format, JsNumber, JsResult, JsValue, Writes}
 
 package object userdata {
 
   /**
-    * We want `LocalDate`s and `LocalDateTime`s returned via the api to be rendered as `Longs`.
+    * We want `LocalDate`s returned via the api to be rendered as `Longs`.
     * Play's default is to render as a formatted string, but by supplying these `Writes` and `Format`
     * instances in the package they will be picked up in preference to the defaults.
     */
-  implicit val localDateTimeWrites: Writes[LocalDateTime] = new Writes[LocalDateTime] {
 
-    override def writes(o: LocalDateTime): JsValue =
-      JsNumber(o.toInstant(ZoneOffset.UTC).toEpochMilli)
-  }
-
-  implicit val LocalDateTimeFormat: Format[LocalDateTime] = new Format[LocalDateTime] {
-
-    override def writes(o: LocalDateTime): JsValue =
-      localDateTimeWrites.writes(o)
-
-    override def reads(json: JsValue): JsResult[LocalDateTime] =
-      DefaultLocalDateTimeReads.reads(json)
-  }
 
   implicit val localDateWrites: Writes[LocalDate] = new Writes[LocalDate] {
 

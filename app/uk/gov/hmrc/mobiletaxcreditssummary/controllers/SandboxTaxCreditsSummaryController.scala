@@ -17,7 +17,6 @@
 package uk.gov.hmrc.mobiletaxcreditssummary.controllers
 
 import javax.inject.{Inject, Singleton}
-import org.joda.time.LocalDate
 import play.api.libs.json.Json
 import play.api.libs.json.Json.toJson
 import play.api.mvc._
@@ -29,6 +28,7 @@ import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
+import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -157,19 +157,19 @@ class SandboxTaxCreditsSummaryController @Inject() (
     )
 
   private def updateDates(resource: String): String = {
-    val currentTime = new LocalDate().toDateTimeAtStartOfDay
+    val currentTime = LocalDate.now()
     resource
-      .replaceAll("previousDate1", currentTime.minusWeeks(2).getMillis.toString)
-      .replaceAll("previousDate2", currentTime.minusWeeks(1).getMillis.toString)
-      .replaceAll("previousDate3", currentTime.getMillis.toString)
-      .replaceAll("date1", currentTime.plusWeeks(1).getMillis.toString)
-      .replaceAll("date2", currentTime.plusWeeks(2).getMillis.toString)
-      .replaceAll("date3", currentTime.plusWeeks(3).getMillis.toString)
-      .replaceAll("date4", currentTime.plusWeeks(4).getMillis.toString)
-      .replaceAll("date5", currentTime.plusWeeks(5).getMillis.toString)
-      .replaceAll("date6", currentTime.plusWeeks(6).getMillis.toString)
-      .replaceAll("date7", currentTime.plusWeeks(7).getMillis.toString)
-      .replaceAll("date8", currentTime.plusWeeks(8).getMillis.toString)
+      .replaceAll("previousDate1", currentTime.minusWeeks(2).toString)
+      .replaceAll("previousDate2", currentTime.minusWeeks(1).toString)
+      .replaceAll("previousDate3", currentTime.toString)
+      .replaceAll("date1", currentTime.plusWeeks(1).toString)
+      .replaceAll("date2", currentTime.plusWeeks(2).toString)
+      .replaceAll("date3", currentTime.plusWeeks(3).toString)
+      .replaceAll("date4", currentTime.plusWeeks(4).toString)
+      .replaceAll("date5", currentTime.plusWeeks(5).toString)
+      .replaceAll("date6", currentTime.plusWeeks(6).toString)
+      .replaceAll("date7", currentTime.plusWeeks(7).toString)
+      .replaceAll("date8", currentTime.plusWeeks(8).toString)
       .replaceAll("year", currentTime.getYear.toString)
       .replaceAll("packReceivedDateValue", currentTime.minusWeeks(2).toString)
       .replaceAll("renewalsEndDateValue", currentTime.plusWeeks(4).toString)

@@ -33,13 +33,13 @@ trait TaxCreditsBrokerConnectorMock extends MockFactory {
   val paymentWithFtnae:    LocalDate = LocalDate.parse(f"$thisYear-08-10")
 
   val expectedPaymentWTC: FuturePayment =
-    FuturePayment(160.34, expectedNextDueDate.atStartOfDay(), oneOffPayment = false)
+    FuturePayment(160.34, expectedNextDueDate, oneOffPayment = false)
 
   val expectedPaymentCTC: FuturePayment =
-    FuturePayment(140.12, expectedNextDueDate.atStartOfDay(), oneOffPayment = false)
+    FuturePayment(140.12, expectedNextDueDate, oneOffPayment = false)
 
   val expectedFtnaePaymentCTC: FuturePayment =
-    FuturePayment(150.12, paymentWithFtnae.atStartOfDay(), oneOffPayment = false)
+    FuturePayment(150.12, paymentWithFtnae, oneOffPayment = false)
   val paymentSectionCTC: PaymentSection = PaymentSection(List(expectedPaymentCTC), "WEEKLY")
 
   val paymentSectionCTCWithFtnae: PaymentSection =
