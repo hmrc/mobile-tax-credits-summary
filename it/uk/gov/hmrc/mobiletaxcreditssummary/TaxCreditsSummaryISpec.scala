@@ -58,7 +58,6 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       stubForShutteringDisabled
 
       val response = await(request(nino1).get())
-
       response.status                          shouldBe 200
       (response.json \ "excluded").as[Boolean] shouldBe false
       (response.json \ "taxCreditsSummary" \ "paymentSummary" \ "workingTaxCredit" \ "paymentFrequency")
