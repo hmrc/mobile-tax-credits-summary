@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.{LocalDate, LocalDateTime, ZoneOffset}
 import play.api.Logger
 import play.api.libs.functional.FunctionalBuilder
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.PaymentReadWriteUtils.{paymentReads, paymentWrites}
 
 case class InformationMessage(
   title:   String,
@@ -151,12 +152,60 @@ case class Total(
   amount:      BigDecimal,
   paymentDate: LocalDate)
 
+object PaymentReadWriteUtils {
+
+  val paymentReads: FunctionalBuilder[Reads]#CanBuild4[BigDecimal, LocalDate, Boolean, Option[String]] =
+    (JsPath \ "amount").read[BigDecimal] and
+    (JsPath \ "paymentDate").read[LocalDate] and
+    (JsPath \ "oneOffPayment").read[Boolean] and
+    (JsPath \ "holidayType").readNullable[String]
+
+  val paymentWrites: OWrites[(BigDecimal, Long, Boolean, Option[String], Boolean, Option[String])] = (
+    (__ \ "amount").write[BigDecimal] ~
+    (__ \ "paymentDate").write[Long] ~
+    (__ \ "oneOffPayment").write[Boolean] ~
+    (__ \ "holidayType").writeNullable[String] ~
+    (__ \ "earlyPayment").write[Boolean] ~
+    (__ \ "explanatoryText").writeNullable[String]
+  ).tupled
+}
+
 object FuturePayment {
-  implicit val formats: OFormat[FuturePayment] = Json.format[FuturePayment]
+
+  implicit val reads: Reads[FuturePayment] = paymentReads(FuturePayment.apply _)
+
+  implicit val writes: Writes[FuturePayment] = new Writes[FuturePayment] {
+
+    def writes(payment: FuturePayment): JsObject =
+      paymentWrites.writes(
+        (payment.amount,
+         payment.paymentDate.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli,
+         payment.oneOffPayment,
+         payment.holidayType,
+         payment.earlyPayment,
+         payment.explanatoryText)
+      )
+  }
+
 }
 
 object PastPayment {
-  implicit val formats: OFormat[PastPayment] = Json.format[PastPayment]
+
+  implicit val reads: Reads[PastPayment] = paymentReads(PastPayment.apply _)
+
+  implicit val writes: Writes[PastPayment] = new Writes[PastPayment] {
+
+    override def writes(payment: PastPayment): JsObject =
+      paymentWrites.writes(
+        (payment.amount,
+         payment.paymentDate.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli,
+         payment.oneOffPayment,
+         payment.holidayType,
+         payment.earlyPayment,
+         payment.explanatoryText)
+      )
+
+  }
 
 }
 
