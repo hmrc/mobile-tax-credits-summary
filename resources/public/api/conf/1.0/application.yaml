@@ -1,0 +1,1281 @@
+openapi: 3.0.0
+info:
+  title: Mobile Tax Credits Summary
+  description: >-
+    ### What is this API for?
+
+    The API is used to retrieve Tax Credits summary information.
+  contact: {}
+  version: '1.0'
+servers:
+  - url: https://test-api.service.hmrc.gov.uk/mobile-tax-credits-summary
+    description: Sandbox
+  - url: https://api.service.hmrc.gov.uk/mobile-tax-credits-summary
+    description: Production
+    variables: {}
+paths:
+  /mobile-tax-credits-summary/income/{nino}/tax-credits/tax-credits-summary:
+    get:
+      tags:
+        - mobile-tax-credits-summary
+      summary: Get tax credits summary
+      description: This endpoint retrieves the tax credits summary.
+      operationId: Gettaxcreditssummary
+      parameters:
+        - name: nino
+          in: path
+          description: The NINO for the individual.
+          required: true
+          style: simple
+          schema:
+            type: string
+            example: NS123456B
+        - name: journeyId
+          in: query
+          description: ''
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/MobileTaxCreditsSummaryIncomeTaxCreditsTaxCreditsSummaryresponse'
+                  - example:
+                      excluded: false
+                      taxCreditsSummary:
+                        paymentSummary:
+                          workingTaxCredit:
+                            paymentSeq:
+                              - amount: 55
+                                paymentDate: 1509008158781
+                                oneOffPayment: false
+                                earlyPayment: false
+                              - amount: 55
+                                paymentDate: 1511690158781
+                                oneOffPayment: false
+                                holidayType: bankHoliday
+                                earlyPayment: true
+                                explanatoryText: Your payment is early because of UK bank holidays.
+                              - amount: 55
+                                paymentDate: 1514282158781
+                                oneOffPayment: true
+                                earlyPayment: false
+                                explanatoryText: One-off payment because of a recent change to help you get the right amount of tax credits.
+                            paymentFrequency: WEEKLY
+                            previousPaymentSeq:
+                              - amount: 33
+                                paymentDate: 1503737758781
+                                oneOffPayment: false
+                                earlyPayment: false
+                              - amount: 43
+                                paymentDate: 1501059358781
+                                oneOffPayment: false
+                                holidayType: bankHoliday
+                                earlyPayment: true
+                                explanatoryText: Your payment was early because of UK bank holidays.
+                              - amount: 53
+                                paymentDate: 1498467358781
+                                oneOffPayment: true
+                                earlyPayment: false
+                                explanatoryText: This was because of a recent change and was to help you get the right amount of tax credits.
+                          childTaxCredit:
+                            paymentSeq:
+                              - amount: 55
+                                paymentDate: 1509008158781
+                                oneOffPayment: false
+                                earlyPayment: false
+                              - amount: 55
+                                paymentDate: 1511690158781
+                                oneOffPayment: false
+                                holidayType: bankHoliday
+                                earlyPayment: true
+                                explanatoryText: Your payment is early because of UK bank holidays.
+                              - amount: 55
+                                paymentDate: 1514282158781
+                                oneOffPayment: true
+                                earlyPayment: false
+                                explanatoryText: One-off payment because of a recent change to help you get the right amount of tax credits.
+                            paymentFrequency: WEEKLY
+                          paymentEnabled: true
+                          totalsByDate:
+                            - amount: 110
+                              paymentDate: 1509008158781
+                            - amount: 110
+                              paymentDate: 1511690158781
+                            - amount: 110
+                              paymentDate: 1514282158781
+                          previousTotalsByDate:
+                            - amount: 53
+                              paymentDate: 1498467358781
+                            - amount: 43
+                              paymentDate: 1501059358781
+                            - amount: 33
+                              paymentDate: 1503737758781
+                        claimants:
+                          personalDetails:
+                            forename: firstname
+                            surname: surname
+                          partnerDetails:
+                            forename: Frederick
+                            otherForenames: Tarquin
+                            surname: Hunter-Smith
+                          children:
+                            - firstNames: Sarah
+                              surname: Smith
+                            - firstNames: Joseph
+                              surname: Smith
+                            - firstNames: Mary
+                              surname: Smith
+                        renewals:
+                          status: NotStartedSingle
+                          totalClaims: '1'
+                          claimsSubmitted: '0'
+                          packReceivedDate: 2021-05-01T23:59:59:00
+                          renewalsEndDate: 2021-07-31T23:59:59:00
+                          viewRenewalsEndDate: 2021-11-01T23:59:59:00
+                          householdBreakdown: false
+                          inGracePeriod: false
+                          currentYear: '2021'
+                          renewNowLink: /
+                      changeOfCircumstanceLinks:
+                        changePersonalDetails: /tax-credits-service/home/your-details
+                        changeJobsOrIncome: /tax-credits-service/home/jobs-and-income
+                        addEditChildrenChildcare: /tax-credits-service/home/children-and-childcare
+                        otherChanges: /tax-credits-service/home/other-changes
+              examples:
+                example-1:
+                  value:
+                    excluded: false
+                    taxCreditsSummary:
+                      paymentSummary:
+                        workingTaxCredit:
+                          paymentSeq:
+                            - amount: 55
+                              paymentDate: 1509008158781
+                              oneOffPayment: false
+                              earlyPayment: false
+                            - amount: 55
+                              paymentDate: 1511690158781
+                              oneOffPayment: false
+                              holidayType: bankHoliday
+                              earlyPayment: true
+                              explanatoryText: Your payment is early because of UK bank holidays.
+                            - amount: 55
+                              paymentDate: 1514282158781
+                              oneOffPayment: true
+                              earlyPayment: false
+                              explanatoryText: One-off payment because of a recent change to help you get the right amount of tax credits.
+                          paymentFrequency: WEEKLY
+                          previousPaymentSeq:
+                            - amount: 33
+                              paymentDate: 1503737758781
+                              oneOffPayment: false
+                              earlyPayment: false
+                            - amount: 43
+                              paymentDate: 1501059358781
+                              oneOffPayment: false
+                              holidayType: bankHoliday
+                              earlyPayment: true
+                              explanatoryText: Your payment was early because of UK bank holidays.
+                            - amount: 53
+                              paymentDate: 1498467358781
+                              oneOffPayment: true
+                              earlyPayment: false
+                              explanatoryText: This was because of a recent change and was to help you get the right amount of tax credits.
+                        childTaxCredit:
+                          paymentSeq:
+                            - amount: 55
+                              paymentDate: 1509008158781
+                              oneOffPayment: false
+                              earlyPayment: false
+                            - amount: 55
+                              paymentDate: 1511690158781
+                              oneOffPayment: false
+                              holidayType: bankHoliday
+                              earlyPayment: true
+                              explanatoryText: Your payment is early because of UK bank holidays.
+                            - amount: 55
+                              paymentDate: 1514282158781
+                              oneOffPayment: true
+                              earlyPayment: false
+                              explanatoryText: One-off payment because of a recent change to help you get the right amount of tax credits.
+                          paymentFrequency: WEEKLY
+                        paymentEnabled: true
+                        totalsByDate:
+                          - amount: 110
+                            paymentDate: 1509008158781
+                          - amount: 110
+                            paymentDate: 1511690158781
+                          - amount: 110
+                            paymentDate: 1514282158781
+                        previousTotalsByDate:
+                          - amount: 53
+                            paymentDate: 1498467358781
+                          - amount: 43
+                            paymentDate: 1501059358781
+                          - amount: 33
+                            paymentDate: 1503737758781
+                      claimants:
+                        personalDetails:
+                          forename: firstname
+                          surname: surname
+                        partnerDetails:
+                          forename: Frederick
+                          otherForenames: Tarquin
+                          surname: Hunter-Smith
+                        children:
+                          - firstNames: Sarah
+                            surname: Smith
+                          - firstNames: Joseph
+                            surname: Smith
+                          - firstNames: Mary
+                            surname: Smith
+                      renewals:
+                        status: NotStartedSingle
+                        totalClaims: '1'
+                        claimsSubmitted: '0'
+                        packReceivedDate: 2021-05-01T23:59:59:00
+                        renewalsEndDate: 2021-07-31T23:59:59:00
+                        viewRenewalsEndDate: 2021-11-01T23:59:59:00
+                        householdBreakdown: false
+                        inGracePeriod: false
+                        currentYear: '2021'
+                        renewNowLink: /
+                    changeOfCircumstanceLinks:
+                      changePersonalDetails: /tax-credits-service/home/your-details
+                      changeJobsOrIncome: /tax-credits-service/home/jobs-and-income
+                      addEditChildrenChildcare: /tax-credits-service/home/children-and-childcare
+                      otherChanges: /tax-credits-service/home/other-changes
+                example-2:
+                  value:
+                    excluded: false
+                    taxCreditsSummary:
+                      paymentSummary:
+                        workingTaxCredit:
+                          paymentSeq:
+                            - amount: 55
+                              paymentDate: 1509008158781
+                              oneOffPayment: false
+                              earlyPayment: false
+                            - amount: 55
+                              paymentDate: 1511690158781
+                              oneOffPayment: false
+                              holidayType: bankHoliday
+                              earlyPayment: true
+                              explanatoryText: Your payment is early because of UK bank holidays.
+                            - amount: 55
+                              paymentDate: 1514282158781
+                              oneOffPayment: true
+                              earlyPayment: false
+                              explanatoryText: One-off payment because of a recent change to help you get the right amount of tax credits.
+                          paymentFrequency: WEEKLY
+                          previousPaymentSeq:
+                            - amount: 33
+                              paymentDate: 1503737758781
+                              oneOffPayment: false
+                              earlyPayment: false
+                            - amount: 43
+                              paymentDate: 1501059358781
+                              oneOffPayment: false
+                              holidayType: bankHoliday
+                              earlyPayment: true
+                              explanatoryText: Your payment was early because of UK bank holidays.
+                            - amount: 53
+                              paymentDate: 1498467358781
+                              oneOffPayment: true
+                              earlyPayment: false
+                              explanatoryText: This was because of a recent change and was to help you get the right amount of tax credits.
+                        childTaxCredit:
+                          paymentSeq:
+                            - amount: 55
+                              paymentDate: 1509008158781
+                              oneOffPayment: false
+                              earlyPayment: false
+                            - amount: 55
+                              paymentDate: 1511690158781
+                              oneOffPayment: false
+                              holidayType: bankHoliday
+                              earlyPayment: true
+                              explanatoryText: Your payment is early because of UK bank holidays.
+                            - amount: 55
+                              paymentDate: 1514282158781
+                              oneOffPayment: true
+                              earlyPayment: false
+                              explanatoryText: One-off payment because of a recent change to help you get the right amount of tax credits.
+                          paymentFrequency: WEEKLY
+                        paymentEnabled: true
+                        totalsByDate:
+                          - amount: 110
+                            paymentDate: 1509008158781
+                          - amount: 110
+                            paymentDate: 1511690158781
+                          - amount: 110
+                            paymentDate: 1514282158781
+                        previousTotalsByDate:
+                          - amount: 53
+                            paymentDate: 1498467358781
+                          - amount: 43
+                            paymentDate: 1501059358781
+                          - amount: 33
+                            paymentDate: 1503737758781
+                      claimants:
+                        personalDetails:
+                          forename: firstname
+                          surname: surname
+                        partnerDetails:
+                          forename: Frederick
+                          otherForenames: Tarquin
+                          surname: Hunter-Smith
+                        children:
+                          - firstNames: Sarah
+                            surname: Smith
+                          - firstNames: Joseph
+                            surname: Smith
+                          - firstNames: Mary
+                            surname: Smith
+                        reportActualProfit:
+                          link: /tax-credits-service/actual-self-employed-profit-or-loss
+                          endDate: 2021-01-31T10:00:00.000Z
+                          userMustReportIncome: true
+                          partnerMustReportIncome: false
+                    changeOfCircumstanceLinks:
+                      changePersonalDetails: /tax-credits-service/home/your-details
+                      changeJobsOrIncome: /tax-credits-service/home/jobs-and-income
+                      addEditChildrenChildcare: /tax-credits-service/home/children-and-childcare
+                      otherChanges: /tax-credits-service/home/other-changes
+                example-3:
+                  value:
+                    excluded: false
+                    taxCreditsSummary:
+                      paymentSummary:
+                        workingTaxCredit:
+                          paymentSeq:
+                            - amount: 55
+                              paymentDate: 1509008158781
+                              oneOffPayment: false
+                              earlyPayment: false
+                            - amount: 55
+                              paymentDate: 1511690158781
+                              oneOffPayment: false
+                              holidayType: bankHoliday
+                              earlyPayment: true
+                              explanatoryText: Your payment is early because of UK bank holidays.
+                            - amount: 55
+                              paymentDate: 1514282158781
+                              oneOffPayment: true
+                              earlyPayment: false
+                              explanatoryText: One-off payment because of a recent change to help you get the right amount of tax credits.
+                          paymentFrequency: WEEKLY
+                          previousPaymentSeq:
+                            - amount: 33
+                              paymentDate: 1503737758781
+                              oneOffPayment: false
+                              earlyPayment: false
+                            - amount: 43
+                              paymentDate: 1501059358781
+                              oneOffPayment: false
+                              holidayType: bankHoliday
+                              earlyPayment: true
+                              explanatoryText: Your payment was early because of UK bank holidays.
+                            - amount: 53
+                              paymentDate: 1498467358781
+                              oneOffPayment: true
+                              earlyPayment: false
+                              explanatoryText: This was because of a recent change and was to help you get the right amount of tax credits.
+                        childTaxCredit:
+                          paymentSeq:
+                            - amount: 55
+                              paymentDate: 1509008158781
+                              oneOffPayment: false
+                              earlyPayment: false
+                            - amount: 55
+                              paymentDate: 1511690158781
+                              oneOffPayment: false
+                              holidayType: bankHoliday
+                              earlyPayment: true
+                              explanatoryText: Your payment is early because of UK bank holidays.
+                            - amount: 55
+                              paymentDate: 1514282158781
+                              oneOffPayment: true
+                              earlyPayment: false
+                              explanatoryText: One-off payment because of a recent change to help you get the right amount of tax credits.
+                          paymentFrequency: WEEKLY
+                        paymentEnabled: true
+                        totalsByDate:
+                          - amount: 110
+                            paymentDate: 1509008158781
+                          - amount: 110
+                            paymentDate: 1511690158781
+                          - amount: 110
+                            paymentDate: 1514282158781
+                        previousTotalsByDate:
+                          - amount: 53
+                            paymentDate: 1498467358781
+                          - amount: 43
+                            paymentDate: 1501059358781
+                          - amount: 33
+                            paymentDate: 1503737758781
+                    changeOfCircumstanceLinks:
+                      changePersonalDetails: /tax-credits-service/home/your-details
+                      changeJobsOrIncome: /tax-credits-service/home/jobs-and-income
+                      addEditChildrenChildcare: /tax-credits-service/home/children-and-childcare
+                      otherChanges: /tax-credits-service/home/other-changes
+                example-4:
+                  value:
+                    excluded: false
+                example-5:
+                  value:
+                    excluded: false
+                    taxCreditsSummary:
+                      paymentSummary:
+                        workingTaxCredit:
+                          paymentSeq:
+                            - amount: 55
+                              paymentDate: 1509008158781
+                              oneOffPayment: false
+                              earlyPayment: false
+                            - amount: 55
+                              paymentDate: 1511690158781
+                              oneOffPayment: false
+                              holidayType: bankHoliday
+                              earlyPayment: true
+                              explanatoryText: Your payment is early because of UK bank holidays.
+                            - amount: 55
+                              paymentDate: 1514282158781
+                              oneOffPayment: true
+                              earlyPayment: false
+                              explanatoryText: One-off payment because of a recent change to help you get the right amount of tax credits.
+                          paymentFrequency: WEEKLY
+                          previousPaymentSeq:
+                            - amount: 33
+                              paymentDate: 1503737758781
+                              oneOffPayment: false
+                              earlyPayment: false
+                            - amount: 43
+                              paymentDate: 1501059358781
+                              oneOffPayment: false
+                              holidayType: bankHoliday
+                              earlyPayment: true
+                              explanatoryText: Your payment was early because of UK bank holidays.
+                            - amount: 53
+                              paymentDate: 1498467358781
+                              oneOffPayment: true
+                              earlyPayment: false
+                              explanatoryText: This was because of a recent change and was to help you get the right amount of tax credits.
+                        childTaxCredit:
+                          paymentSeq:
+                            - amount: 55
+                              paymentDate: 1509008158781
+                              oneOffPayment: false
+                              earlyPayment: false
+                            - amount: 55
+                              paymentDate: 1511690158781
+                              oneOffPayment: false
+                              holidayType: bankHoliday
+                              earlyPayment: true
+                              explanatoryText: Your payment is early because of UK bank holidays.
+                            - amount: 55
+                              paymentDate: 1514282158781
+                              oneOffPayment: true
+                              earlyPayment: false
+                              explanatoryText: One-off payment because of a recent change to help you get the right amount of tax credits.
+                          paymentFrequency: WEEKLY
+                        paymentEnabled: true
+                        totalsByDate:
+                          - amount: 110
+                            paymentDate: 1509008158781
+                          - amount: 110
+                            paymentDate: 1511690158781
+                          - amount: 110
+                            paymentDate: 1514282158781
+                        previousTotalsByDate:
+                          - amount: 53
+                            paymentDate: 1498467358781
+                          - amount: 43
+                            paymentDate: 1501059358781
+                          - amount: 33
+                            paymentDate: 1503737758781
+                      claimants:
+                        personalDetails:
+                          forename: firstname
+                          surname: surname
+                        partnerDetails:
+                          forename: Frederick
+                          otherForenames: Tarquin
+                          surname: Hunter-Smith
+                        children:
+                          - firstNames: Sarah
+                            surname: Smith
+                          - firstNames: Joseph
+                            surname: Smith
+                          - firstNames: Mary
+                            surname: Smith
+                    changeOfCircumstanceLinks:
+                      changePersonalDetails: /tax-credits-service/home/your-details
+                      changeJobsOrIncome: /tax-credits-service/home/jobs-and-income
+                      addEditChildrenChildcare: /tax-credits-service/home/children-and-childcare
+                      otherChanges: /tax-credits-service/home/other-changes
+                example-6:
+                  value:
+                    excluded: false
+                    taxCreditsSummary:
+                      paymentSummary:
+                        workingTaxCredit:
+                          paymentSeq:
+                            - amount: 55
+                              paymentDate: 1509008158781
+                              oneOffPayment: false
+                              earlyPayment: false
+                            - amount: 55
+                              paymentDate: 1511690158781
+                              oneOffPayment: false
+                              holidayType: bankHoliday
+                              earlyPayment: true
+                              explanatoryText: Your payment is early because of UK bank holidays.
+                            - amount: 55
+                              paymentDate: 1514282158781
+                              oneOffPayment: true
+                              earlyPayment: false
+                              explanatoryText: One-off payment because of a recent change to help you get the right amount of tax credits.
+                          paymentFrequency: WEEKLY
+                          previousPaymentSeq:
+                            - amount: 33
+                              paymentDate: 1503737758781
+                              oneOffPayment: false
+                              earlyPayment: false
+                            - amount: 43
+                              paymentDate: 1501059358781
+                              oneOffPayment: false
+                              holidayType: bankHoliday
+                              earlyPayment: true
+                              explanatoryText: Your payment was early because of UK bank holidays.
+                            - amount: 53
+                              paymentDate: 1498467358781
+                              oneOffPayment: true
+                              earlyPayment: false
+                              explanatoryText: This was because of a recent change and was to help you get the right amount of tax credits.
+                        childTaxCredit:
+                          paymentSeq:
+                            - amount: 55
+                              paymentDate: 1509008158781
+                              oneOffPayment: false
+                              earlyPayment: false
+                            - amount: 55
+                              paymentDate: 1511690158781
+                              oneOffPayment: false
+                              holidayType: bankHoliday
+                              earlyPayment: true
+                              explanatoryText: Your payment is early because of UK bank holidays.
+                            - amount: 55
+                              paymentDate: 1514282158781
+                              oneOffPayment: true
+                              earlyPayment: false
+                              explanatoryText: One-off payment because of a recent change to help you get the right amount of tax credits.
+                          paymentFrequency: WEEKLY
+                        paymentEnabled: true
+                        totalsByDate:
+                          - amount: 110
+                            paymentDate: 1509008158781
+                          - amount: 110
+                            paymentDate: 1511690158781
+                          - amount: 110
+                            paymentDate: 1514282158781
+                        previousTotalsByDate:
+                          - amount: 53
+                            paymentDate: 1498467358781
+                          - amount: 43
+                            paymentDate: 1501059358781
+                          - amount: 33
+                            paymentDate: 1503737758781
+                      claimants:
+                        personalDetails:
+                          forename: firstname
+                          surname: surname
+                        partnerDetails:
+                          forename: Frederick
+                          otherForenames: Tarquin
+                          surname: Hunter-Smith
+                        children:
+                          - firstNames: Sarah
+                            surname: Smith
+                          - firstNames: Joseph
+                            surname: Smith
+                          - firstNames: Mary
+                            surname: Smith
+                    changeOfCircumstanceLinks:
+                      changePersonalDetails: /tax-credits-service/home/your-details
+                      changeJobsOrIncome: /tax-credits-service/home/jobs-and-income
+                      addEditChildrenChildcare: /tax-credits-service/home/children-and-childcare
+                      otherChanges: /tax-credits-service/home/other-changes
+      deprecated: false
+      security:
+        - userRestricted:
+            - read:native-apps-api-orchestration
+components:
+  securitySchemes:
+    userRestricted:
+      type: oauth2
+      description: |
+        HMRC supports OAuth 2.0 for authenticating user-restricted API requests using an OAuth 2.0 Bearer Token in the
+        AUTHORIZATION header.
+        See https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/user-restricted-endpoints for details.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://api.service.hmrc.gov.uk/oauth/authorize
+          tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
+          refreshUrl: https://api.service.hmrc.gov.uk/oauth/refresh
+          scopes:
+            read:native-apps-api-orchestration: Expose APIs to app for tax credits summary services.
+  schemas:
+    errorResponse:
+      title: errorResponse
+      required:
+        - code
+      type: object
+      properties:
+        code:
+          type: string
+    ChangeOfCircumstanceLinks:
+      title: ChangeOfCircumstanceLinks
+      required:
+        - changePersonalDetails
+        - changeJobsOrIncome
+        - addEditChildrenChildcare
+        - otherChanges
+      type: object
+      properties:
+        changePersonalDetails:
+          type: string
+        changeJobsOrIncome:
+          type: string
+        addEditChildrenChildcare:
+          type: string
+        otherChanges:
+          type: string
+      example:
+        changePersonalDetails: /tax-credits-service/home/your-details
+        changeJobsOrIncome: /tax-credits-service/home/jobs-and-income
+        addEditChildrenChildcare: /tax-credits-service/home/children-and-childcare
+        otherChanges: /tax-credits-service/home/other-changes
+    Child:
+      title: Child
+      required:
+        - firstNames
+        - surname
+      type: object
+      properties:
+        firstNames:
+          type: string
+        surname:
+          type: string
+      example:
+        firstNames: Sarah
+        surname: Smith
+    ChildTaxCredit:
+      title: ChildTaxCredit
+      required:
+        - paymentSeq
+        - paymentFrequency
+      type: object
+      properties:
+        paymentSeq:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentSeq'
+          description: ''
+        paymentFrequency:
+          type: string
+      example:
+        paymentSeq:
+          - amount: 55
+            paymentDate: 1509008158781
+            oneOffPayment: false
+            earlyPayment: false
+          - amount: 55
+            paymentDate: 1511690158781
+            oneOffPayment: false
+            holidayType: bankHoliday
+            earlyPayment: true
+            explanatoryText: Your payment is early because of UK bank holidays.
+          - amount: 55
+            paymentDate: 1514282158781
+            oneOffPayment: true
+            earlyPayment: false
+            explanatoryText: One-off payment because of a recent change to help you get the right amount of tax credits.
+        paymentFrequency: WEEKLY
+    Claimants:
+      title: Claimants
+      required:
+        - personalDetails
+        - children
+      type: object
+      properties:
+        personalDetails:
+          $ref: '#/components/schemas/PersonalDetails'
+        partnerDetails:
+          $ref: '#/components/schemas/PartnerDetails'
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Child'
+          description: ''
+      example:
+        personalDetails:
+          forename: firstname
+          surname: surname
+        partnerDetails:
+          forename: Frederick
+          otherForenames: Tarquin
+          surname: Hunter-Smith
+        children:
+          - firstNames: Sarah
+            surname: Smith
+          - firstNames: Joseph
+            surname: Smith
+          - firstNames: Mary
+            surname: Smith
+    MobileTaxCreditsSummaryIncomeTaxCreditsTaxCreditsSummaryresponse:
+      title: MobileTaxCreditsSummaryIncomeTaxCreditsTaxCreditsSummaryresponse
+      required:
+        - excluded
+      type: object
+      properties:
+        excluded:
+          type: boolean
+        taxCreditsSummary:
+          $ref: '#/components/schemas/TaxCreditsSummary'
+        changeOfCircumstanceLinks:
+          $ref: '#/components/schemas/ChangeOfCircumstanceLinks'
+      example:
+        excluded: false
+        taxCreditsSummary:
+          paymentSummary:
+            workingTaxCredit:
+              paymentSeq:
+                - amount: 55
+                  paymentDate: 1509008158781
+                  oneOffPayment: false
+                  earlyPayment: false
+                - amount: 55
+                  paymentDate: 1511690158781
+                  oneOffPayment: false
+                  holidayType: bankHoliday
+                  earlyPayment: true
+                  explanatoryText: Your payment is early because of UK bank holidays.
+                - amount: 55
+                  paymentDate: 1514282158781
+                  oneOffPayment: true
+                  earlyPayment: false
+                  explanatoryText: One-off payment because of a recent change to help you get the right amount of tax credits.
+              paymentFrequency: WEEKLY
+              previousPaymentSeq:
+                - amount: 33
+                  paymentDate: 1503737758781
+                  oneOffPayment: false
+                  earlyPayment: false
+                - amount: 43
+                  paymentDate: 1501059358781
+                  oneOffPayment: false
+                  holidayType: bankHoliday
+                  earlyPayment: true
+                  explanatoryText: Your payment was early because of UK bank holidays.
+                - amount: 53
+                  paymentDate: 1498467358781
+                  oneOffPayment: true
+                  earlyPayment: false
+                  explanatoryText: This was because of a recent change and was to help you get the right amount of tax credits.
+            childTaxCredit:
+              paymentSeq:
+                - amount: 55
+                  paymentDate: 1509008158781
+                  oneOffPayment: false
+                  earlyPayment: false
+                - amount: 55
+                  paymentDate: 1511690158781
+                  oneOffPayment: false
+                  holidayType: bankHoliday
+                  earlyPayment: true
+                  explanatoryText: Your payment is early because of UK bank holidays.
+                - amount: 55
+                  paymentDate: 1514282158781
+                  oneOffPayment: true
+                  earlyPayment: false
+                  explanatoryText: One-off payment because of a recent change to help you get the right amount of tax credits.
+              paymentFrequency: WEEKLY
+            paymentEnabled: true
+            totalsByDate:
+              - amount: 110
+                paymentDate: 1509008158781
+              - amount: 110
+                paymentDate: 1511690158781
+              - amount: 110
+                paymentDate: 1514282158781
+            previousTotalsByDate:
+              - amount: 53
+                paymentDate: 1498467358781
+              - amount: 43
+                paymentDate: 1501059358781
+              - amount: 33
+                paymentDate: 1503737758781
+          claimants:
+            personalDetails:
+              forename: firstname
+              surname: surname
+            partnerDetails:
+              forename: Frederick
+              otherForenames: Tarquin
+              surname: Hunter-Smith
+            children:
+              - firstNames: Sarah
+                surname: Smith
+              - firstNames: Joseph
+                surname: Smith
+              - firstNames: Mary
+                surname: Smith
+          renewals:
+            status: NotStartedSingle
+            totalClaims: '1'
+            claimsSubmitted: '0'
+            packReceivedDate: 2021-05-01T23:59:59:00
+            renewalsEndDate: 2021-07-31T23:59:59:00
+            viewRenewalsEndDate: 2021-11-01T23:59:59:00
+            householdBreakdown: false
+            inGracePeriod: false
+            currentYear: '2021'
+            renewNowLink: /
+        changeOfCircumstanceLinks:
+          changePersonalDetails: /tax-credits-service/home/your-details
+          changeJobsOrIncome: /tax-credits-service/home/jobs-and-income
+          addEditChildrenChildcare: /tax-credits-service/home/children-and-childcare
+          otherChanges: /tax-credits-service/home/other-changes
+    PartnerDetails:
+      title: PartnerDetails
+      required:
+        - forename
+        - otherForenames
+        - surname
+      type: object
+      properties:
+        forename:
+          type: string
+        otherForenames:
+          type: string
+        surname:
+          type: string
+      example:
+        forename: Frederick
+        otherForenames: Tarquin
+        surname: Hunter-Smith
+    PaymentSeq:
+      title: PaymentSeq
+      required:
+        - amount
+        - paymentDate
+        - oneOffPayment
+        - earlyPayment
+      type: object
+      properties:
+        amount:
+          type: integer
+          format: int32
+        paymentDate:
+          type: integer
+          format: int64
+        oneOffPayment:
+          type: boolean
+        earlyPayment:
+          type: boolean
+        holidayType:
+          type: string
+        explanatoryText:
+          type: string
+      example:
+        amount: 55
+        paymentDate: 1509008158781
+        oneOffPayment: false
+        earlyPayment: false
+    PaymentSummary:
+      title: PaymentSummary
+      required:
+        - workingTaxCredit
+        - childTaxCredit
+        - paymentEnabled
+        - totalsByDate
+        - previousTotalsByDate
+      type: object
+      properties:
+        workingTaxCredit:
+          $ref: '#/components/schemas/WorkingTaxCredit'
+        childTaxCredit:
+          $ref: '#/components/schemas/ChildTaxCredit'
+        paymentEnabled:
+          type: boolean
+        totalsByDate:
+          type: array
+          items:
+            $ref: '#/components/schemas/TotalsByDate'
+          description: ''
+        previousTotalsByDate:
+          type: array
+          items:
+            $ref: '#/components/schemas/PreviousTotalsByDate'
+          description: ''
+      example:
+        workingTaxCredit:
+          paymentSeq:
+            - amount: 55
+              paymentDate: 1509008158781
+              oneOffPayment: false
+              earlyPayment: false
+            - amount: 55
+              paymentDate: 1511690158781
+              oneOffPayment: false
+              holidayType: bankHoliday
+              earlyPayment: true
+              explanatoryText: Your payment is early because of UK bank holidays.
+            - amount: 55
+              paymentDate: 1514282158781
+              oneOffPayment: true
+              earlyPayment: false
+              explanatoryText: One-off payment because of a recent change to help you get the right amount of tax credits.
+          paymentFrequency: WEEKLY
+          previousPaymentSeq:
+            - amount: 33
+              paymentDate: 1503737758781
+              oneOffPayment: false
+              earlyPayment: false
+            - amount: 43
+              paymentDate: 1501059358781
+              oneOffPayment: false
+              holidayType: bankHoliday
+              earlyPayment: true
+              explanatoryText: Your payment was early because of UK bank holidays.
+            - amount: 53
+              paymentDate: 1498467358781
+              oneOffPayment: true
+              earlyPayment: false
+              explanatoryText: This was because of a recent change and was to help you get the right amount of tax credits.
+        childTaxCredit:
+          paymentSeq:
+            - amount: 55
+              paymentDate: 1509008158781
+              oneOffPayment: false
+              earlyPayment: false
+            - amount: 55
+              paymentDate: 1511690158781
+              oneOffPayment: false
+              holidayType: bankHoliday
+              earlyPayment: true
+              explanatoryText: Your payment is early because of UK bank holidays.
+            - amount: 55
+              paymentDate: 1514282158781
+              oneOffPayment: true
+              earlyPayment: false
+              explanatoryText: One-off payment because of a recent change to help you get the right amount of tax credits.
+          paymentFrequency: WEEKLY
+        paymentEnabled: true
+        totalsByDate:
+          - amount: 110
+            paymentDate: 1509008158781
+          - amount: 110
+            paymentDate: 1511690158781
+          - amount: 110
+            paymentDate: 1514282158781
+        previousTotalsByDate:
+          - amount: 53
+            paymentDate: 1498467358781
+          - amount: 43
+            paymentDate: 1501059358781
+          - amount: 33
+            paymentDate: 1503737758781
+    PersonalDetails:
+      title: PersonalDetails
+      required:
+        - forename
+        - surname
+      type: object
+      properties:
+        forename:
+          type: string
+        surname:
+          type: string
+      example:
+        forename: firstname
+        surname: surname
+    PreviousPaymentSeq:
+      title: PreviousPaymentSeq
+      required:
+        - amount
+        - paymentDate
+        - oneOffPayment
+        - earlyPayment
+      type: object
+      properties:
+        amount:
+          type: integer
+          format: int32
+        paymentDate:
+          type: integer
+          format: int64
+        oneOffPayment:
+          type: boolean
+        earlyPayment:
+          type: boolean
+        holidayType:
+          type: string
+        explanatoryText:
+          type: string
+      example:
+        amount: 33
+        paymentDate: 1503737758781
+        oneOffPayment: false
+        earlyPayment: false
+    PreviousTotalsByDate:
+      title: PreviousTotalsByDate
+      required:
+        - amount
+        - paymentDate
+      type: object
+      properties:
+        amount:
+          type: integer
+          format: int32
+        paymentDate:
+          type: integer
+          format: int64
+      example:
+        amount: 53
+        paymentDate: 1498467358781
+    Renewals:
+      title: Renewals
+      required:
+        - status
+        - totalClaims
+        - claimsSubmitted
+        - packReceivedDate
+        - renewalsEndDate
+        - viewRenewalsEndDate
+        - householdBreakdown
+        - inGracePeriod
+        - currentYear
+        - renewNowLink
+      type: object
+      properties:
+        status:
+          type: string
+        totalClaims:
+          type: string
+        claimsSubmitted:
+          type: string
+        packReceivedDate:
+          type: string
+        renewalsEndDate:
+          type: string
+        viewRenewalsEndDate:
+          type: string
+        householdBreakdown:
+          type: boolean
+        inGracePeriod:
+          type: boolean
+        currentYear:
+          type: string
+        renewNowLink:
+          type: string
+      example:
+        status: NotStartedSingle
+        totalClaims: '1'
+        claimsSubmitted: '0'
+        packReceivedDate: 2021-05-01T23:59:59:00
+        renewalsEndDate: 2021-07-31T23:59:59:00
+        viewRenewalsEndDate: 2021-11-01T23:59:59:00
+        householdBreakdown: false
+        inGracePeriod: false
+        currentYear: '2021'
+        renewNowLink: /
+    TaxCreditsSummary:
+      title: TaxCreditsSummary
+      required:
+        - paymentSummary
+      type: object
+      properties:
+        paymentSummary:
+          $ref: '#/components/schemas/PaymentSummary'
+        claimants:
+          $ref: '#/components/schemas/Claimants'
+        renewals:
+          $ref: '#/components/schemas/Renewals'
+      example:
+        paymentSummary:
+          workingTaxCredit:
+            paymentSeq:
+              - amount: 55
+                paymentDate: 1509008158781
+                oneOffPayment: false
+                earlyPayment: false
+              - amount: 55
+                paymentDate: 1511690158781
+                oneOffPayment: false
+                holidayType: bankHoliday
+                earlyPayment: true
+                explanatoryText: Your payment is early because of UK bank holidays.
+              - amount: 55
+                paymentDate: 1514282158781
+                oneOffPayment: true
+                earlyPayment: false
+                explanatoryText: One-off payment because of a recent change to help you get the right amount of tax credits.
+            paymentFrequency: WEEKLY
+            previousPaymentSeq:
+              - amount: 33
+                paymentDate: 1503737758781
+                oneOffPayment: false
+                earlyPayment: false
+              - amount: 43
+                paymentDate: 1501059358781
+                oneOffPayment: false
+                holidayType: bankHoliday
+                earlyPayment: true
+                explanatoryText: Your payment was early because of UK bank holidays.
+              - amount: 53
+                paymentDate: 1498467358781
+                oneOffPayment: true
+                earlyPayment: false
+                explanatoryText: This was because of a recent change and was to help you get the right amount of tax credits.
+          childTaxCredit:
+            paymentSeq:
+              - amount: 55
+                paymentDate: 1509008158781
+                oneOffPayment: false
+                earlyPayment: false
+              - amount: 55
+                paymentDate: 1511690158781
+                oneOffPayment: false
+                holidayType: bankHoliday
+                earlyPayment: true
+                explanatoryText: Your payment is early because of UK bank holidays.
+              - amount: 55
+                paymentDate: 1514282158781
+                oneOffPayment: true
+                earlyPayment: false
+                explanatoryText: One-off payment because of a recent change to help you get the right amount of tax credits.
+            paymentFrequency: WEEKLY
+          paymentEnabled: true
+          totalsByDate:
+            - amount: 110
+              paymentDate: 1509008158781
+            - amount: 110
+              paymentDate: 1511690158781
+            - amount: 110
+              paymentDate: 1514282158781
+          previousTotalsByDate:
+            - amount: 53
+              paymentDate: 1498467358781
+            - amount: 43
+              paymentDate: 1501059358781
+            - amount: 33
+              paymentDate: 1503737758781
+        claimants:
+          personalDetails:
+            forename: firstname
+            surname: surname
+          partnerDetails:
+            forename: Frederick
+            otherForenames: Tarquin
+            surname: Hunter-Smith
+          children:
+            - firstNames: Sarah
+              surname: Smith
+            - firstNames: Joseph
+              surname: Smith
+            - firstNames: Mary
+              surname: Smith
+        renewals:
+          status: NotStartedSingle
+          totalClaims: '1'
+          claimsSubmitted: '0'
+          packReceivedDate: 2021-05-01T23:59:59:00
+          renewalsEndDate: 2021-07-31T23:59:59:00
+          viewRenewalsEndDate: 2021-11-01T23:59:59:00
+          householdBreakdown: false
+          inGracePeriod: false
+          currentYear: '2021'
+          renewNowLink: /
+    TotalsByDate:
+      title: TotalsByDate
+      required:
+        - amount
+        - paymentDate
+      type: object
+      properties:
+        amount:
+          type: integer
+          format: int32
+        paymentDate:
+          type: integer
+          format: int64
+      example:
+        amount: 110
+        paymentDate: 1509008158781
+    WorkingTaxCredit:
+      title: WorkingTaxCredit
+      required:
+        - paymentSeq
+        - paymentFrequency
+        - previousPaymentSeq
+      type: object
+      properties:
+        paymentSeq:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentSeq'
+          description: ''
+        paymentFrequency:
+          type: string
+        previousPaymentSeq:
+          type: array
+          items:
+            $ref: '#/components/schemas/PreviousPaymentSeq'
+          description: ''
+      example:
+        paymentSeq:
+          - amount: 55
+            paymentDate: 1509008158781
+            oneOffPayment: false
+            earlyPayment: false
+          - amount: 55
+            paymentDate: 1511690158781
+            oneOffPayment: false
+            holidayType: bankHoliday
+            earlyPayment: true
+            explanatoryText: Your payment is early because of UK bank holidays.
+          - amount: 55
+            paymentDate: 1514282158781
+            oneOffPayment: true
+            earlyPayment: false
+            explanatoryText: One-off payment because of a recent change to help you get the right amount of tax credits.
+        paymentFrequency: WEEKLY
+        previousPaymentSeq:
+          - amount: 33
+            paymentDate: 1503737758781
+            oneOffPayment: false
+            earlyPayment: false
+          - amount: 43
+            paymentDate: 1501059358781
+            oneOffPayment: false
+            holidayType: bankHoliday
+            earlyPayment: true
+            explanatoryText: Your payment was early because of UK bank holidays.
+          - amount: 53
+            paymentDate: 1498467358781
+            oneOffPayment: true
+            earlyPayment: false
+            explanatoryText: This was because of a recent change and was to help you get the right amount of tax credits.
+tags:
+  - name: mobile-tax-credits-summary
+    description: ''
