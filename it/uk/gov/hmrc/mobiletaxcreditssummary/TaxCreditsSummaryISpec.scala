@@ -34,9 +34,9 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
 
   protected val now: LocalDate = LocalDate.now
 
-  protected def reportActualProfitStartDate: String = ZonedDateTime.now.toString
+  protected val reportActualProfitStartDate: String = LocalDateTime.now.toString
 
-  protected def reportActualProfitEndDate: String = LocalDateTime.now.plusDays(1).toString + "Z"
+  protected val reportActualProfitEndDate: String = LocalDateTime.now.plusDays(1).toString
 
   override def configuration: Map[String, Any] =
     super.configuration ++
@@ -100,6 +100,12 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (((response.json \\ "claimants").head \ "children")(0) \ "surname").as[String]         shouldBe "Smith"
       (((response.json \\ "claimants").head \ "reportActualProfit") \ "link")
         .as[String] shouldBe "/tax-credits-service/actual-self-employed-profit-or-loss"
+      (((response.json \\ "claimants").head \ "reportActualProfit") \ "endDate")
+        .as[String] shouldBe reportActualProfitEndDate + "Z"
+      (((response.json \\ "claimants").head \ "reportActualProfit") \ "userMustReportIncome")
+        .as[Boolean] shouldBe true
+      (((response.json \\ "claimants").head \ "reportActualProfit") \ "partnerMustReportIncome")
+        .as[Boolean] shouldBe false
     }
 
     "return a valid response for TAX-CREDITS-USER with Old Rate special circumstance" in {
