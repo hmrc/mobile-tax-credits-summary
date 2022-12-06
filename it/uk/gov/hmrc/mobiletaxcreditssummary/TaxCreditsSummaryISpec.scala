@@ -28,15 +28,15 @@ import uk.gov.hmrc.mobiletaxcreditssummary.stubs.TaxCreditsBrokerStub._
 import uk.gov.hmrc.mobiletaxcreditssummary.stubs.TaxCreditsRenewalsStub._
 import uk.gov.hmrc.mobiletaxcreditssummary.support.BaseISpec
 
-import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
+import java.time.{LocalDate, LocalDateTime}
 
 class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
 
-  protected val now: LocalDate = LocalDate.now
+  protected val now: LocalDateTime = LocalDateTime.now
 
-  protected val reportActualProfitStartDate: String = LocalDateTime.now.toString
+  protected val reportActualProfitStartDate: String = now.toString
 
-  protected val reportActualProfitEndDate: String = LocalDateTime.now.plusDays(1).toString
+  protected val reportActualProfitEndDate: String = now.plusDays(1).toString
 
   override def configuration: Map[String, Any] =
     super.configuration ++
