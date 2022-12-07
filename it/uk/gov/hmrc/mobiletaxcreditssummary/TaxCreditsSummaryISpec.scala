@@ -28,15 +28,18 @@ import uk.gov.hmrc.mobiletaxcreditssummary.stubs.TaxCreditsBrokerStub._
 import uk.gov.hmrc.mobiletaxcreditssummary.stubs.TaxCreditsRenewalsStub._
 import uk.gov.hmrc.mobiletaxcreditssummary.support.BaseISpec
 
-import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
+import java.time.format.DateTimeFormatter
+import java.time.{LocalDate, LocalDateTime}
 
 class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
 
-  protected val now: LocalDate = LocalDate.now
+  val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
 
-  protected def reportActualProfitStartDate: String = ZonedDateTime.now.toString
+  protected val now: LocalDateTime = LocalDateTime.now
 
-  protected def reportActualProfitEndDate: String = LocalDateTime.now.plusDays(1).toString + "Z"
+  protected val reportActualProfitStartDate: String = now.format(formatter)
+
+  protected val reportActualProfitEndDate: String = now.plusDays(1).format(formatter)
 
   override def configuration: Map[String, Any] =
     super.configuration ++
@@ -100,6 +103,12 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (((response.json \\ "claimants").head \ "children")(0) \ "surname").as[String]         shouldBe "Smith"
       (((response.json \\ "claimants").head \ "reportActualProfit") \ "link")
         .as[String] shouldBe "/tax-credits-service/actual-self-employed-profit-or-loss"
+      (((response.json \\ "claimants").head \ "reportActualProfit") \ "endDate")
+        .as[String] shouldBe configuration.getOrElse("microservice.reportActualProfitPeriod.endDate", "") + "Z"
+      (((response.json \\ "claimants").head \ "reportActualProfit") \ "userMustReportIncome")
+        .as[Boolean] shouldBe true
+      (((response.json \\ "claimants").head \ "reportActualProfit") \ "partnerMustReportIncome")
+        .as[Boolean] shouldBe false
     }
 
     "return a valid response for TAX-CREDITS-USER with Old Rate special circumstance" in {

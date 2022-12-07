@@ -16,10 +16,12 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.services
 
-import java.time.{LocalDateTime, ZonedDateTime}
+import java.time.{LocalDateTime, ZoneId, ZoneOffset, ZonedDateTime}
 import javax.inject.{Inject, Named, Singleton}
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.TaxCreditsNino
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.{ClaimActualIncomeEligibilityStatus, ReportActualProfit}
+
+import java.time.format.DateTimeFormatter
 
 @Singleton
 class ReportActualProfitService @Inject() (
@@ -33,13 +35,17 @@ class ReportActualProfitService @Inject() (
   ): Option[ReportActualProfit] =
     if (!reportActualProfitPeriodOpen)
       None
-    else
-      buildReportActualProfit(tcNino: TaxCreditsNino, status, mainApplicantNino)
+    else {
+      val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+      val endDate   = LocalDateTime.parse(reportActualProfitEndDate).format(formatter)
+      buildReportActualProfit(tcNino: TaxCreditsNino, status, mainApplicantNino, endDate)
+    }
 
   private def buildReportActualProfit(
     tcNino:            TaxCreditsNino,
     status:            ClaimActualIncomeEligibilityStatus,
-    mainApplicantNino: TaxCreditsNino
+    mainApplicantNino: TaxCreditsNino,
+    endDate:           String
   ): Option[ReportActualProfit] = {
     val userLoggedInIsMainApplicant = tcNino.value == mainApplicantNino.value
     (status.applicant1, status.applicant2, userLoggedInIsMainApplicant) match {
@@ -49,7 +55,7 @@ class ReportActualProfitService @Inject() (
         Some(
           ReportActualProfit(
             "/tax-credits-service/actual-profit",
-            reportActualProfitEndDate,
+            endDate,
             userMustReportIncome    = true,
             partnerMustReportIncome = true
           )
@@ -60,7 +66,7 @@ class ReportActualProfitService @Inject() (
         Some(
           ReportActualProfit(
             "/tax-credits-service/actual-self-employed-profit-or-loss",
-            reportActualProfitEndDate,
+            endDate,
             userMustReportIncome    = true,
             partnerMustReportIncome = false
           )
@@ -71,7 +77,7 @@ class ReportActualProfitService @Inject() (
         Some(
           ReportActualProfit(
             "/tax-credits-service/actual-self-employed-profit-or-loss-partner",
-            reportActualProfitEndDate,
+            endDate,
             userMustReportIncome    = false,
             partnerMustReportIncome = true
           )
@@ -82,7 +88,7 @@ class ReportActualProfitService @Inject() (
         Some(
           ReportActualProfit(
             "/tax-credits-service/actual-self-employed-profit-or-loss",
-            reportActualProfitEndDate,
+            endDate,
             userMustReportIncome    = true,
             partnerMustReportIncome = false
           )
@@ -93,7 +99,7 @@ class ReportActualProfitService @Inject() (
         Some(
           ReportActualProfit(
             "/tax-credits-service/actual-self-employed-profit-or-loss-partner",
-            reportActualProfitEndDate,
+            endDate,
             userMustReportIncome    = false,
             partnerMustReportIncome = true
           )
@@ -102,10 +108,11 @@ class ReportActualProfitService @Inject() (
     }
   }
 
-  def reportActualProfitPeriodOpen: Boolean = {
-    val startDate = ZonedDateTime.parse(reportActualProfitStartDate)
-    val endDate   = ZonedDateTime.parse(reportActualProfitEndDate)
-    (LocalDateTime.now().isAfter(startDate.toLocalDateTime) && LocalDateTime.now().isBefore(endDate.toLocalDateTime))
+  private def reportActualProfitPeriodOpen: Boolean = {
+    val currentTime: LocalDateTime = LocalDateTime.now(ZoneId.of("Europe/London"))
+    val startDate = LocalDateTime.parse(reportActualProfitStartDate)
+    val endDate   = LocalDateTime.parse(reportActualProfitEndDate)
+    (currentTime.isAfter(startDate) && currentTime.isBefore(endDate))
   }
 
 }
