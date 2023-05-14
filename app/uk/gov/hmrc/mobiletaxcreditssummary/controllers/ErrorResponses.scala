@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ case object ErrorBadRequest extends ErrorResponse(400, "BAD_REQUEST", "Invalid r
 case object ErrorUnauthorizedMicroService extends ErrorResponse(401, "UNAUTHORIZED", "Unauthorized to access resource")
 
 case object ErrorForbidden extends ErrorResponse(403, "FORBIDDEN", "Access Denied")
+
+case object ErrorTooManyRequests extends ErrorResponse(429,"TOO_MANY_REQUESTS","Too many requests have been made to tax credits summary please try again later")
 
 class FailToMatchTaxIdOnAuth extends Exception
 
