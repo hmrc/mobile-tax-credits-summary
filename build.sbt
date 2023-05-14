@@ -29,7 +29,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     majorVersion := 0,
     playDefaultPort := 8246,
-    scalaVersion := "2.12.8",
+    scalaVersion := "2.12.15",
     libraryDependencies ++= AppDependencies(),
     dependencyOverrides ++= AppDependencies.jettyOverrides,
     evictionWarningOptions in update := EvictionWarningOptions.default

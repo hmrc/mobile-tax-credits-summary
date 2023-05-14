@@ -46,6 +46,7 @@ class BaseISpec
   protected val nino2       = Nino("AP412713B")
   protected val sandboxNino = Nino("CS700100A")
   protected val acceptJsonHeader: (String, String) = "Accept" -> "application/vnd.hmrc.1.0+json"
+  protected val authorisationJsonHeader: (String, String) = "AUTHORIZATION" -> "Bearer 123"
 
   def configuration: Map[String, Any] =
     Map(
