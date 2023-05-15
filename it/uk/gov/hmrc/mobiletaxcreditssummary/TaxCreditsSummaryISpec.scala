@@ -345,6 +345,15 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       response.status shouldBe 500
     }
 
+    "return a valid response for ERROR-429 - tcs/:nino/exclusion call returns 429" in {
+      grantAccess(nino1.value)
+      exclusion429(nino1)
+      stubForShutteringDisabled
+
+      val response = await(request(nino1).get())
+      response.status shouldBe 429
+    }
+
     "return 400 if journeyId not supplied" in {
       val response = await(wsUrl(s"/income/$nino1/tax-credits/tax-credits-summary").get())
       response.status shouldBe 400

@@ -33,6 +33,12 @@ object TaxCreditsBrokerStub {
         .willReturn(aResponse().withStatus(500).withHeader("Content-Type", "application/json"))
     )
 
+  def exclusion429(nino: Nino): Unit =
+    stubFor(
+      get(urlPathEqualTo(s"/tcs/${nino.value}/exclusion"))
+        .willReturn(aResponse().withStatus(429).withHeader("Content-Type", "application/json"))
+    )
+
   def exclusion503(nino: Nino): Unit =
     stubFor(
       get(urlPathEqualTo(s"/tcs/${nino.value}/exclusion"))

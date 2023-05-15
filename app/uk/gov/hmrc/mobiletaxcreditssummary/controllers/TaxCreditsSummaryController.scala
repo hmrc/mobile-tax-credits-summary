@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import play.api.mvc._
 import uk.gov.hmrc.api.controllers._
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, NotFoundException, ServiceUnavailableException}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, NotFoundException, ServiceUnavailableException, TooManyRequestException, UpstreamErrorResponse}
 import uk.gov.hmrc.mobiletaxcreditssummary.connectors.ShutteringConnector
 import uk.gov.hmrc.mobiletaxcreditssummary.controllers.action.{AccessControl, ShutteredCheck}
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
@@ -62,6 +62,10 @@ trait ErrorHandling {
       case ex: BadRequestException =>
         logger.error(s"BadRequestException reported: ${ex.getMessage}", ex)
         Status(ErrorBadRequest.httpStatusCode)(toJson[ErrorResponse](ErrorBadRequest))
+
+      case ex: UpstreamErrorResponse if ex.statusCode == TOO_MANY_REQUESTS =>
+        logger.error(s"TooManyRequestException reported: ${ex.getMessage}", ex)
+        Status(ErrorTooManyRequests.httpStatusCode)(toJson[ErrorResponse](ErrorTooManyRequests))
 
       case e: Throwable =>
         logger.error(s"Internal server error: ${e.getMessage}", e)
