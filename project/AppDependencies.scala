@@ -29,8 +29,7 @@ private object AppDependencies {
   }
 
   private def testCommon(scope: String) = Seq(
-    "org.scalatestplus.play" %% "scalatestplus-play" % scalaTestPlusPlayVersion % scope
-  )
+    "org.scalatestplus.play" %% "scalatestplus-play" % scalaTestPlusPlayVersion % scope)
 
   object Test {
 
