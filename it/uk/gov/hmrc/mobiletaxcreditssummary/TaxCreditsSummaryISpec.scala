@@ -104,7 +104,7 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (((response.json \\ "claimants").head \ "reportActualProfit") \ "link")
         .as[String] shouldBe "/tax-credits-service/actual-self-employed-profit-or-loss"
       (((response.json \\ "claimants").head \ "reportActualProfit") \ "endDate")
-        .as[String] shouldBe configuration.getOrElse("microservice.reportActualProfitPeriod.endDate", "") + "Z"
+        .as[String] shouldBe configuration.getOrElse("microservice.reportActualProfitPeriod.endDate", "")
       (((response.json \\ "claimants").head \ "reportActualProfit") \ "userMustReportIncome")
         .as[Boolean] shouldBe true
       (((response.json \\ "claimants").head \ "reportActualProfit") \ "partnerMustReportIncome")

@@ -265,7 +265,7 @@ class TaxCreditsSummaryServiceSpec
         new ReportActualProfitService(reportActualProfitPeriodStartDate, reportActualProfitPeriodEndDate)
       val reportActualProfit = ReportActualProfit(
         "/tax-credits-service/actual-profit",
-        reportActualProfitPeriodEndDate + "Z",
+        reportActualProfitPeriodEndDate,
         userMustReportIncome    = true,
         partnerMustReportIncome = true
       )
@@ -299,7 +299,7 @@ class TaxCreditsSummaryServiceSpec
         new ReportActualProfitService(reportActualProfitPeriodStartDate, reportActualProfitPeriodEndDate)
       val reportActualProfit = ReportActualProfit(
         "/tax-credits-service/actual-self-employed-profit-or-loss",
-        reportActualProfitPeriodEndDate + "Z",
+        reportActualProfitPeriodEndDate,
         userMustReportIncome    = true,
         partnerMustReportIncome = false
       )
@@ -333,7 +333,7 @@ class TaxCreditsSummaryServiceSpec
         new ReportActualProfitService(reportActualProfitPeriodStartDate, reportActualProfitPeriodEndDate)
       val reportActualProfit = ReportActualProfit(
         "/tax-credits-service/actual-self-employed-profit-or-loss-partner",
-        reportActualProfitPeriodEndDate + "Z",
+        reportActualProfitPeriodEndDate,
         userMustReportIncome    = false,
         partnerMustReportIncome = true
       )
@@ -367,7 +367,7 @@ class TaxCreditsSummaryServiceSpec
         new ReportActualProfitService(reportActualProfitPeriodStartDate, reportActualProfitPeriodEndDate)
       val reportActualProfit = ReportActualProfit(
         "/tax-credits-service/actual-self-employed-profit-or-loss-partner",
-        reportActualProfitPeriodEndDate + "Z",
+        reportActualProfitPeriodEndDate,
         userMustReportIncome    = false,
         partnerMustReportIncome = true
       )
@@ -402,7 +402,7 @@ class TaxCreditsSummaryServiceSpec
         new ReportActualProfitService(reportActualProfitPeriodStartDate, reportActualProfitPeriodEndDate)
       val reportActualProfit = ReportActualProfit(
         "/tax-credits-service/actual-self-employed-profit-or-loss",
-        reportActualProfitPeriodEndDate + "Z",
+        reportActualProfitPeriodEndDate,
         userMustReportIncome    = true,
         partnerMustReportIncome = false
       )
