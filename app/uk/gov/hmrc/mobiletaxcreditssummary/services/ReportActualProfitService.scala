@@ -36,7 +36,7 @@ class ReportActualProfitService @Inject() (
     if (!reportActualProfitPeriodOpen)
       None
     else {
-      val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+      val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
       val endDate   = LocalDateTime.parse(reportActualProfitEndDate).format(formatter)
       buildReportActualProfit(tcNino: TaxCreditsNino, status, mainApplicantNino, endDate)
     }

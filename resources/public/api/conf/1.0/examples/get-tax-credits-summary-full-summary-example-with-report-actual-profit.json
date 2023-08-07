@@ -133,7 +133,7 @@
       ],
       "reportActualProfit": {
         "link": "/tax-credits-service/actual-self-employed-profit-or-loss",
-        "endDate": "2021-01-31T10:00:00.000Z",
+        "endDate": "2021-01-31T10:00:00.000",
         "userMustReportIncome": true,
         "partnerMustReportIncome": false
       }
