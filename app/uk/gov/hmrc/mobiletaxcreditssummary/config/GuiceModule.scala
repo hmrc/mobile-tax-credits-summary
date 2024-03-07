@@ -27,7 +27,8 @@ import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.http.HttpClient
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
+
 
 class GuiceModule(
   environment:   Environment,

@@ -16,12 +16,13 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.connectors
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
 import akka.actor.ActorSystem
 import com.typesafe.config.Config
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{Matchers, WordSpecLike}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 import play.api.{Configuration, Environment}
 import play.api.libs.json.Json
 import play.api.libs.json.Json.parse
@@ -37,7 +38,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
 class TaxCreditsBrokerSpec
-    extends WordSpecLike
+    extends AnyWordSpecLike
     with Matchers
     with ScalaFutures
     with FutureAwaits

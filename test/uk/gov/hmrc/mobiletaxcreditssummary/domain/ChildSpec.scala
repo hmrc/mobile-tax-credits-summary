@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.domain
 
-import java.time.LocalDate
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 
-import org.scalatest.{Matchers, WordSpecLike}
+import java.time.LocalDate
 import play.api.libs.json.Json
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.Child
 
-class ChildSpec extends WordSpecLike with Matchers {
+class ChildSpec extends AnyWordSpecLike with Matchers {
 
   "Child DOB calculation" should {
     "using today's date for child DOB will result in age 0" in {

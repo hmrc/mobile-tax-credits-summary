@@ -26,20 +26,19 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     majorVersion := 0,
     playDefaultPort := 8246,
-    scalaVersion := "2.12.8",
+    scalaVersion := "2.13.8",
     libraryDependencies ++= AppDependencies(),
-    dependencyOverrides ++= AppDependencies.jettyOverrides,
-    evictionWarningOptions in update := EvictionWarningOptions.default
+    update / evictionWarningOptions := EvictionWarningOptions.default
       .withWarnScalaVersionEviction(false),
     resolvers += Resolver.jcenterRepo,
-    unmanagedResourceDirectories in Compile += baseDirectory.value / "resources",
-    unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest) (
+    Compile / unmanagedResourceDirectories += baseDirectory.value / "resources",
+    IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory) (
       base => Seq(base / "it")
     ).value,
-    testGrouping in IntegrationTest := oneForkedJvmPerTest(
-      (definedTests in IntegrationTest).value
+    IntegrationTest / testGrouping := oneForkedJvmPerTest(
+      (IntegrationTest / definedTests).value
     ),
-    coverageMinimum := 92,
+    coverageMinimumStmtTotal := 92,
     coverageFailOnMinimum := true,
     coverageHighlighting := true,
     coverageExcludedPackages := "<empty>;.*Routes.*;app.*;.*prod;.*definition;.*testOnlyDoNotUseInAppConf;.*com.kenshoo.*;.*javascript.*;.*BuildInfo;.*Reverse.*;.*Base64.*;.*binders.*"
