@@ -17,7 +17,6 @@
 package uk.gov.hmrc.mobiletaxcreditssummary.service
 
 import java.time.LocalDate
-import org.scalatest.prop.TableDrivenPropertyChecks._
 import org.scalatest.{Tag, TestData}
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.Application

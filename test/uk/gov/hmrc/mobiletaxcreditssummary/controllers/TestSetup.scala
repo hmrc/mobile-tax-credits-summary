@@ -17,7 +17,6 @@
 package uk.gov.hmrc.mobiletaxcreditssummary.controllers
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{Matchers, WordSpecLike}
 import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.AnyContentAsEmpty
@@ -31,12 +30,14 @@ import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
 import uk.gov.hmrc.mobiletaxcreditssummary.mocks.{AuditMock, AuthorisationMock, ShutteringMock, TaxCreditsBrokerConnectorMock, TaxCreditsRenewalsConnectorMock}
 import uk.gov.hmrc.mobiletaxcreditssummary.services.{LiveTaxCreditsSummaryService, ReportActualProfitService}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-
 import eu.timepit.refined.auto._
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
+
 import java.time.LocalDateTime
 
 trait TestSetup
-    extends WordSpecLike
+    extends AnyWordSpecLike
     with Matchers
     with MockFactory
     with TaxCreditsBrokerConnectorMock

@@ -16,15 +16,15 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.controllers
 
-import org.scalatest.Matchers
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.auth.core.ConfidenceLevel.{L50, L200}
+import uk.gov.hmrc.auth.core.ConfidenceLevel.{L200, L50}
 import uk.gov.hmrc.auth.core.syntax.retrieved._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mobiletaxcreditssummary.controllers.action.{Authorisation, Authority}
+import scala.concurrent.ExecutionContext.Implicits.global
 
-class AuthorisationSpec extends TestSetup with FutureAwaits with DefaultAwaitTimeout with Matchers {
+class AuthorisationSpec extends TestSetup with FutureAwaits with DefaultAwaitTimeout {
 
   def authorisation(mockAuthConnector: AuthConnector): Authorisation =
     new Authorisation {

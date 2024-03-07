@@ -16,13 +16,15 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.domain
 
-import org.scalatest.{Matchers, OptionValues, WordSpecLike}
+import org.scalatest.OptionValues
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 import play.api.libs.json._
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.{FuturePayment, PastPayment, PaymentSummary}
 
-import java.time.{LocalDate, ZoneId, ZoneOffset}
+import java.time.{LocalDate, ZoneOffset}
 
-class PaymentSummarySpec extends WordSpecLike with Matchers with OptionValues {
+class PaymentSummarySpec extends AnyWordSpecLike with Matchers with OptionValues {
 
   private val now = LocalDate.now
 

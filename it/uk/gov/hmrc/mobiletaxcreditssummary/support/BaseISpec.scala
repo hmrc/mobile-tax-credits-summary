@@ -16,8 +16,10 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.support
 
+import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import org.scalatest.{Matchers, OptionValues, WordSpecLike}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 import org.scalatestplus.play.WsScalaTestClient
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
@@ -30,7 +32,7 @@ import java.time.LocalDate
 import scala.language.postfixOps
 
 class BaseISpec
-    extends WordSpecLike
+    extends AnyWordSpecLike
     with Matchers
     with ScalaFutures
     with FutureAwaits
@@ -45,7 +47,8 @@ class BaseISpec
   protected val nino1       = Nino("AA000000A")
   protected val nino2       = Nino("AP412713B")
   protected val sandboxNino = Nino("CS700100A")
-  protected val acceptJsonHeader: (String, String) = "Accept" -> "application/vnd.hmrc.1.0+json"
+  protected val acceptJsonHeader:        (String, String) = "Accept"        -> "application/vnd.hmrc.1.0+json"
+  protected val authorisationJsonHeader: (String, String) = "AUTHORIZATION" -> "Bearer 123"
 
   def configuration: Map[String, Any] =
     Map(
@@ -60,7 +63,7 @@ class BaseISpec
       "microservice.renewals.packReceivedDate"                -> LocalDate.now().minusMonths(1).atStartOfDay().toString,
       "microservice.renewals.endDate"                         -> LocalDate.now().plusMonths(1).atStartOfDay().toString,
       "microservice.renewals.gracePeriodEndDate"              -> LocalDate.now().plusMonths(2).atStartOfDay().toString,
-      "microservice.renewals.endViewRenewalsDate"             -> LocalDate.now().plusMonths(3).atStartOfDay().toString,
+      "microservice.renewals.endViewRenewalsDate"             -> LocalDate.now().plusMonths(3).atStartOfDay().toString
     )
 
   protected def appBuilder: GuiceApplicationBuilder = new GuiceApplicationBuilder().configure(configuration)

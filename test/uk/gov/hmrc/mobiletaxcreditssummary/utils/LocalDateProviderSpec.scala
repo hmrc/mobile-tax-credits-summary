@@ -16,15 +16,17 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.utils
 
-import java.time.{LocalDate, Month}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 
-import org.scalatest.{Matchers, Tag, TestData, WordSpecLike}
+import java.time.{LocalDate, Month}
+import org.scalatest.{Tag, TestData}
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Injecting
 
-class LocalDateProviderSpec extends WordSpecLike with Matchers with GuiceOneAppPerTest with Injecting {
+class LocalDateProviderSpec extends AnyWordSpecLike with Matchers with GuiceOneAppPerTest with Injecting {
 
   "LocalDateProviderSpec" should {
 
