@@ -21,9 +21,10 @@ import play.api._
 import play.api.libs.json.Json.{obj, toJson}
 import play.api.mvc._
 import uk.gov.hmrc.api.controllers._
+import uk.gov.hmrc.api.service.Auditor
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, NotFoundException, ServiceUnavailableException, TooManyRequestException, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, NotFoundException, ServiceUnavailableException, UpstreamErrorResponse}
 import uk.gov.hmrc.mobiletaxcreditssummary.connectors.ShutteringConnector
 import uk.gov.hmrc.mobiletaxcreditssummary.controllers.action.{AccessControl, ShutteredCheck}
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
@@ -34,7 +35,6 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.play.http.HeaderCarrierConverter.fromRequest
-import uk.gov.hmrc.service.Auditor
 
 import scala.concurrent.{ExecutionContext, Future}
 

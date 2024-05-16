@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class DashboardData(
   personalDetails:    Person,
@@ -27,5 +27,5 @@ case class DashboardData(
   awardDetails:       AwardDetails)
 
 object DashboardData {
-  implicit val formats = Json.format[DashboardData]
+  implicit val formats: OFormat[DashboardData] = Json.format[DashboardData]
 }

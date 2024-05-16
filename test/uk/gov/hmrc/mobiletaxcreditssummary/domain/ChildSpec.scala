@@ -66,7 +66,7 @@ class ChildSpec extends AnyWordSpecLike with Matchers {
       )
       val child =
         Child("", "", LocalDate.parse("2019-01-01"), hasFTNAE = false, hasConnexions = false, isActive = false, None)
-      jsonDiff(None, Json.toJson(child), expected) shouldBe 'empty
+      jsonDiff(None, Json.toJson(child), expected) shouldBe empty
     }
   }
 }

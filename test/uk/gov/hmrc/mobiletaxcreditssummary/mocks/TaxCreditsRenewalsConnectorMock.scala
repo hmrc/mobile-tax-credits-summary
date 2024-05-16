@@ -20,7 +20,7 @@ import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobiletaxcreditssummary.connectors.TaxCreditsRenewalsConnector
-import uk.gov.hmrc.mobiletaxcreditssummary.domain.{RenewalStatus, TaxCreditsNino}
+import uk.gov.hmrc.mobiletaxcreditssummary.domain.TaxCreditsNino
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.types.ModelTypes.JourneyId
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.{Applicant, Household, LegacyClaim, LegacyClaims, LegacyRenewal}
 

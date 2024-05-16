@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata
 
-import java.time.{LocalDate, LocalDateTime, ZoneOffset}
+import java.time.{LocalDate, ZoneOffset}
 import play.api.Logger
 import play.api.libs.functional.FunctionalBuilder
 import play.api.libs.functional.syntax._

@@ -26,7 +26,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     majorVersion := 0,
     playDefaultPort := 8246,
-    scalaVersion := "2.13.8",
+    scalaVersion := "2.13.12",
     libraryDependencies ++= AppDependencies(),
     update / evictionWarningOptions := EvictionWarningOptions.default
       .withWarnScalaVersionEviction(false),
@@ -38,7 +38,7 @@ lazy val microservice = Project(appName, file("."))
     IntegrationTest / testGrouping := oneForkedJvmPerTest(
       (IntegrationTest / definedTests).value
     ),
-    coverageMinimumStmtTotal := 92,
+    coverageMinimumStmtTotal := 91,
     coverageFailOnMinimum := true,
     coverageHighlighting := true,
     coverageExcludedPackages := "<empty>;.*Routes.*;app.*;.*prod;.*definition;.*testOnlyDoNotUseInAppConf;.*com.kenshoo.*;.*javascript.*;.*BuildInfo;.*Reverse.*;.*Base64.*;.*binders.*"

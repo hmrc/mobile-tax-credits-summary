@@ -17,7 +17,7 @@
 package uk.gov.hmrc.mobiletaxcreditssummary.service
 
 import java.time.LocalDate
-import org.scalatest.{Tag, TestData}
+import org.scalatest.TestData
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -236,7 +236,7 @@ class TaxCreditsSummaryServiceSpec
       mockTaxCreditsBrokerConnectorGetExclusion(Some(Exclusion(false)), taxCreditsNino)
       mockTaxCreditsBrokerConnectorGetDashboardDataFailure(upstream5xxException, taxCreditsNino)
 
-      intercept[Upstream5xxResponse] {
+      intercept[UpstreamErrorResponse] {
         await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId))
       }
     }
@@ -248,10 +248,10 @@ class TaxCreditsSummaryServiceSpec
                                                      taxCreditsRenewalsService,
                                                      reportActualProfitService,
                                                      informationMessageService)
-      mockTaxCreditsBrokerConnectorGetExclusionFailure(Upstream4xxResponse("blows up for excluded users", 400, 400),
+      mockTaxCreditsBrokerConnectorGetExclusionFailure(UpstreamErrorResponse("blows up for excluded users", 400, 400),
                                                        taxCreditsNino)
 
-      intercept[Upstream4xxResponse] {
+      intercept[UpstreamErrorResponse] {
         await(service.getTaxCreditsSummaryResponse(Nino(nino), journeyId))
       }
     }
@@ -259,7 +259,7 @@ class TaxCreditsSummaryServiceSpec
     "return the correct actual profit link during a valid period when both the applicant and partner have estimated their income" in {
       val localDateProvider               = app.injector.instanceOf[LocalDateProvider]
       val informationMessageService       = new InformationMessageService(localDateProvider)
-      val reportActualProfitPeriodEndDate = currentYear + "-12-31T23:59:59.000"
+      val reportActualProfitPeriodEndDate = s"$currentYear-12-31T23:59:59.000"
       val reportActualProfitService =
         new ReportActualProfitService(reportActualProfitPeriodStartDate, reportActualProfitPeriodEndDate)
       val reportActualProfit = ReportActualProfit(
@@ -293,7 +293,7 @@ class TaxCreditsSummaryServiceSpec
     "return the correct actual profit link during a valid period when only the applicant has estimated their income" in {
       val localDateProvider               = app.injector.instanceOf[LocalDateProvider]
       val informationMessageService       = new InformationMessageService(localDateProvider)
-      val reportActualProfitPeriodEndDate = currentYear + "-12-31T23:59:59.000"
+      val reportActualProfitPeriodEndDate = s"$currentYear-12-31T23:59:59.000"
       val reportActualProfitService =
         new ReportActualProfitService(reportActualProfitPeriodStartDate, reportActualProfitPeriodEndDate)
       val reportActualProfit = ReportActualProfit(
@@ -327,7 +327,7 @@ class TaxCreditsSummaryServiceSpec
     "return the correct actual profit link during a valid period when only the applicant's partner has estimated their income" in {
       val localDateProvider               = app.injector.instanceOf[LocalDateProvider]
       val informationMessageService       = new InformationMessageService(localDateProvider)
-      val reportActualProfitPeriodEndDate = currentYear + "-12-31T23:59:59.000"
+      val reportActualProfitPeriodEndDate = s"$currentYear-12-31T23:59:59.000"
       val reportActualProfitService =
         new ReportActualProfitService(reportActualProfitPeriodStartDate, reportActualProfitPeriodEndDate)
       val reportActualProfit = ReportActualProfit(
@@ -361,7 +361,7 @@ class TaxCreditsSummaryServiceSpec
     "return the correct actual profit link during a valid period when the logged in user is not the main applicant and their partner has estimated their income" in {
       val localDateProvider               = app.injector.instanceOf[LocalDateProvider]
       val informationMessageService       = new InformationMessageService(localDateProvider)
-      val reportActualProfitPeriodEndDate = currentYear + "-12-31T23:59:59.000"
+      val reportActualProfitPeriodEndDate = s"$currentYear-12-31T23:59:59.000"
       val reportActualProfitService =
         new ReportActualProfitService(reportActualProfitPeriodStartDate, reportActualProfitPeriodEndDate)
       val reportActualProfit = ReportActualProfit(
@@ -396,7 +396,7 @@ class TaxCreditsSummaryServiceSpec
     "return the correct actual profit link during a valid period when the logged in user is not the main applicant, but they have estimated their income" in {
       val localDateProvider               = app.injector.instanceOf[LocalDateProvider]
       val informationMessageService       = new InformationMessageService(localDateProvider)
-      val reportActualProfitPeriodEndDate = currentYear + "-12-31T23:59:59.000"
+      val reportActualProfitPeriodEndDate = s"$currentYear-12-31T23:59:59.000"
       val reportActualProfitService =
         new ReportActualProfitService(reportActualProfitPeriodStartDate, reportActualProfitPeriodEndDate)
       val reportActualProfit = ReportActualProfit(
@@ -431,7 +431,7 @@ class TaxCreditsSummaryServiceSpec
     "return no actual profit link during a valid period when both the applicant and partner have not estimated their income" in {
       val localDateProvider               = app.injector.instanceOf[LocalDateProvider]
       val informationMessageService       = new InformationMessageService(localDateProvider)
-      val reportActualProfitPeriodEndDate = currentYear + "-12-31T23:59:59.000"
+      val reportActualProfitPeriodEndDate = s"$currentYear-12-31T23:59:59.000"
       val reportActualProfitService =
         new ReportActualProfitService(reportActualProfitPeriodStartDate, reportActualProfitPeriodEndDate)
       val service = new LiveTaxCreditsSummaryService(mockTaxCreditsBrokerConnector,
@@ -457,7 +457,7 @@ class TaxCreditsSummaryServiceSpec
     "return no actual profit link during a valid period when one applicant has estimated their income but the other is excluded" in {
       val localDateProvider               = app.injector.instanceOf[LocalDateProvider]
       val informationMessageService       = new InformationMessageService(localDateProvider)
-      val reportActualProfitPeriodEndDate = currentYear + "-12-31T23:59:59.000"
+      val reportActualProfitPeriodEndDate = s"$currentYear-12-31T23:59:59.000"
       val reportActualProfitService =
         new ReportActualProfitService(reportActualProfitPeriodStartDate, reportActualProfitPeriodEndDate)
       val service = new LiveTaxCreditsSummaryService(mockTaxCreditsBrokerConnector,
@@ -509,7 +509,7 @@ class TaxCreditsSummaryServiceSpec
         Some(OldRate),
         informationMessage,
         Some(
-          MessageLink(false,
+          MessageLink(preFtnaeDeadline = false,
                       "Contact tax credits",
                       "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries")
         )
@@ -545,7 +545,7 @@ class TaxCreditsSummaryServiceSpec
         Some(NewRate),
         informationMessage,
         Some(
-          MessageLink(false,
+          MessageLink(preFtnaeDeadline = false,
                       "Contact tax credits",
                       "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/tax-credits-enquiries")
         )
@@ -559,13 +559,11 @@ class TaxCreditsSummaryServiceSpec
       case Some(tag) =>
         GuiceApplicationBuilder()
           .configure("dateOverride" -> tag)
-          .disable[com.kenshoo.play.metrics.PlayModule]
           .configure("metrics.enabled" -> false)
           .build()
       case _ =>
         GuiceApplicationBuilder()
           .configure("dateOverride" -> LocalDate.now().toString)
-          .disable[com.kenshoo.play.metrics.PlayModule]
           .configure("metrics.enabled" -> false)
           .build()
     }

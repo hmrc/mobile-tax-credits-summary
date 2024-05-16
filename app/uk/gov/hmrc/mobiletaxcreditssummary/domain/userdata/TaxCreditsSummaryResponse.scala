@@ -19,8 +19,6 @@ package uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.ChangeOfCircumstanceLinks
 
-import java.time.{LocalDate, ZoneId, ZonedDateTime}
-
 case class TaxCreditsSummaryResponse(
   excluded:                  Boolean = false,
   taxCreditsSummary:         Option[TaxCreditsSummary],

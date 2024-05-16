@@ -29,7 +29,6 @@ import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.domain.Nino
 
 import java.time.LocalDate
-import scala.language.postfixOps
 
 class BaseISpec
     extends AnyWordSpecLike
@@ -44,9 +43,9 @@ class BaseISpec
     with WireMockSupport {
   override implicit lazy val app: Application = appBuilder.build()
 
-  protected val nino1       = Nino("AA000000A")
-  protected val nino2       = Nino("AP412713B")
-  protected val sandboxNino = Nino("CS700100A")
+  protected val nino1: Nino = Nino("AA000000A")
+  protected val nino2: Nino = Nino("AP412713B")
+  protected val sandboxNino: Nino = Nino("CS700100A")
   protected val acceptJsonHeader:        (String, String) = "Accept"        -> "application/vnd.hmrc.1.0+json"
   protected val authorisationJsonHeader: (String, String) = "AUTHORIZATION" -> "Bearer 123"
 
