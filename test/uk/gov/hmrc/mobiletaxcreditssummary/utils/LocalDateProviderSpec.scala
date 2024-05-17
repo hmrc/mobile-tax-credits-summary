@@ -46,13 +46,11 @@ class LocalDateProviderSpec extends AnyWordSpecLike with Matchers with GuiceOneA
       case Some(tag) =>
         GuiceApplicationBuilder()
           .configure("dateOverride" -> tag)
-          .disable[com.kenshoo.play.metrics.PlayModule]
           .configure("metrics.enabled" -> false)
           .build()
       case _ =>
         GuiceApplicationBuilder()
           .configure("dateOverride" -> LocalDate.now().toString)
-          .disable[com.kenshoo.play.metrics.PlayModule]
           .configure("metrics.enabled" -> false)
           .build()
     }

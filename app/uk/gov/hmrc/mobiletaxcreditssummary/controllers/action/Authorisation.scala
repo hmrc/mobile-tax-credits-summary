@@ -70,7 +70,7 @@ trait Authorisation extends Results with AuthorisedFunctions {
         block(request)
       }
       .recover {
-        case _: uk.gov.hmrc.http.Upstream4xxResponse =>
+        case ex: uk.gov.hmrc.http.UpstreamErrorResponse if ex.statusCode > 399 && ex.statusCode < 500 =>
           logger.info("Unauthorized! Failed to grant access since 4xx response!")
           Unauthorized(Json.toJson[ErrorResponse](ErrorUnauthorizedMicroService))
 

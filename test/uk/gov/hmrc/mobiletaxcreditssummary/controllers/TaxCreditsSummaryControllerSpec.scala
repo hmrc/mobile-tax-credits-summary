@@ -79,7 +79,7 @@ class TaxCreditsSummaryControllerSpec extends TestSetup with FileResource {
       (mockService
         .getTaxCreditsSummaryResponse(_: Nino, _: JourneyId)(_: HeaderCarrier, _: ExecutionContext))
         .expects(Nino(nino), *, *, *)
-        .returning(Future failed Upstream5xxResponse("error", 500, 500))
+        .returning(Future failed UpstreamErrorResponse("error", 500, 500))
 
       status(
         controller.taxCreditsSummary(Nino(nino), "17d2420c-4fc6-4eee-9311-a37325066704")(

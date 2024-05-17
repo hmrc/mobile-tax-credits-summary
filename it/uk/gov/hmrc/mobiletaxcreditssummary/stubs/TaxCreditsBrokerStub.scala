@@ -1,6 +1,6 @@
 package uk.gov.hmrc.mobiletaxcreditssummary.stubs
 
-import java.time.{LocalDate, ZoneId}
+import java.time.LocalDate
 
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, stubFor, urlPathEqualTo}
 import uk.gov.hmrc.domain.Nino

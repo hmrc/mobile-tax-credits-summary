@@ -16,9 +16,11 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.config
 
-import akka.actor.ActorSystem
+
 import com.google.inject.Inject
 import com.typesafe.config.Config
+import org.apache.pekko.actor.ActorSystem
+
 import javax.inject.Named
 import play.api.Configuration
 import play.api.libs.ws.WSClient

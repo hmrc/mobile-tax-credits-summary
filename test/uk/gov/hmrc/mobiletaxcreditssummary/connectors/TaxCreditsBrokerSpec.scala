@@ -17,8 +17,8 @@
 package uk.gov.hmrc.mobiletaxcreditssummary.connectors
 
 import java.time.LocalDate
-import akka.actor.ActorSystem
 import com.typesafe.config.Config
+import org.apache.pekko.actor.ActorSystem
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers

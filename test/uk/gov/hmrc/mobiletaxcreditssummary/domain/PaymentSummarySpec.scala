@@ -134,7 +134,7 @@ class PaymentSummarySpec extends AnyWordSpecLike with Matchers with OptionValues
       paymentSummary.workingTaxCredit.isDefined shouldBe false
       paymentSummary.totalsByDate.isDefined     shouldBe true
 
-      jsonDiff(None, Json.toJson(paymentSummary), expectedResponse) shouldBe 'empty
+      jsonDiff(None, Json.toJson(paymentSummary), expectedResponse) shouldBe empty
     }
     "parse correctly if no ctc is provided" in {
 
@@ -168,7 +168,7 @@ class PaymentSummarySpec extends AnyWordSpecLike with Matchers with OptionValues
       paymentSummary.workingTaxCredit.isDefined shouldBe true
       paymentSummary.totalsByDate.isEmpty       shouldBe false
 
-      jsonDiff(None, Json.toJson(paymentSummary), expectedResponse) shouldBe 'empty
+      jsonDiff(None, Json.toJson(paymentSummary), expectedResponse) shouldBe empty
     }
     "parse correctly and sort calculated totalsByDate by Date" in {
 
@@ -215,7 +215,7 @@ class PaymentSummarySpec extends AnyWordSpecLike with Matchers with OptionValues
       paymentSummary.workingTaxCredit.isDefined shouldBe true
       paymentSummary.totalsByDate.isDefined     shouldBe true
 
-      jsonDiff(None, Json.toJson(paymentSummary), expectedResponse) shouldBe 'empty
+      jsonDiff(None, Json.toJson(paymentSummary), expectedResponse) shouldBe empty
     }
     "correctly parse the previous payments and associated totals for wtc" in {
 
@@ -276,7 +276,7 @@ class PaymentSummarySpec extends AnyWordSpecLike with Matchers with OptionValues
       paymentSummary.workingTaxCredit.isDefined                     shouldBe true
       paymentSummary.totalsByDate.isDefined                         shouldBe true
       paymentSummary.previousTotalsByDate.isDefined                 shouldBe true
-      jsonDiff(None, Json.toJson(paymentSummary), expectedResponse) shouldBe 'empty
+      jsonDiff(None, Json.toJson(paymentSummary), expectedResponse) shouldBe empty
     }
     "correctly parse the previous payments and associated totals for ctc" in {
 
@@ -337,7 +337,7 @@ class PaymentSummarySpec extends AnyWordSpecLike with Matchers with OptionValues
       paymentSummary.workingTaxCredit.isDefined                     shouldBe true
       paymentSummary.totalsByDate.isDefined                         shouldBe true
       paymentSummary.previousTotalsByDate.isDefined                 shouldBe true
-      jsonDiff(None, Json.toJson(paymentSummary), expectedResponse) shouldBe 'empty
+      jsonDiff(None, Json.toJson(paymentSummary), expectedResponse) shouldBe empty
     }
     "totals are calculated correctly for wtc and ctc with future and previous payments" in {
       val wtc =
@@ -416,7 +416,7 @@ class PaymentSummarySpec extends AnyWordSpecLike with Matchers with OptionValues
       paymentSummary.workingTaxCredit.isDefined                     shouldBe true
       paymentSummary.totalsByDate.isDefined                         shouldBe true
       paymentSummary.previousTotalsByDate.isDefined                 shouldBe true
-      jsonDiff(None, Json.toJson(paymentSummary), expectedResponse) shouldBe 'empty
+      jsonDiff(None, Json.toJson(paymentSummary), expectedResponse) shouldBe empty
     }
   }
 

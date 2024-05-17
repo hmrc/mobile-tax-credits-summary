@@ -31,5 +31,5 @@ object ClaimActualIncomeEligibilityStatus {
   val APPLICANT_EXCLUDED:       ApplicantActualIncomeEligibilityStatus = "ApplicantExcluded"
   val APPLICANT_NOT_APPLICABLE: ApplicantActualIncomeEligibilityStatus = "ApplicantNotApplicable"
 
-  implicit val formats = Json.format[ClaimActualIncomeEligibilityStatus]
+  implicit val formats: OFormat[ClaimActualIncomeEligibilityStatus] = Json.format[ClaimActualIncomeEligibilityStatus]
 }

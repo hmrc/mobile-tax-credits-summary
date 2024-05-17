@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.TaxCreditsNino
 
 case class AwardDetails(
@@ -28,5 +28,5 @@ case class AwardDetails(
   renewalsJourney:           Boolean)
 
 object AwardDetails {
-  implicit val formats = Json.format[AwardDetails]
+  implicit val formats: OFormat[AwardDetails] = Json.format[AwardDetails]
 }
