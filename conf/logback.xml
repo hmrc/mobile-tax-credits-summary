@@ -16,7 +16,7 @@
                 user=[%X{Authorization}] message=[%message] %replace(exception=[%xException]){'^exception=\[\]$',''}%n
             </pattern>
         </encoder>
-    </appender>fSTDOUT_IGNORE_NETTY
+    </appender>
 
     <appender name="CONNECTOR_LOG_FILE" class="ch.qos.logback.core.FileAppender">
         <file>logs/connectors.log</file>
