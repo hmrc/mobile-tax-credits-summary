@@ -27,8 +27,6 @@ import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.http.HttpClient
 
-import scala.jdk.CollectionConverters._
-
 
 class GuiceModule(
   environment:   Environment,
@@ -63,9 +61,7 @@ class GuiceModule(
     bindConfigString("renewalsGracePeriodEndDate", "microservice.renewals.gracePeriodEndDate")
     bindConfigString("renewalsEndViewDate", "microservice.renewals.endViewRenewalsDate")
 
-    bind(classOf[ApiAccess]).toInstance(
-      ApiAccess("PRIVATE", configuration.underlying.getStringList("api.access.white-list.applicationIds").asScala)
-    )
+    bind(classOf[ApiAccess]).toInstance(ApiAccess("PRIVATE"))
   }
 
   class DefaultConfig(val config: Config)

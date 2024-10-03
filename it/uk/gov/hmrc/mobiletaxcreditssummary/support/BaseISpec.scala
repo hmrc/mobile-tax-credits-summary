@@ -43,15 +43,16 @@ class BaseISpec
     with WireMockSupport {
   override implicit lazy val app: Application = appBuilder.build()
 
-  protected val nino1: Nino = Nino("AA000000A")
-  protected val nino2: Nino = Nino("AP412713B")
-  protected val sandboxNino: Nino = Nino("CS700100A")
-  protected val acceptJsonHeader:        (String, String) = "Accept"        -> "application/vnd.hmrc.1.0+json"
+  protected val nino1:                   Nino             = Nino("AA000000A")
+  protected val nino2:                   Nino             = Nino("AP412713B")
+  protected val sandboxNino:             Nino             = Nino("CS700100A")
+  protected val acceptJsonHeader:        (String, String) = "Accept" -> "application/vnd.hmrc.1.0+json"
   protected val authorisationJsonHeader: (String, String) = "AUTHORIZATION" -> "Bearer 123"
 
   def configuration: Map[String, Any] =
     Map(
       "auditing.enabled"                                      -> false,
+      "metrics.enabled"                                       -> false,
       "microservice.services.auth.port"                       -> wireMockPort,
       "microservice.services.datastream.port"                 -> wireMockPort,
       "microservice.services.tax-credits-broker.port"         -> wireMockPort,
