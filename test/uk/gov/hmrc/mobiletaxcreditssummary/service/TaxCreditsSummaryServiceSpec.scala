@@ -26,7 +26,7 @@ import play.api.libs.json.Json.parse
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.api.sandbox.FileResource
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{Upstream4xxResponse, Upstream5xxResponse, UpstreamErrorResponse}
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.mobiletaxcreditssummary.controllers.TestSetup
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata.LegacyRenewalStatus.COMPLETE
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.{ChangeOfCircumstanceLinks, Complete, Renewals, TaxCreditsNino}

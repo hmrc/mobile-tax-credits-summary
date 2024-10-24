@@ -18,39 +18,46 @@ package uk.gov.hmrc.mobiletaxcreditssummary.connectors
 
 import com.google.inject.name.Named
 import com.google.inject.{Inject, Singleton}
-import uk.gov.hmrc.http.{CoreGet, HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, StringContextOps}
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.TaxCreditsNino
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
 import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.client.HttpClientV2
 
+import java.net.URL
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class TaxCreditsBrokerConnector @Inject() (
-  http:                                    CoreGet,
+  http:                                    HttpClientV2,
   @Named("tax-credits-broker") serviceUrl: String) {
-  val externalServiceName = "tax-credits-broker"
 
   def url(
     nino:  TaxCreditsNino,
     route: String
-  ) = s"$serviceUrl/tcs/${nino.value}/$route"
+  ): URL = url"${s"$serviceUrl/tcs/${nino.value}/$route"}"
 
   def getExclusion(
     nino:                   TaxCreditsNino
   )(implicit headerCarrier: HeaderCarrier,
     ex:                     ExecutionContext
   ): Future[Option[Exclusion]] =
-    http.GET[Option[Exclusion]](url(nino, "exclusion")).recover {
-      case _: NotFoundException => None
-    }
+    http
+      .get(url(nino, "exclusion"))
+      .execute[Option[Exclusion]]
+      .recover {
+        case _: NotFoundException => None
+      }
 
   def getDashboardData(
     nino:                   TaxCreditsNino
   )(implicit headerCarrier: HeaderCarrier,
     ex:                     ExecutionContext
   ): Future[Option[DashboardData]] =
-    http.GET[Option[DashboardData]](url(nino, "dashboard-data")).recover {
-      case _: NotFoundException => None
-    }
+    http
+      .get(url(nino, "dashboard-data"))
+      .execute[Option[DashboardData]]
+      .recover {
+        case _: NotFoundException => None
+      }
 }
