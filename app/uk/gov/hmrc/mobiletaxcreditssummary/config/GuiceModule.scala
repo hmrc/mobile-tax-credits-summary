@@ -21,11 +21,9 @@ import com.google.inject.name.Names.named
 import com.typesafe.config.Config
 import play.api.{Configuration, Environment}
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.http.{CoreGet, CorePost}
 import uk.gov.hmrc.mobiletaxcreditssummary.controllers.api.ApiAccess
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.http.HttpClient
 
 
 class GuiceModule(
@@ -37,9 +35,6 @@ class GuiceModule(
 
   override def configure(): Unit = {
     bind(classOf[AuthConnector]).to(classOf[DefaultAuthConnector])
-    bind(classOf[CoreGet]).to(classOf[WSHttpImpl])
-    bind(classOf[CorePost]).to(classOf[WSHttpImpl])
-    bind(classOf[HttpClient]).to(classOf[WSHttpImpl])
 
     bindConfigInt("controllers.confidenceLevel")
     bindConfigString("appUrl", "appUrl")

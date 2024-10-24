@@ -17,23 +17,22 @@
 package uk.gov.hmrc.mobiletaxcreditssummary.connectors
 
 import java.time.LocalDate
-import com.typesafe.config.Config
-import org.apache.pekko.actor.ActorSystem
+import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
-import play.api.{Configuration, Environment}
 import play.api.libs.json.Json
 import play.api.libs.json.Json.parse
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.api.sandbox.FileResource
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.http.hooks.HttpHook
+import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.TaxCreditsNino
 import uk.gov.hmrc.mobiletaxcreditssummary.domain.userdata._
 
+import java.net.URL
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -46,7 +45,9 @@ class TaxCreditsBrokerSpec
     with FileResource {
 
   trait Setup extends MockFactory {
-    implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+    implicit lazy val hc:   HeaderCarrier  = HeaderCarrier()
+    val mockHttpClient:     HttpClientV2   = mock[HttpClientV2]
+    val mockRequestBuilder: RequestBuilder = mock[RequestBuilder]
 
     val expectedNextDueDate: LocalDate                = LocalDate.parse("2015-07-16")
     val headers:             Map[String, Seq[String]] = Map("Accept" -> Seq("application/vnd.hmrc.1.0+json"))
@@ -102,62 +103,55 @@ class TaxCreditsBrokerSpec
 
     val exclusion:   Exclusion = Exclusion(true)
     val notExcluded: Exclusion = Exclusion(false)
-    val serviceUrl = "https://localhost"
+    val serviceUrl = "https://localhost:11111"
 
-    class TestTaxCreditsBrokerConnector(http: CoreGet) extends TaxCreditsBrokerConnector(http, serviceUrl)
+    val connector: TaxCreditsBrokerConnector = new TaxCreditsBrokerConnector(mockHttpClient, serviceUrl)
 
-    def TaxCreditsBrokerTestConnector(response: Option[Future[HttpResponse]] = None): TestTaxCreditsBrokerConnector = {
+    def exclusionGet[T](
+      nino:  Nino,
+      route: String
+    ): CallHandler[Future[T]] = {
+      (mockHttpClient
+        .get(_: URL)(_: HeaderCarrier))
+        .expects(url"${s"$serviceUrl/tcs/${nino.value}/$route"}", *)
+        .returns(mockRequestBuilder)
 
-      val http: CoreGet = new CoreGet with HttpGet with GetHttpTransport {
-        override val hooks: Seq[HttpHook] = NoneRequired
+      (mockRequestBuilder
+        .execute[T](_: HttpReads[T], _: ExecutionContext))
+        .expects(*, *)
 
-        override def configuration: Config = Configuration.load(Environment.simple()).underlying
-
-        override def doGet(
-          url:         String,
-          headers:     Seq[(String, String)] = Seq.empty
-        )(implicit ec: ExecutionContext
-        ): Future[HttpResponse] =
-          response.getOrElse(throw new Exception("No response defined!"))
-
-        override protected def actorSystem: ActorSystem = ActorSystem()
-      }
-
-      new TestTaxCreditsBrokerConnector(http)
     }
-
-    val connector: TaxCreditsBrokerConnector = TaxCreditsBrokerTestConnector(Some(response))
   }
 
   "taxCreditsBroker connector" should {
 
     "return exclusion = true when 200 response is received with a valid json payload of exclusion = true" in new Setup {
-      override lazy val response: Future[AnyRef with HttpResponse] = http200Exclusion
+      exclusionGet(nino, "exclusion").returns(Future successful Some(exclusion))
 
       await(connector.getExclusion(TaxCreditsNino(nino.value))) shouldBe Some(exclusion)
     }
 
     "return exclusion = false when 200 response is received with a valid json payload of exclusion = false" in new Setup {
-      override lazy val response: Future[AnyRef with HttpResponse] = http200NotExcluded
+      exclusionGet(nino, "exclusion").returns(Future successful Some(notExcluded))
 
       await(connector.getExclusion(TaxCreditsNino(nino.value))) shouldBe Some(notExcluded)
     }
 
     "return exclusion = None when 404 response is received" in new Setup {
-      override lazy val response: Future[AnyRef with HttpResponse] = http404Exclusion
+      exclusionGet(nino, "exclusion").returns(Future failed new NotFoundException(""))
 
       await(connector.getExclusion(TaxCreditsNino(nino.value))) shouldBe None
     }
 
     "return a valid response for getDashboardData when a 200 response is received with a valid json payload" in new Setup {
-      override lazy val response: Future[AnyRef with HttpResponse] = http200dashboardData
-      val result:                 Option[DashboardData]            = await(connector.getDashboardData(TaxCreditsNino(nino.value)))
+      exclusionGet(nino, "dashboard-data").returns(Future successful Some(dashboardData))
+      val result: Option[DashboardData] = await(connector.getDashboardData(TaxCreditsNino(nino.value)))
       result shouldBe Some(dashboardData)
     }
 
     "return None when dashboard data response is 404" in new Setup {
-      override lazy val response: Future[AnyRef with HttpResponse] = http404dashboardData
-      val result:                 Option[DashboardData]            = await(connector.getDashboardData(TaxCreditsNino(nino.value)))
+      exclusionGet(nino, "dashboard-data").returns(Future failed new NotFoundException(""))
+      val result: Option[DashboardData] = await(connector.getDashboardData(TaxCreditsNino(nino.value)))
       result shouldBe None
     }
   }
