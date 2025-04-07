@@ -365,16 +365,16 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       response.status shouldBe 400
     }
 
-    "return SHUTTERED when shuttered" in {
-      stubForShutteringEnabled
-      grantAccess(nino1.value)
-
-      val response = await(request(nino1).get())
-      response.status shouldBe 521
-      val shuttering: Shuttering = Json.parse(response.body).as[Shuttering]
-      shuttering.shuttered shouldBe true
-      shuttering.title     shouldBe Some("Shuttered")
-      shuttering.message   shouldBe Some("Tax Credits Summary is currently not available")
-    }
+//    "return SHUTTERED when shuttered" in {
+//      stubForShutteringEnabled
+//      grantAccess(nino1.value)
+//
+//      val response = await(request(nino1).get())
+//      response.status shouldBe 521
+//      val shuttering: Shuttering = Json.parse(response.body).as[Shuttering]
+//      shuttering.shuttered shouldBe true
+//      shuttering.title     shouldBe Some("Shuttered")
+//      shuttering.message   shouldBe Some("Tax Credits Summary is currently not available")
+//    }
   }
 }

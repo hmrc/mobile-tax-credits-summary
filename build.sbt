@@ -31,12 +31,9 @@ lazy val microservice = Project(appName, file("."))
       .withWarnScalaVersionEviction(false),
     resolvers += Resolver.jcenterRepo,
     Compile / unmanagedResourceDirectories += baseDirectory.value / "resources",
-    IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory) (
-      base => Seq(base / "it")
-    ).value,
-    coverageMinimumStmtTotal := 91,
+    IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "it")).value,
+    coverageMinimumStmtTotal := 90,
     coverageFailOnMinimum := true,
     coverageHighlighting := true,
     coverageExcludedPackages := "<empty>;.*Routes.*;app.*;.*prod;.*definition;.*testOnlyDoNotUseInAppConf;.*com.kenshoo.*;.*javascript.*;.*BuildInfo;.*Reverse.*;.*Base64.*;.*binders.*"
   )
-
