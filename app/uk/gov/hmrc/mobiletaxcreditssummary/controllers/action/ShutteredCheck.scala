@@ -27,6 +27,6 @@ trait ShutteredCheck extends Results {
   private final val WebServerIsDown = new Status(521)
 
   def withShuttering(shuttering: Shuttering)(fn: => Future[Result]): Future[Result] =
-    if (shuttering.shuttered) Future.successful(Ok("")) else fn
+    if (shuttering.shuttered) Future.successful(Ok("{}")) else fn
 
 }
