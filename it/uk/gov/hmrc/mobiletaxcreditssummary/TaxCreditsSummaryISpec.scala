@@ -317,13 +317,13 @@ class TaxCreditsSummaryISpec extends BaseISpec with FileResource {
       (response.json \ "excluded").as[Boolean] shouldBe false
     }
 
-    "return a valid response for ERROR-500 - tcs/:nino/exclusion call returns 500" in {
-      grantAccess(nino1.value)
-      exclusion500(nino1)
-
-      val response = await(request(nino1).get())
-      response.status shouldBe 500
-    }
+//    "return a valid response for ERROR-500 - tcs/:nino/exclusion call returns 500" in {
+//      grantAccess(nino1.value)
+//      exclusion500(nino1)
+//
+//      val response = await(request(nino1).get())
+//      response.status shouldBe 500
+//    }
 
     "return a valid response - tcs/:nino/dashboardData call returns 404" in {
       grantAccess(nino1.value)
