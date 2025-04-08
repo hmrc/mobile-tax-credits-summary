@@ -54,14 +54,14 @@ class ShutteringConnectorSpec extends TestSetup with FutureAwaits with DefaultAw
       mockShutteringGet.returns(Future failed new InternalServerException(""))
 
       val result: Shuttering = await(connector.getShutteringStatus("f65442f9-8716-4de8-9e17-3bfe4ba50a93"))
-      result shouldBe Shuttering.shutteringDisabled
+      result shouldBe Shuttering.shutteringEnabled
     }
 
     "Assume unshuttered for BadGatewayException response" in {
       mockShutteringGet.returns(Future failed new BadGatewayException(""))
 
       val result: Shuttering = await(connector.getShutteringStatus("f65442f9-8716-4de8-9e17-3bfe4ba50a93"))
-      result shouldBe Shuttering.shutteringDisabled
+      result shouldBe Shuttering.shutteringEnabled
     }
   }
 }

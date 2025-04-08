@@ -47,7 +47,7 @@ class ShutteringConnector @Inject() (
       .recover {
         case e =>
           logger.warn(s"Call to mobile-shuttering failed:\n $e \nAssuming unshuttered.")
-          Shuttering.shutteringDisabled
+          Shuttering.shutteringEnabled
       }
 
 }
