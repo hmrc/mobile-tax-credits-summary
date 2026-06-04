@@ -10,7 +10,7 @@
     "versions": [
       {
         "version": "1.0",
-        "status": "STABLE",
+        "status": "DEPRECATED",
         "endpointsEnabled": true,
         "access": @Json.toJson(apiAccess)
       }
